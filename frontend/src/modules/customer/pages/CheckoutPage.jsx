@@ -146,22 +146,24 @@ const CheckoutPage = () => {
   const previewDebounceRef = useRef(null);
   const [currentAddress, setCurrentAddress] = useState({
     type: "Home",
-    name: "Harshvardhan Panchal",
-    address: "81 Pipliyahana Road, Near 214",
+    name: "",
+    address: "",
     landmark: "",
-    city: "Indore - 452018",
-    phone: "6268423925",
+    city: "",
+    phone: "",
   });
   const [isEditAddressOpen, setIsEditAddressOpen] = useState(false);
   const [editAddressForm, setEditAddressForm] = useState({
     type: "Home",
-    name: "Harshvardhan Panchal",
-    address: "81 Pipliyahana Road, Near 214",
+    name: "",
+    address: "",
     landmark: "",
-    city: "Indore - 452018",
-    phone: "6268423925",
+    city: "",
+    phone: "",
   });
+  const [editAddressErrors, setEditAddressErrors] = useState({});
   const [showRecipientForm, setShowRecipientForm] = useState(false);
+  const [recipientErrors, setRecipientErrors] = useState({});
   const [recipientData, setRecipientData] = useState({
     completeAddress: "",
     landmark: "",
@@ -223,7 +225,7 @@ const CheckoutPage = () => {
   // Derived display values for primary delivery card
   const displayName = savedRecipient?.name || currentAddress.name;
   const displayPhone =
-    savedRecipient?.phone || currentAddress.phone || "6268423925";
+    savedRecipient?.phone || currentAddress.phone || "";
   const displayAddress = savedRecipient
     ? `${savedRecipient.completeAddress}${savedRecipient.landmark ? `, ${savedRecipient.landmark}` : ""}${savedRecipient.pincode ? ` - ${savedRecipient.pincode}` : ""}`
     : `${currentAddress.address}${currentAddress.landmark ? `, ${currentAddress.landmark}` : ""}, ${currentAddress.city}`;
@@ -279,14 +281,21 @@ const CheckoutPage = () => {
   };
 
   const handleSaveRecipient = () => {
-    if (
-      !recipientData.completeAddress ||
-      !recipientData.name ||
-      recipientData.phone.length !== 10
-    ) {
-      showToast("Please fill all required fields", "error");
+    const errors = {};
+    if (!recipientData.completeAddress?.trim()) errors.completeAddress = "Address is required";
+    if (!recipientData.name?.trim()) errors.name = "Name is required";
+    if (!recipientData.phone?.trim()) {
+      errors.phone = "Phone number is required";
+    } else if (!/^\d{10}$/.test(recipientData.phone)) {
+      errors.phone = "Phone number must be exactly 10 digits";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setRecipientErrors(errors);
+      showToast("Please fix the validation errors", "error");
       return;
     }
+    setRecipientErrors({});
     setSavedRecipient(recipientData);
     setShowRecipientForm(false);
     try {
@@ -429,14 +438,15 @@ const CheckoutPage = () => {
   };
 
   const handleSaveEditedAddress = async () => {
-    if (
-      !editAddressForm.name.trim() ||
-      !editAddressForm.address.trim() ||
-      !editAddressForm.city.trim()
-    ) {
-      showToast("Please fill name, address and city", "error");
+    const errors = {};
+    if (!editAddressForm.address?.trim()) errors.address = "Address is required";
+    if (!editAddressForm.city?.trim()) errors.city = "City / Pincode is required";
+
+    if (Object.keys(errors).length > 0) {
+      setEditAddressErrors(errors);
       return;
     }
+    setEditAddressErrors({});
 
     let location = null;
     let placeId = null;
@@ -999,6 +1009,7 @@ const CheckoutPage = () => {
               displayName={displayName}
               displayPhone={displayPhone}
               displayAddress={displayAddress}
+              recipientErrors={recipientErrors}
             />
 
             {/* Cart Summary */}
@@ -1157,9 +1168,10 @@ const CheckoutPage = () => {
                   id="edit-address"
                   value={editAddressForm.address}
                   onChange={(e) => setEditAddressForm((prev) => ({ ...prev, address: e.target.value }))}
-                  className="h-10"
+                  className={`h-10 ${editAddressErrors.address ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                   placeholder="House, street, area"
                 />
+                {editAddressErrors.address && <span className="text-xs text-red-500">{editAddressErrors.address}</span>}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-landmark" className="text-xs font-semibold text-slate-700">Nearest Landmark (optional)</Label>
@@ -1177,9 +1189,10 @@ const CheckoutPage = () => {
                   id="edit-city"
                   value={editAddressForm.city}
                   onChange={(e) => setEditAddressForm((prev) => ({ ...prev, city: e.target.value }))}
-                  className="h-10"
+                  className={`h-10 ${editAddressErrors.city ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                   placeholder="City - Pincode"
                 />
+                {editAddressErrors.city && <span className="text-xs text-red-500">{editAddressErrors.city}</span>}
               </div>
             </div>
             <DialogFooter className="mt-2">

@@ -36,6 +36,7 @@ const CheckoutAddressSection = React.memo(function CheckoutAddressSection({
   displayName,
   displayPhone,
   displayAddress,
+  recipientErrors,
 }) {
   return (
     <motion.div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
@@ -105,8 +106,9 @@ const CheckoutAddressSection = React.memo(function CheckoutAddressSection({
                     onChange={(e) =>
                       onRecipientDataChange({ ...recipientData, completeAddress: e.target.value })
                     }
-                    className="h-12 rounded-xl border-slate-200 focus:ring-primary focus:border-primary text-sm"
+                    className={`h-12 rounded-xl text-sm ${recipientErrors?.completeAddress ? "border-red-500 focus-visible:ring-red-500" : "border-slate-200 focus:ring-primary focus:border-primary"}`}
                   />
+                  {recipientErrors?.completeAddress && <span className="text-xs text-red-500 px-1">{recipientErrors.completeAddress}</span>}
                   <Input
                     placeholder="Find landmark (optional)"
                     value={recipientData.landmark}
@@ -140,8 +142,9 @@ const CheckoutAddressSection = React.memo(function CheckoutAddressSection({
                     onChange={(e) =>
                       onRecipientDataChange({ ...recipientData, name: e.target.value })
                     }
-                    className="h-12 rounded-xl border-slate-200 focus:ring-primary focus:border-primary text-sm"
+                    className={`h-12 rounded-xl text-sm ${recipientErrors?.name ? "border-red-500 focus-visible:ring-red-500" : "border-slate-200 focus:ring-primary focus:border-primary"}`}
                   />
+                  {recipientErrors?.name && <span className="text-xs text-red-500 px-1">{recipientErrors.name}</span>}
                   <div className="relative">
                     <Input
                       placeholder="Receiver's phone number*"
@@ -149,13 +152,14 @@ const CheckoutAddressSection = React.memo(function CheckoutAddressSection({
                       onChange={(e) =>
                         onRecipientDataChange({ ...recipientData, phone: e.target.value })
                       }
-                      className="h-12 rounded-xl border-slate-200 focus:ring-primary focus:border-primary text-sm pr-10"
+                      className={`h-12 rounded-xl pr-10 text-sm ${recipientErrors?.phone ? "border-red-500 focus-visible:ring-red-500" : "border-slate-200 focus:ring-primary focus:border-primary"}`}
                     />
                     <Contact2
                       size={18}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
                     />
                   </div>
+                  {recipientErrors?.phone && <span className="text-xs text-red-500 px-1">{recipientErrors.phone}</span>}
                 </div>
               </div>
 
