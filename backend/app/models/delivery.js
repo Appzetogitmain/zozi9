@@ -75,7 +75,18 @@ const deliverySchema = new mongoose.Schema(
             default: false,
         },
 
+        emergencyContacts: [
+            {
+                id: { type: String },
+                name: { type: String, trim: true },
+                phone: { type: String, trim: true }
+            }
+        ],
 
+        privacySettings: {
+            shareLiveLocation: { type: Boolean, default: true },
+            profileVisibility: { type: Boolean, default: true }
+        },
 
         isOnline: {
             type: Boolean,

@@ -516,8 +516,12 @@ const DeliveryAuth = () => {
                                 toast.error("Please fill all personal information fields and upload photo");
                                 return;
                               }
-                              if (signupPhone.length !== 10) {
+                              if (signupPhone.length !== 10 || !/^\d{10}$/.test(signupPhone)) {
                                 toast.error("Please enter a valid 10-digit phone number");
+                                return;
+                              }
+                              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupEmail)) {
+                                toast.error("Please enter a valid email address");
                                 return;
                               }
                               setSignupStep(2);
@@ -608,12 +612,12 @@ const DeliveryAuth = () => {
                             </button>
                             <button
                               onClick={() => {
-                                if (!signupVehicleNumber) {
-                                  toast.error("Please enter your vehicle plate number");
+                                if (!signupVehicleNumber || !/^[A-Z0-9 -]{6,12}$/.test(signupVehicleNumber)) {
+                                  toast.error("Please enter a valid vehicle plate number (e.g. MH 01 AB 1234)");
                                   return;
                                 }
-                                if (!signupDLNumber) {
-                                  toast.error("Please enter your driving license number");
+                                if (!signupDLNumber || !/^[A-Z]{2}[0-9]{13}$/.test(signupDLNumber.replace(/[^A-Z0-9]/g, ''))) {
+                                  toast.error("Please enter a valid Driving License number (e.g. MH0120230001234)");
                                   return;
                                 }
                                 setSignupStep(3);
@@ -697,12 +701,20 @@ const DeliveryAuth = () => {
                                   toast.error("Please fill all bank and identification fields");
                                   return;
                                 }
-                                if (signupAadharNumber.length !== 12) {
-                                  toast.error("Aadhar number must be 12 digits");
+                                if (!/^\d{12}$/.test(signupAadharNumber)) {
+                                  toast.error("Aadhar number must be exactly 12 digits");
                                   return;
                                 }
-                                if (signupPanNumber.length !== 10) {
-                                  toast.error("PAN number must be 10 characters");
+                                if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(signupPanNumber)) {
+                                  toast.error("Invalid PAN format (e.g. ABCDE1234F)");
+                                  return;
+                                }
+                                if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(signupIfsc)) {
+                                  toast.error("Invalid IFSC format (e.g. HDFC0001234)");
+                                  return;
+                                }
+                                if (!/^\d{9,18}$/.test(signupAccountNumber)) {
+                                  toast.error("Account number must be between 9 and 18 digits");
                                   return;
                                 }
                                 setSignupStep(4);

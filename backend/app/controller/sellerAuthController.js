@@ -134,6 +134,25 @@ export const signupSeller = async (req, res) => {
             return handleResponse(res, 400, "All fields are required");
         }
 
+        if (!/^[A-Za-z\s]{3,50}$/.test(name)) {
+            return handleResponse(res, 400, "Owner name must be 3-50 characters (letters only)");
+        }
+        if (shopName.length < 3 || shopName.length > 100) {
+            return handleResponse(res, 400, "Shop name must be between 3 and 100 characters");
+        }
+        if (!/^\d{10}$/.test(phone)) {
+            return handleResponse(res, 400, "Invalid phone number format");
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return handleResponse(res, 400, "Invalid email address format");
+        }
+        if (password.length < 6) {
+             return handleResponse(res, 400, "Password must be at least 6 characters");
+        }
+        if (pincode && !/^\d{6}$/.test(pincode)) {
+             return handleResponse(res, 400, "Invalid pincode format");
+        }
+
         verifySellerVerificationToken({
             channel: "email",
             rawValue: email,

@@ -1,13 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ScrollText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSettings } from '@core/context/SettingsContext';
+import { customerApi } from '../services/customerApi';
 
 const TermsPage = () => {
     const navigate = useNavigate();
     const { settings } = useSettings();
     const appName = settings?.appName || 'App';
     const companyName = settings?.companyName || appName;
+    const [content, setContent] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTerms = async () => {
+            try {
+                const res = await customerApi.getLegalPage('CUSTOMER', 'TERMS');
+                if (res.data?.success) {
+                    setContent(res.data.result?.content || '');
+                }
+            } catch (err) {
+                console.error('Failed to fetch terms:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchTerms();
+    }, []);
+
     return (
         <div className="min-h-screen bg-slate-50 font-sans pb-10">
             {/* Header */}
@@ -34,34 +54,15 @@ const TermsPage = () => {
                     </div>
 
                     <div className="prose prose-slate prose-sm max-w-none text-slate-600 space-y-4">
-                        <p>
-                            Welcome to {appName}. By accessing or using our mobile application and services, you agree to be bound by these Terms and Conditions.
-                        </p>
-
-                        <h3 className="text-slate-800 font-bold text-base mt-6">1. Acceptance of Terms</h3>
-                        <p>
-                            By creating an account or using our services, you agree to comply with these terms. If you do not agree, you may not use our services.
-                        </p>
-
-                        <h3 className="text-slate-800 font-bold text-base mt-6">2. Use of Service</h3>
-                        <p>
-                            You must be at least 18 years old to use our services. You agree to provide accurate information during registration and to keep your account secure.
-                        </p>
-
-                        <h3 className="text-slate-800 font-bold text-base mt-6">3. Orders and Payments</h3>
-                        <p>
-                            All orders are subject to availability. Prices are subject to change without notice. We reserve the right to cancel orders at our discretion.
-                        </p>
-
-                        <h3 className="text-slate-800 font-bold text-base mt-6">4. Intellectual Property</h3>
-                        <p>
-                            All content, trademarks, and data on this app are the property of {companyName} and are protected by law.
-                        </p>
-
-                        <h3 className="text-slate-800 font-bold text-base mt-6">5. Termination</h3>
-                        <p>
-                            We reserve the right to end or suspend your account at any time for violation of these terms.
-                        </p>
+                        {isLoading ? (
+                            <div className="flex items-center justify-center py-10">
+                                <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
+                            </div>
+                        ) : content ? (
+                            <div dangerouslySetInnerHTML={{ __html: content.replace(/{appName}/g, appName).replace(/{companyName}/g, companyName) }} />
+                        ) : (
+                            <p>Terms and conditions are not available at the moment.</p>
+                        )}
                     </div>
                 </div>
             </div>

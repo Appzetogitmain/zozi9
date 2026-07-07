@@ -34,11 +34,30 @@ const adminSchema = new mongoose.Schema(
       type: String,
       default: "admin",
     },
+    roleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role",
+    },
+    isSuperAdmin: {
+      type: Boolean,
+      default: false,
+    },
     isVerified: {
       type: Boolean,
       default: true, // Internal admins might be verified by default or via admin code
     },
-
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    setupOtp: {
+      type: String,
+      select: false,
+    },
+    setupOtpExpiry: {
+      type: Date,
+      select: false,
+    },
     lastLogin: Date,
   },
   { timestamps: true },

@@ -4,18 +4,33 @@ import { ArrowLeft, Save, User, Mail, Phone, MapPin, Calendar, Droplet } from "l
 import Button from "@/shared/components/ui/Button";
 import Input from "@/shared/components/ui/Input";
 import { toast } from "sonner";
+import { useAuth } from "@core/context/AuthContext";
 
 const PersonalDetails = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: "Rahul Kumar",
-    phone: "+91 98765 43210",
-    email: "rahul.kumar@example.com",
-    address: "Flat 302, Green Apts, MG Road, Bangalore - 560001",
-    dob: "1995-08-15",
-    bloodGroup: "O+",
+    fullName: user?.name || "",
+    phone: user?.phone || "",
+    email: user?.email || "",
+    address: user?.address || "",
+    dob: user?.dob || "",
+    bloodGroup: user?.bloodGroup || "",
   });
+
+  React.useEffect(() => {
+    if (user) {
+      setFormData({
+        fullName: user.name || "",
+        phone: user.phone || "",
+        email: user.email || "",
+        address: user.address || "",
+        dob: user.dob || "",
+        bloodGroup: user.bloodGroup || "",
+      });
+    }
+  }, [user]);
 
   const handleSave = () => {
     setIsEditing(false);
@@ -59,7 +74,7 @@ const PersonalDetails = () => {
           <div className="relative">
             <div className="w-24 h-24 rounded-full p-1 bg-white shadow-md">
               <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                src={user?.profileImage || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.name || 'DP'}`}
                 alt="Profile"
                 className="w-full h-full rounded-full object-cover bg-gray-100"
               />
@@ -70,7 +85,7 @@ const PersonalDetails = () => {
               </button>
             )}
           </div>
-          <p className="mt-3 text-sm text-gray-500">Delivery Partner ID: 882190</p>
+          <p className="mt-3 text-sm text-gray-500">Delivery Partner ID: {user?._id ? user._id.slice(-6).toUpperCase() : "N/A"}</p>
         </div>
 
         {/* Form Fields */}

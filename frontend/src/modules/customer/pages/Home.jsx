@@ -60,7 +60,7 @@ import SectionRenderer from "../components/experience/SectionRenderer";
 import ExperienceBannerCarousel from "../components/experience/ExperienceBannerCarousel";
 import { useLocation } from "../context/LocationContext";
 import { useSettings } from "@core/context/SettingsContext";
-import Lottie from "lottie-react";
+
 import {
   getSideImageByKey,
   getBackgroundColorByValue,
@@ -487,20 +487,13 @@ const Home = () => {
   const [offerSections, setOfferSections] = useState(
     () => cachedHomePageData?.offerSections || [],
   );
-  const [noServiceData, setNoServiceData] = useState(null);
+
 
   useEffect(() => {
     productsRef.current = products || [];
   }, [products]);
 
-  // Dynamically load no-service Lottie when products are empty and not loading
-  useEffect(() => {
-    if (products.length === 0 && !isLoading) {
-      import("@/assets/lottie/animation.json")
-        .then((m) => setNoServiceData(m.default))
-        .catch(() => {});
-    }
-  }, [products.length === 0 && !isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+ 
 
   const scrollQuickCats = (direction) => {
     if (quickCatsRef.current) {
@@ -1271,6 +1264,18 @@ const Home = () => {
     });
   };
 
+  if (isLoading && categories.length <= 1) {
+    return (
+      <div className="min-h-screen bg-[#F5F7F8] flex flex-col items-center justify-center relative">
+         <div className="absolute inset-0 bg-primary/5 pattern-dots pointer-events-none opacity-50" />
+         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary/20 border-t-primary mb-4 z-10"></div>
+         <p className="text-primary font-bold tracking-widest uppercase text-sm z-10 animate-pulse">
+           Loading {settings?.appName || "Store"}...
+         </p>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`min-h-screen pt-[216px] md:pt-[250px] ${products.length === 0 && !isLoading ? "bg-white" : "bg-[#F5F7F8]"}`}>
@@ -1287,12 +1292,15 @@ const Home = () => {
       {/* Main Page Content - Conditionally Hidden if No Service */}
       {products.length === 0 && !isLoading ? (
         <div className="flex flex-col items-center justify-center pt-24 pb-48 animate-in fade-in zoom-in duration-700">
-          <div className="w-64 h-64 md:w-96 md:h-96 mb-8">
-            {noServiceData ? (
-              <Lottie animationData={noServiceData} loop={true} />
-            ) : (
-              <div className="w-64 h-64 md:w-96 md:h-96" />
-            )}
+          <div className="w-64 h-64 md:w-96 md:h-96 mb-8 flex items-center justify-center">
+            <video
+              src="/coming-soon-banner-animation-gif-download-6584143.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-contain"
+            />
           </div>
           <h3 className="text-3xl md:text-5xl font-black text-slate-800 tracking-tight mb-4 text-center px-4 uppercase">
             Service <span className="text-primary">Unavailable</span>

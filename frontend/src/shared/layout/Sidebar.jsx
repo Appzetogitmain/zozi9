@@ -218,7 +218,7 @@ const SidebarItem = ({
   );
 };
 
-const SidebarContent = ({ items, title, onClose, openMenu, handleToggle, hoveredIdx, setHoveredIdx }) => {
+const SidebarContent = ({ items = [], title, onClose, openMenu, handleToggle, hoveredIdx, setHoveredIdx }) => {
   const { settings } = useSettings();
   const appName = settings?.appName || 'App';
 
@@ -311,7 +311,7 @@ const SidebarContent = ({ items, title, onClose, openMenu, handleToggle, hovered
   );
 };
 
-const Sidebar = ({ items, title, isOpen, onClose }) => {
+const Sidebar = ({ items = [], title, isOpen, onClose }) => {
   const { role } = useAuth();
   const [openMenu, setOpenMenu] = useState(null);
   const [hoveredIdx, setHoveredIdx] = useState(null);

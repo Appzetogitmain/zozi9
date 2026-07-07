@@ -9,7 +9,7 @@ export const getAdminProfile = async (req, res) => {
       return handleResponse(res, 400, "Missing user ID in session");
     }
 
-    const admin = await Admin.findById(req.user.id);
+    const admin = await Admin.findById(req.user.id).populate("roleId");
     if (!admin) {
       console.warn('[ProfileService] Admin document not found in database for ID:', req.user.id);
       return handleResponse(res, 404, "Admin not found");

@@ -20,6 +20,7 @@ import Settings from "../pages/profile/Settings";
 import HelpSupport from "../pages/profile/HelpSupport";
 import Withdrawals from "../pages/profile/Withdrawals";
 import Notifications from "../pages/Notifications";
+import DeliveryLegalPage from "../pages/DeliveryLegalPage";
 
 const DeliveryRoutes = () => {
   return (
@@ -45,6 +46,8 @@ const DeliveryRoutes = () => {
         <Route path="profile/help-support" element={<HelpSupport />} />
         <Route path="profile/withdrawals" element={<Withdrawals />} />
         <Route path="notifications" element={<Notifications />} />
+        <Route path="terms" element={<DeliveryLegalPage type="TERMS" />} />
+        <Route path="privacy" element={<DeliveryLegalPage type="PRIVACY" />} />
         <Route path="/" element={<Navigate to="dashboard" replace />} />
       </Route>
     </Routes>

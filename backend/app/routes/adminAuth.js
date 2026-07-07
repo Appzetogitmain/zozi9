@@ -3,6 +3,11 @@ import {
     bootstrapAdmin,
     signupAdmin,
     loginAdmin,
+    inviteAdmin,
+    verifyAdminOtp,
+    setupAdminPassword,
+    getAdmins,
+    toggleAdminStatus,
 } from "../controller/adminAuthController.js";
 import {
     getAdminProfile,
@@ -52,6 +57,7 @@ import {
     authRouteRateLimiter,
     createContentLengthGuard,
 } from "../middleware/securityMiddlewares.js";
+import { requireSuperAdmin } from "../middleware/permissionMiddleware.js";
 
 const router = express.Router();
 
@@ -62,6 +68,12 @@ const smallAdminPayload = createContentLengthGuard(
 router.post("/bootstrap", adminBootstrapRateLimiter, smallAdminPayload, bootstrapAdmin);
 router.post("/signup", adminBootstrapRateLimiter, smallAdminPayload, signupAdmin);
 router.post("/login", authRouteRateLimiter, smallAdminPayload, loginAdmin);
+// Role and User Management for RBAC
+router.get("/admins", verifyToken, requireSuperAdmin, getAdmins);
+router.post("/invite", verifyToken, requireSuperAdmin, inviteAdmin); 
+router.post("/verify-otp", authRouteRateLimiter, smallAdminPayload, verifyAdminOtp);
+router.post("/setup-password", authRouteRateLimiter, smallAdminPayload, setupAdminPassword);
+router.put("/users/:id/toggle-status", verifyToken, requireSuperAdmin, toggleAdminStatus);
 
 // Profile routes
 router.get(

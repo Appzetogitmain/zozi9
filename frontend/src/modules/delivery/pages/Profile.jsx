@@ -26,7 +26,7 @@ import { useEffect } from 'react';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { settings } = useSettings();
   const appName = settings?.appName || "App";
   const [faqs, setFaqs] = useState([]);
@@ -134,7 +134,7 @@ const Profile = () => {
           <div className="relative">
             <div className="w-20 h-20 bg-white rounded-full p-1 shadow-lg">
               <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                src={user?.profileImage || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.name || 'DP'}`}
                 alt="Profile"
                 className="w-full h-full rounded-full object-cover bg-gray-100"
               />
@@ -142,16 +142,16 @@ const Profile = () => {
             <div className="absolute bottom-0 right-0 w-6 h-6 bg-brand-500 border-2 border-white rounded-full"></div>
           </div>
           <div className="text-white">
-            <h2 className="font-bold text-xl">Rahul Kumar</h2>
+            <h2 className="font-bold text-xl">{user?.name || "Loading..."}</h2>
             <p className="text-white/80 text-sm flex items-center mb-1">
-              <Phone size={14} className="mr-1" /> +91 98765 43210
+              <Phone size={14} className="mr-1" /> {user?.phone || "N/A"}
             </p>
             <div className="flex items-center space-x-2">
               <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-medium backdrop-blur-sm">
-                ID: 882190
+                ID: {user?._id ? user._id.slice(-6).toUpperCase() : "N/A"}
               </span>
-              <span className="bg-brand-500 text-primary-foreground px-2 py-0.5 rounded text-xs font-bold shadow-sm">
-                VERIFIED
+              <span className="bg-brand-500 text-primary-foreground px-2 py-0.5 rounded text-xs font-bold shadow-sm uppercase">
+                {user?.isVerified ? "VERIFIED" : "UNVERIFIED"}
               </span>
             </div>
           </div>
@@ -168,23 +168,16 @@ const Profile = () => {
           <p className="text-gray-400 text-[10px] uppercase font-bold tracking-wider">
             Joined
           </p>
-          <p className="font-bold text-gray-900 text-lg">Jan '24</p>
+          <p className="font-bold text-gray-900 text-lg">
+            {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }) : "N/A"}
+          </p>
         </div>
         <div className="w-px bg-gray-100"></div>
         <div className="flex-1">
           <p className="text-gray-400 text-[10px] uppercase font-bold tracking-wider">
             Trips
           </p>
-          <p className="font-bold text-gray-900 text-lg">1,240</p>
-        </div>
-        <div className="w-px bg-gray-100"></div>
-        <div className="flex-1">
-          <p className="text-gray-400 text-[10px] uppercase font-bold tracking-wider">
-            Rating
-          </p>
-          <p className="font-bold text-gray-900 text-lg flex justify-center items-center">
-            4.8 <span className="text-yellow-400 text-sm ml-1">★</span>
-          </p>
+          <p className="font-bold text-gray-900 text-lg">{user?.totalTrips || "0"}</p>
         </div>
       </motion.div>
 

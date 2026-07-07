@@ -28,6 +28,7 @@ const Transactions = React.lazy(() => import("../pages/Transactions"));
 const DeliveryTracking = React.lazy(() => import("../pages/DeliveryTracking"));
 const Profile = React.lazy(() => import("../pages/Profile"));
 const Withdrawals = React.lazy(() => import("../pages/Withdrawals"));
+const SellerLegalPage = React.lazy(() => import("../pages/SellerLegalPage"));
 
 const navItems = [
   { label: "Dashboard", path: "/seller", icon: HiOutlineSquares2X2, end: true },
@@ -57,6 +58,8 @@ const navItems = [
     icon: HiOutlineCurrencyDollar,
   },
   { label: "Profile", path: "/seller/profile", icon: HiOutlineUser },
+  { label: "Terms & Conditions", path: "/seller/terms", icon: HiOutlineArchiveBox },
+  { label: "Privacy Policy", path: "/seller/privacy", icon: HiOutlineArchiveBox },
 ];
 
 const SellerRoutes = () => {
@@ -75,6 +78,8 @@ const SellerRoutes = () => {
         <Route path="/earnings" element={<Earnings />} />
         <Route path="/withdrawals" element={<Withdrawals />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/terms" element={<SellerLegalPage type="TERMS" />} />
+        <Route path="/privacy" element={<SellerLegalPage type="PRIVACY" />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </DashboardLayout>

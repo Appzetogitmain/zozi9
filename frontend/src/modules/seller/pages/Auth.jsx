@@ -269,33 +269,47 @@ const Auth = () => {
     try {
       // Basic client-side validation for signup
       if (!isLogin) {
-        const email = formData.email || "";
-        const phone = formData.phone || "";
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          toast.error("Please enter a valid business email address.");
-          setIsLoading(false);
-          return;
+        if (signupStep === 1) {
+          if (!/^[A-Za-z\s]{3,50}$/.test(formData.name || "")) {
+            return toast.error("Owner name must be 3-50 characters (letters only).");
+          }
+          if ((formData.shopName || "").length < 3 || (formData.shopName || "").length > 100) {
+            return toast.error("Shop Name must be between 3 and 100 characters.");
+          }
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email || "")) {
+            return toast.error("Please enter a valid business email address.");
+          }
+          if (!/^[0-9]{10}$/.test(formData.phone || "")) {
+            return toast.error("Please enter a valid 10-digit contact number.");
+          }
+          if (verifications.email.status !== "verified" || !verifications.email.token) {
+            return toast.error("Please verify your business email before continuing.");
+          }
+          if (verifications.phone.status !== "verified" || !verifications.phone.token) {
+            return toast.error("Please verify your contact number before continuing.");
+          }
+          if ((formData.password || "").trim().length < 6) {
+            return toast.error("Password must be at least 6 characters.");
+          }
+        } else if (signupStep === 2) {
+          if (!formData.locality || formData.locality.length < 2) {
+            return toast.error("Please enter a valid locality.");
+          }
+          if (!formData.city || formData.city.length < 2) {
+            return toast.error("Please enter a valid city.");
+          }
+          if (!formData.state || formData.state.length < 2) {
+            return toast.error("Please enter a valid state.");
+          }
+          if (!/^\d{6}$/.test(formData.pincode || "")) {
+            return toast.error("Please enter a valid 6-digit pincode.");
+          }
         }
-        if (!/^[0-9]{10}$/.test(phone)) {
-          toast.error("Please enter a valid 10-digit contact number.");
-          return;
+      } else {
+        // Login validations
+        if ((formData.password || "").trim().length < 6) {
+          return toast.error("Password must be at least 6 characters.");
         }
-        if (verifications.email.status !== "verified" || !verifications.email.token) {
-          toast.error("Please verify your business email before continuing.");
-          return;
-        }
-        if (verifications.phone.status !== "verified" || !verifications.phone.token) {
-          toast.error("Please verify your contact number before continuing.");
-          return;
-        }
-      }
-      // Password: min 6 characters
-      const pwd = (formData.password || "").trim();
-      if (pwd.length < 6) {
-        toast.error(
-          "Password must be at least 6 characters.",
-        );
-        return;
       }
 
       if (!isLogin && signupStep < 3) {

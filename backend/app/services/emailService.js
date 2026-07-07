@@ -125,6 +125,30 @@ export async function sendSellerVerificationOtpEmail({
   };
 }
 
+export async function sendAdminInvitationOtpEmail({ email, otp, expiresInMinutes }) {
+  if (!useRealEmailOTP()) {
+    logger.info("Admin email OTP generated in mock mode", { email, otp, mode: "mock" });
+    return { delivered: false, mode: "mock" };
+  }
+
+  const transporter = getTransporter();
+  await transporter.sendMail({
+    from: getMailFrom(),
+    to: email,
+    subject: "Admin Invitation - Setup Password",
+    text: `You have been invited as an admin. Your setup verification code is ${otp}. This code expires in ${expiresInMinutes} minutes.`,
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #0f172a;">
+        <p>You have been invited as an admin. Your setup verification code is:</p>
+        <p style="font-size: 28px; font-weight: 700; letter-spacing: 6px;">${otp}</p>
+        <p>This code expires in ${expiresInMinutes} minutes.</p>
+      </div>
+    `,
+  });
+
+  return { delivered: true, mode: "real" };
+}
+
 export function __resetEmailTransportForTests() {
   cachedTransporter = null;
 }

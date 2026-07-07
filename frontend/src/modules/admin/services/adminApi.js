@@ -3,6 +3,19 @@ import axiosInstance from '@core/api/axios';
 export const adminApi = {
     login: (data) => axiosInstance.post('/admin/login', data),
     signup: (data) => axiosInstance.post('/admin/signup', data),
+    invite: (data) => axiosInstance.post('/admin/invite', data),
+    verifyOtp: (data) => axiosInstance.post('/admin/verify-otp', data),
+    setupPassword: (data) => axiosInstance.post('/admin/setup-password', data),
+    toggleAdminStatus: (id) => axiosInstance.put(`/admin/users/${id}/toggle-status`),
+    
+    // Roles
+    getRoles: () => axiosInstance.get('/admin/roles'),
+    getRoleById: (id) => axiosInstance.get(`/admin/roles/${id}`),
+    createRole: (data) => axiosInstance.post('/admin/roles', data),
+    updateRole: (id, data) => axiosInstance.put(`/admin/roles/${id}`, data),
+    deleteRole: (id) => axiosInstance.delete(`/admin/roles/${id}`),
+
+    getAdmins: () => axiosInstance.get('/admin/admins'),
     getStats: () => axiosInstance.get('/admin/stats'),
     getUsers: (params) => axiosInstance.get('/admin/users', { params }),
     getUserById: (id) => axiosInstance.get(`/admin/users/${id}`),
@@ -138,4 +151,8 @@ export const adminApi = {
     createCoupon: (data) => axiosInstance.post('/admin/coupons', data),
     updateCoupon: (id, data) => axiosInstance.put(`/admin/coupons/${id}`, data),
     deleteCoupon: (id) => axiosInstance.delete(`/admin/coupons/${id}`),
+
+    // Legal Pages
+    getLegalPage: (role, type) => axiosInstance.get(`/legal/${role}/${type}`),
+    updateLegalPage: (role, type, data) => axiosInstance.put(`/legal/${role}/${type}`, data),
 };

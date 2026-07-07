@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import DashboardLayout from "@shared/layout/DashboardLayout";
 import { useSupportUnread } from "@core/context/SupportUnreadContext";
+import { useAuth } from "@core/context/AuthContext";
 import {
   LayoutDashboard,
   Tag,
@@ -20,6 +21,7 @@ import {
   Terminal,
   Sparkles,
   User,
+  Shield,
 } from "lucide-react";
 
 const Dashboard = React.lazy(() => import("../pages/Dashboard"));
@@ -63,7 +65,8 @@ const CustomerManagement = React.lazy(
   () => import("../pages/CustomerManagement"),
 );
 const CustomerDetail = React.lazy(() => import("../pages/CustomerDetail"));
-const UserManagement = React.lazy(() => import("../pages/UserManagement"));
+const AdminUsersManagement = React.lazy(() => import("../pages/AdminUsersManagement"));
+const RolesManagement = React.lazy(() => import("../pages/RolesManagement"));
 const Profile = React.lazy(() => import("@/pages/Profile"));
 const FAQManagement = React.lazy(() => import("../pages/FAQManagement"));
 const OrdersList = React.lazy(() => import("../pages/OrdersList"));
@@ -91,6 +94,7 @@ const ShopByStoreManagement = React.lazy(
 const AdminSettings = React.lazy(() => import("../pages/AdminSettings"));
 const EnvSettings = React.lazy(() => import("../pages/EnvSettings"));
 const AdminProfile = React.lazy(() => import("../pages/AdminProfile"));
+const AdminLegalPages = React.lazy(() => import("../pages/AdminLegalPages"));
 
 const navItems = [
   {
@@ -203,29 +207,56 @@ const navItems = [
     icon: Settings,
     color: "slate",
   },
-  { label: "My Profile", path: "/admin/profile", icon: User, color: "indigo" },
+  { label: "My Profile", path: "/admin/profile", icon: User, color: "indigo", isPublic: true },
+  { label: "Legal Pages", path: "/admin/legal", icon: ClipboardList, color: "blue" },
   { label: "System Settings", path: "/admin/env", icon: Terminal, color: "dark" },
+  {
+    label: "Admin Management",
+    icon: Shield,
+    color: "slate",
+    children: [
+      { label: "Admin Users", path: "/admin/admin-users" },
+      { label: "Role Management", path: "/admin/roles" },
+    ],
+    isSuperAdminOnly: true,
+  },
 ];
 
 const BillingCharges = React.lazy(() => import("../pages/BillingCharges"));
 
 const AdminRoutes = () => {
   const { totalUnread } = useSupportUnread();
+  const { user } = useAuth();
 
   const navItemsWithBadges = React.useMemo(() => {
+    let filteredItems = navItems;
+
+    const isSuperAdmin = user?.isSuperAdmin || !user?.roleId;
+
+    if (user && !isSuperAdmin) {
+      const allowedModules = user.roleId?.modules || [];
+      filteredItems = navItems.filter((item) => {
+        if (item.isPublic) return true;
+        if (item.isSuperAdminOnly) return false;
+        return allowedModules.includes(item.label) || item.label === "Dashboard";
+      });
+    }
+
     const count = Number.isFinite(totalUnread) ? totalUnread : 0;
-    if (count <= 0) return navItems;
-    return navItems.map((item) => {
+    if (count <= 0) return filteredItems;
+    
+    return filteredItems.map((item) => {
       if (item?.label !== "Customer Support") return item;
       return { ...item, badgeCount: count };
     });
-  }, [totalUnread]);
+  }, [totalUnread, user]);
 
   return (
     <DashboardLayout navItems={navItemsWithBadges} title="Admin Center">
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/users" element={<UserManagement />} />
+        <Route path="/admin-users" element={<AdminUsersManagement />} />
+        <Route path="/roles" element={<RolesManagement />} />
         <Route path="/profile" element={<AdminProfile />} />
         {/* Lazy routes for new sections */}
         <Route
@@ -269,6 +300,7 @@ const AdminRoutes = () => {
         <Route path="/returns" element={<Returns />} />
         <Route path="/billing" element={<BillingCharges />} />
         <Route path="/settings" element={<AdminSettings />} />
+        <Route path="/legal" element={<AdminLegalPages />} />
         <Route path="/env" element={<EnvSettings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

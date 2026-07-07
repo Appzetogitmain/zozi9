@@ -27,6 +27,25 @@ export const signupDelivery = async (req, res) => {
         if (!name || !phone) {
             return handleResponse(res, 400, "Name and phone are required");
         }
+        
+        if (!/^\d{10}$/.test(phone)) {
+            return handleResponse(res, 400, "Invalid phone number format");
+        }
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return handleResponse(res, 400, "Invalid email format");
+        }
+        if (vehicleNumber && !/^[A-Z0-9 -]{6,12}$/.test(vehicleNumber)) {
+            return handleResponse(res, 400, "Invalid vehicle plate number format");
+        }
+        if (drivingLicenseNumber && !/^[A-Z]{2}[0-9]{13}$/.test(drivingLicenseNumber.replace(/[^A-Z0-9]/g, ''))) {
+            return handleResponse(res, 400, "Invalid Driving License number format");
+        }
+        if (accountNumber && !/^\d{9,18}$/.test(accountNumber)) {
+            return handleResponse(res, 400, "Invalid account number format");
+        }
+        if (ifsc && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc)) {
+            return handleResponse(res, 400, "Invalid IFSC format");
+        }
 
         let delivery = await Delivery.findOne({ phone });
 
@@ -205,7 +224,7 @@ export const getDeliveryProfile = async (req, res) => {
 ================================ */
 export const updateDeliveryProfile = async (req, res) => {
     try {
-        const { name, vehicleType, vehicleNumber, drivingLicenseNumber, currentArea, isOnline } = req.body;
+        const { name, vehicleType, vehicleNumber, drivingLicenseNumber, currentArea, isOnline, emergencyContacts, privacySettings } = req.body;
 
         const delivery = await Delivery.findById(req.user.id);
         if (!delivery) {
@@ -218,6 +237,13 @@ export const updateDeliveryProfile = async (req, res) => {
         if (drivingLicenseNumber) delivery.drivingLicenseNumber = drivingLicenseNumber;
         if (currentArea) delivery.currentArea = currentArea;
         if (typeof isOnline !== 'undefined') delivery.isOnline = isOnline;
+        if (emergencyContacts) delivery.emergencyContacts = emergencyContacts;
+        if (privacySettings) {
+            delivery.privacySettings = {
+                ...delivery.privacySettings,
+                ...privacySettings
+            };
+        }
 
         await delivery.save();
 

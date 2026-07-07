@@ -8,7 +8,7 @@ import { useProductDetail } from '../context/ProductDetailContext';
 import { useSettings } from '@core/context/SettingsContext';
 import { cn } from '@/lib/utils';
 import { useLocation as useAppLocation } from '../context/LocationContext';
-import Lottie from 'lottie-react';
+
 
 const SearchPage = () => {
     const navigate = useNavigate();
@@ -27,7 +27,7 @@ const SearchPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
-    const [noServiceData, setNoServiceData] = useState(null);
+
 
     // Manage Recent Searches with LocalStorage
     const [pastSearches, setPastSearches] = useState(() => {
@@ -190,14 +190,7 @@ const SearchPage = () => {
         setResults(filteredResults);
     }, [filteredResults]);
 
-    // Dynamically load no-service Lottie when results are empty
-    useEffect(() => {
-        if (!isLoading) {
-            import('@/assets/lottie/animation.json')
-                .then((m) => setNoServiceData(m.default))
-                .catch(() => {});
-        }
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
 
     // Lowest Price Section
     const lowestPriceProducts = useMemo(() => {
@@ -293,12 +286,15 @@ const SearchPage = () => {
                             </div>
                         ) : (
                             <div className="py-16 flex flex-col items-center text-center">
-                                <div className="w-48 h-48 md:w-64 md:h-64 mb-6">
-                                    {noServiceData ? (
-                                        <Lottie animationData={noServiceData} loop={true} />
-                                    ) : (
-                                        <div className="w-48 h-48 md:w-64 md:h-64" />
-                                    )}
+                                <div className="w-48 h-48 md:w-64 md:h-64 mb-6 flex items-center justify-center">
+                                    <video
+                                        src="/coming-soon-banner-animation-gif-download-6584143.mp4"
+                                        autoPlay
+                                        loop
+                                        muted
+                                        playsInline
+                                        className="w-full h-full object-contain"
+                                    />
                                 </div>
                                 <h3 className="text-xl font-black text-slate-800 tracking-tight mb-2">No items found</h3>
                                 <p className="text-slate-500 font-medium max-w-xs">We couldn't find anything for "{query}". Try different keywords!</p>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, UserPlus, Phone, Trash2, Shield, Lock, Eye } from "lucide-react";
 import Button from "@/shared/components/ui/Button";
@@ -6,32 +6,70 @@ import Card from "@/shared/components/ui/Card";
 import Input from "@/shared/components/ui/Input";
 import { toast } from "sonner";
 import { useSettings } from "@core/context/SettingsContext";
+import { useAuth } from "@core/context/AuthContext";
+import { deliveryApi } from "../../services/deliveryApi";
 
 const SafetyPrivacy = () => {
   const navigate = useNavigate();
   const { settings } = useSettings();
+  const { user, refreshUser } = useAuth();
   const appName = settings?.appName || "App";
 
-  const [contacts, setContacts] = useState([
-    { id: 1, name: "Anita Kumar (Wife)", phone: "+91 98765 12345" },
-    { id: 2, name: "Ravi Singh (Brother)", phone: "+91 98765 67890" },
-  ]);
+  const [contacts, setContacts] = useState([]);
+  const [privacySettings, setPrivacySettings] = useState({
+    shareLiveLocation: true,
+    profileVisibility: true,
+  });
+
+  useEffect(() => {
+    if (user) {
+      setContacts(user.emergencyContacts || []);
+      setPrivacySettings(user.privacySettings || { shareLiveLocation: true, profileVisibility: true });
+    }
+  }, [user]);
 
   const [newContact, setNewContact] = useState({ name: "", phone: "" });
   const [showAddContact, setShowAddContact] = useState(false);
 
-  const handleAddContact = () => {
+  const handleAddContact = async () => {
     if (newContact.name && newContact.phone) {
-      setContacts([...contacts, { ...newContact, id: Date.now() }]);
-      setNewContact({ name: "", phone: "" });
-      setShowAddContact(false);
-      toast.success("Emergency contact added!");
+      const updatedContacts = [...contacts, { ...newContact, id: Date.now().toString() }];
+      
+      try {
+        await deliveryApi.updateProfile({ emergencyContacts: updatedContacts });
+        await refreshUser();
+        setContacts(updatedContacts);
+        setNewContact({ name: "", phone: "" });
+        setShowAddContact(false);
+        toast.success("Emergency contact added!");
+      } catch (error) {
+        toast.error("Failed to add contact");
+      }
     }
   };
 
-  const handleRemoveContact = (id) => {
-    setContacts(contacts.filter((c) => c.id !== id));
-    toast.success("Contact removed");
+  const handleRemoveContact = async (id) => {
+    const updatedContacts = contacts.filter((c) => c.id !== id && c._id !== id);
+    try {
+      await deliveryApi.updateProfile({ emergencyContacts: updatedContacts });
+      await refreshUser();
+      setContacts(updatedContacts);
+      toast.success("Contact removed");
+    } catch (error) {
+      toast.error("Failed to remove contact");
+    }
+  };
+
+  const handleToggle = async (key) => {
+    const updatedSettings = { ...privacySettings, [key]: !privacySettings[key] };
+    try {
+      await deliveryApi.updateProfile({ privacySettings: updatedSettings });
+      await refreshUser();
+      setPrivacySettings(updatedSettings);
+      toast.success("Privacy settings updated");
+    } catch (error) {
+      toast.error("Failed to update settings");
+    }
   };
 
   return (
@@ -72,7 +110,7 @@ const SafetyPrivacy = () => {
                   variant="ghost" 
                   size="icon" 
                   className="text-red-500 hover:bg-red-50"
-                  onClick={() => handleRemoveContact(contact.id)}
+                  onClick={() => handleRemoveContact(contact.id || contact._id)}
                 >
                   <Trash2 size={18} />
                 </Button>
@@ -121,8 +159,11 @@ const SafetyPrivacy = () => {
                 <h4 className="font-medium text-gray-800">Share Live Location</h4>
                 <p className="text-xs text-gray-500">Allow customers to track you during delivery</p>
               </div>
-              <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full bg-brand-500 cursor-pointer">
-                <span className="absolute left-6 top-1 bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200 ease-in-out transform"></span>
+              <div 
+                className={`relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full cursor-pointer ${privacySettings?.shareLiveLocation ? 'bg-brand-500' : 'bg-gray-300'}`}
+                onClick={() => handleToggle('shareLiveLocation')}
+              >
+                <span className={`absolute top-1 bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200 ease-in-out transform ${privacySettings?.shareLiveLocation ? 'left-6' : 'left-1'}`}></span>
               </div>
             </div>
             <div className="p-4 flex justify-between items-center">
@@ -130,8 +171,11 @@ const SafetyPrivacy = () => {
                 <h4 className="font-medium text-gray-800">Profile Visibility</h4>
                 <p className="text-xs text-gray-500">Show your photo to customers</p>
               </div>
-              <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full bg-brand-500 cursor-pointer">
-                <span className="absolute left-6 top-1 bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200 ease-in-out transform"></span>
+              <div 
+                className={`relative inline-block w-12 h-6 transition duration-200 ease-in-out rounded-full cursor-pointer ${privacySettings?.profileVisibility ? 'bg-brand-500' : 'bg-gray-300'}`}
+                onClick={() => handleToggle('profileVisibility')}
+              >
+                <span className={`absolute top-1 bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200 ease-in-out transform ${privacySettings?.profileVisibility ? 'left-6' : 'left-1'}`}></span>
               </div>
             </div>
           </Card>
