@@ -112,3 +112,8 @@ export const notifyDeliveryPartners = (orderData) => {
   if (!_io) return;
   _io.to("delivery:online").emit("new_order_packed", orderData);
 };
+
+export const broadcastMaintenanceStatus = (config) => {
+  if (!_io) return;
+  _io.emit("maintenance:status", config);
+};

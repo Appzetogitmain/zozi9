@@ -39,7 +39,9 @@ import {
     getSellers,
     getSellerLocations,
     getPlatformSettings,
-    updatePlatformSettings
+    updatePlatformSettings,
+    getMaintenanceSettings,
+    updateMaintenanceSettings
 } from "../controller/adminController.js";
 import {
     exportAdminFinanceStatementController,
@@ -156,6 +158,18 @@ router.put(
     verifyToken,
     allowRoles("admin"),
     updatePlatformSettings
+);
+router.get(
+    "/settings/maintenance",
+    verifyToken,
+    requireSuperAdmin,
+    getMaintenanceSettings
+);
+router.put(
+    "/settings/maintenance",
+    verifyToken,
+    requireSuperAdmin,
+    updateMaintenanceSettings
 );
 router.get("/users", verifyToken, allowRoles("admin"), getUsers);
 router.get("/users/:id", verifyToken, allowRoles("admin"), getUserById);

@@ -24,6 +24,7 @@ import metricsRoute from "./metricsRoutes.js";
 import authOtpRoute from "../modules/otp/otp.routes.js";
 import legalRoute from "./legalRoutes.js";
 import roleRoute from "./roleRoutes.js";
+import { maintenanceMiddleware } from "../middleware/maintenanceMiddleware.js";
 
 import express from "express";
 
@@ -33,6 +34,9 @@ const setupRoutes = (app) => {
     // Health and metrics endpoints (no /api prefix for standard paths)
     app.use("/health", healthRoute);
     app.use("/metrics", metricsRoute);
+
+    // Apply maintenance middleware globally to the /api router
+    router.use(maintenanceMiddleware);
 
     router.use("/customer", customerRoute);
     router.use("/delivery", deliveryRoute);

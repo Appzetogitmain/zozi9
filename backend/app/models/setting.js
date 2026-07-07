@@ -161,6 +161,19 @@ const settingSchema = new mongoose.Schema(
                 default: false,
             },
         },
+
+        // Maintenance Mode
+        maintenanceMode: {
+            enabled: { type: Boolean, default: false },
+            title: { type: String, default: "Scheduled Maintenance" },
+            message: { type: String, default: "We are upgrading our servers. Please try again later." },
+            estimatedEndTime: { type: Date, default: null },
+            allowedRoles: [{ type: String }],
+            allowedIPs: [{ type: String }],
+            scheduledStart: { type: Date, default: null },
+            scheduledEnd: { type: Date, default: null },
+            autoSchedule: { type: Boolean, default: false },
+        },
     },
     {
         timestamps: true,

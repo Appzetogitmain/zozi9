@@ -87,6 +87,15 @@ axiosInstance.interceptors.response.use(
                 );
             }
         }
+        
+        // Handle 503 Maintenance Mode
+        if (error.response?.status === 503 && error.response?.data?.maintenance) {
+            // Dispatch a custom event to trigger maintenance UI globally
+            window.dispatchEvent(new CustomEvent('maintenance_mode', { 
+                detail: error.response.data 
+            }));
+        }
+        
         return Promise.reject(error);
     }
 );

@@ -31,6 +31,11 @@ export const adminApi = {
     updatePassword: (data) => axiosInstance.put('/admin/profile/password', data),
     getPlatformSettings: () => axiosInstance.get('/admin/settings/platform'),
     updatePlatformSettings: (data) => axiosInstance.put('/admin/settings/platform', data),
+    
+    // Maintenance
+    getMaintenanceSettings: () => axiosInstance.get('/admin/settings/maintenance'),
+    updateMaintenanceSettings: (data) => axiosInstance.put('/admin/settings/maintenance', data),
+
     getDeliveryFinanceSettings: () => axiosInstance.get('/admin/settings/delivery'),
     updateDeliveryFinanceSettings: (data) => axiosInstance.put('/admin/settings/delivery', data),
     getFinanceSummary: () => axiosInstance.get('/admin/finance/summary'),
