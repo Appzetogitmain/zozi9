@@ -277,10 +277,10 @@ const SearchPage = () => {
                         </div>
 
                         {results.length > 0 ? (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-3 md:gap-x-4 gap-y-6 md:gap-y-10">
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-x-2 md:gap-x-4 gap-y-4 md:gap-y-6">
                                 {results.map((product) => (
                                     <div key={product.id} onClick={() => saveSearch(query)} className="flex justify-center">
-                                        <ProductCard product={product} compact={isMobile} />
+                                        <ProductCard product={product} compact={true} />
                                     </div>
                                 ))}
                             </div>
@@ -349,7 +349,7 @@ const SearchPage = () => {
                                     ))
                                 ) : lowestPriceProducts.map((product) => (
                                     <div key={product.id} className="min-w-[126px] sm:min-w-[136px] md:min-w-[148px] snap-start">
-                                        <ProductCard product={product} compact={isMobile} />
+                                        <ProductCard product={product} compact={true} />
                                     </div>
                                 ))}
                             </div>

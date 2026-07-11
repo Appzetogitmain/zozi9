@@ -23,6 +23,7 @@ import {
   HiOutlineSquaresPlus,
   HiOutlineExclamationTriangle,
   HiOutlineXCircle,
+  HiOutlineDocumentArrowUp,
 } from "react-icons/hi2";
 import Modal from "@shared/components/ui/Modal";
 import SellerStatCard from "../components/SellerStatCard";
@@ -32,6 +33,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { sellerApi } from "../services/sellerApi";
 import { toast } from "sonner";
 import Pagination from "@shared/components/ui/Pagination";
+import BulkUploadModal from "../components/BulkUploadModal";
 
 const ProductManagement = () => {
   const navigate = useNavigate();
@@ -127,6 +129,7 @@ const ProductManagement = () => {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [viewingVariants, setViewingVariants] = useState(null);
   const [isVariantsViewModalOpen, setIsVariantsViewModalOpen] = useState(false);
+  const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [modalTab, setModalTab] = useState("general");
 
@@ -492,12 +495,20 @@ const ProductManagement = () => {
             Track your items, prices, and how many are left in stock.
           </p>
         </div>
-        <button
-          onClick={() => navigate("/seller/products/add")}
-          className="flex items-center gap-2 bg-black  text-primary-foreground px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors">
-          <HiOutlinePlus className="h-5 w-5" />
-          Add New Product
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={() => setIsBulkUploadModalOpen(true)}
+            className="flex justify-center items-center gap-2 bg-white border-2 border-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors font-bold text-sm">
+            <HiOutlineDocumentArrowUp className="h-5 w-5" />
+            Bulk Upload
+          </button>
+          <button
+            onClick={() => navigate("/seller/products/add")}
+            className="flex justify-center items-center gap-2 bg-black text-primary-foreground px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors font-bold text-sm">
+            <HiOutlinePlus className="h-5 w-5" />
+            Add New Product
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -836,7 +847,7 @@ const ProductManagement = () => {
             >
               Clear
             </button>
-            <button
+<button
               type="button"
               onClick={() => setIsFilterOpen(false)}
               className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50"
@@ -846,6 +857,15 @@ const ProductManagement = () => {
           </div>
         </div>
       )}
+
+      {/* Bulk Upload Modal */}
+      <BulkUploadModal
+        isOpen={isBulkUploadModalOpen}
+        onClose={() => setIsBulkUploadModalOpen(false)}
+        onUploadSuccess={() => fetchProducts(1)}
+        categories={categories}
+      />
+
 
       <div className="mt-4">
         <Pagination

@@ -709,6 +709,114 @@ export const createProduct = async (req, res) => {
 };
 
 /* ===============================
+   BULK CREATE PRODUCTS
+================================ */
+export const bulkCreateProducts = async (req, res) => {
+  try {
+    const role = String(req.user?.role || "").toLowerCase();
+    const sellerId = role === "admin" ? null : req.user.id;
+    const { products } = req.body;
+
+    if (!Array.isArray(products) || products.length === 0) {
+      return handleResponse(res, 400, "Products array is required");
+    }
+
+    const approvalConfig = await getProductApprovalConfig();
+    const moderationUpdate =
+      role === "admin"
+        ? buildAdminApprovedModerationUpdate(req.user?.id || null)
+        : approvalConfig.sellerCreateRequiresApproval
+        ? buildSellerPendingModerationUpdate()
+        : buildSellerApprovedModerationUpdate();
+
+    const preparedProducts = products.map((prod, index) => {
+      const productData = { ...prod };
+      stripRestrictedModerationFields(productData);
+
+      if (!productData.sellerId && role === "admin") {
+        throw new Error(`sellerId is required for admin-created products (at index ${index})`);
+      } else if (role !== "admin") {
+        productData.sellerId = sellerId;
+      }
+
+      if (!productData.name) {
+        throw new Error(`Product name is required (at index ${index})`);
+      }
+
+      if (!productData.slug || productData.slug.trim() === "") {
+        productData.slug = slugify(productData.name);
+      } else {
+        productData.slug = slugify(productData.slug);
+      }
+
+      productData.description =
+        typeof productData.description === "string"
+          ? productData.description.trim()
+          : productData.description || "";
+
+      if (!productData.sku || String(productData.sku).trim() === "") {
+        productData.sku = makeProductSku(productData.name, 1);
+      }
+
+      applyMediaFields(productData);
+
+      if (typeof productData.tags === "string") {
+        productData.tags = productData.tags.split(",").map((tag) => tag.trim());
+      }
+
+      if (typeof productData.variants === "string") {
+        try {
+          productData.variants = JSON.parse(productData.variants);
+        } catch (e) {
+          productData.variants = [];
+        }
+      }
+
+      if (Array.isArray(productData.variants)) {
+        productData.variants = productData.variants.map((variant, idx) => ({
+          ...variant,
+          sku:
+            variant?.sku && String(variant.sku).trim()
+              ? variant.sku
+              : makeProductSku(productData.name, idx + 1),
+        }));
+      }
+
+      Object.assign(productData, moderationUpdate);
+      return productData;
+    });
+
+    const insertedProducts = await Product.insertMany(preparedProducts);
+
+    // Enqueue search indexing for all asynchronously
+    for (const product of insertedProducts) {
+      enqueueProductIndex(product._id.toString()).catch(() => {});
+      invalidate(`cache:catalog:product:${product._id.toString()}`).catch(() => {});
+    }
+
+    try {
+      await invalidate(buildKey("catalog", "productList", "*"));
+      await invalidate("cache:offersections:public:*");
+    } catch (cacheErr) {
+      console.error("Cache invalidation error (bulkCreateProducts):", cacheErr);
+    }
+
+    const successMessage =
+      role !== "admin" && approvalConfig.sellerCreateRequiresApproval
+        ? `${insertedProducts.length} products submitted for admin approval`
+        : `${insertedProducts.length} products created successfully`;
+
+    return handleResponse(res, 201, successMessage, { count: insertedProducts.length });
+  } catch (error) {
+    console.error("Bulk Create Products Error:", error);
+    if (error.code === 11000) {
+      return handleResponse(res, 400, "One or more products have duplicate Slug or SKU");
+    }
+    return handleResponse(res, 500, error.message);
+  }
+};
+
+/* ===============================
    UPDATE PRODUCT
 ================================ */
 export const updateProduct = async (req, res) => {
