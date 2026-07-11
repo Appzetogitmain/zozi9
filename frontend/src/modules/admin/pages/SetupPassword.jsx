@@ -78,7 +78,7 @@ const SetupPassword = () => {
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Email address</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Mail className="h-5 w-5 text-slate-400" />
+                                        <Mail className="h-5 w-5 text-slate-500" />
                                     </div>
                                     <input
                                         type="email"
@@ -94,7 +94,7 @@ const SetupPassword = () => {
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Verification OTP</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <KeyRound className="h-5 w-5 text-slate-400" />
+                                        <KeyRound className="h-5 w-5 text-slate-500" />
                                     </div>
                                     <input
                                         type="text"
@@ -126,7 +126,7 @@ const SetupPassword = () => {
                                 <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Lock className="h-5 w-5 text-slate-400" />
+                                        <Lock className="h-5 w-5 text-slate-500" />
                                     </div>
                                     <input
                                         type="password"
@@ -142,7 +142,7 @@ const SetupPassword = () => {
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Confirm Password</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Lock className="h-5 w-5 text-slate-400" />
+                                        <Lock className="h-5 w-5 text-slate-500" />
                                     </div>
                                     <input
                                         type="password"

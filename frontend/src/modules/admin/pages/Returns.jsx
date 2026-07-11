@@ -245,7 +245,7 @@ const Returns = () => {
               Return Requests
               <Badge
                 variant="secondary"
-                className="text-[10px] px-1.5 py-0 font-bold tracking-widest uppercase"
+                className="text-xs px-1.5 py-0 font-bold tracking-widest uppercase"
               >
                 Admin
               </Badge>
@@ -292,7 +292,7 @@ const Returns = () => {
                         <HiOutlineInboxStack className="h-5 w-5 sm:h-6 sm:w-6" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest truncate">
+                        <p className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest truncate">
                           {label}
                         </p>
                         <h4 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
@@ -363,7 +363,7 @@ const Returns = () => {
               <div className="p-3 sm:p-4">
                 {filteredReturns.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16 px-4">
-                    <div className="h-14 w-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 mb-3">
+                    <div className="h-14 w-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 mb-3">
                       <HiOutlineInboxStack className="h-7 w-7" />
                     </div>
                     <h3 className="text-sm font-bold text-slate-900">
@@ -408,21 +408,21 @@ const Returns = () => {
                           {(ret.returnStatus === "return_in_transit" || ret.returnStatus === "return_drop_pending" || ret.returnStatus === "return_pickup_assigned") && ret.returnDeliveryBoy && (
                             <div className="mt-2 flex items-center gap-1.5 px-2 py-1 bg-brand-50 rounded-lg border border-brand-100 w-fit">
                               <HiOutlineTruck className="h-3 w-3 text-brand-600" />
-                              <span className="text-[10px] font-bold text-brand-700">Rider: {ret.returnDeliveryBoy.name}</span>
+                              <span className="text-xs font-bold text-brand-700">Rider: {ret.returnDeliveryBoy.name}</span>
                             </div>
                           )}
                           {/* Proper Data: QC Note for passed/failed */}
                           {(ret.returnStatus === "qc_passed" || ret.returnStatus === "qc_failed") && ret.returnQcNote && (
                             <div className="mt-2 flex items-start gap-1.5 px-2 py-1 bg-slate-50 rounded-lg border border-slate-100 w-fit max-w-[200px]">
                               <HiOutlineInboxStack className="h-3 w-3 text-slate-500 mt-0.5" />
-                              <span className="text-[10px] font-medium text-slate-600 italic line-clamp-2">QC: {ret.returnQcNote}</span>
+                              <span className="text-xs font-medium text-slate-600 italic line-clamp-2">QC: {ret.returnQcNote}</span>
                             </div>
                           )}
                         </div>
                         <div className="flex flex-col items-end gap-2 shrink-0">
                           <Badge
                             variant={getStatusVariant(ret.returnStatus)}
-                            className="text-[10px] font-black uppercase px-2 py-0"
+                            className="text-xs font-black uppercase px-2 py-0"
                           >
                             {mapReturnStatusLabel(ret.returnStatus)}
                           </Badge>
@@ -471,7 +471,7 @@ const Returns = () => {
                   <div className="flex items-center space-x-2 mt-0.5">
                     <Badge
                       variant={getStatusVariant(selectedReturn.returnStatus)}
-                      className="text-[10px] font-black uppercase tracking-widest px-1.5 py-0"
+                      className="text-xs font-black uppercase tracking-widest px-1.5 py-0"
                     >
                       {mapReturnStatusLabel(selectedReturn.returnStatus)}
                     </Badge>
@@ -557,20 +557,20 @@ const Returns = () => {
                           <HiOutlineTruck className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="text-[10px] font-black text-brand-600 uppercase tracking-widest leading-none mb-1">Rider Assigned</p>
+                          <p className="text-xs font-black text-brand-600 uppercase tracking-widest leading-none mb-1">Rider Assigned</p>
                           <p className="text-sm font-bold text-slate-900 leading-none">{selectedReturn.returnDeliveryBoy.name}</p>
                         </div>
                       </div>
                       {selectedReturn.returnDeliveryBoy.phone && (
                         <a
                           href={`tel:${selectedReturn.returnDeliveryBoy.phone}`}
-                          className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-700 bg-white px-3 py-1.5 rounded-lg border border-brand-200 shadow-sm hover:bg-brand-100 transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-700 bg-white px-3 py-1.5 rounded-lg border border-brand-200 shadow-sm hover:bg-brand-100 transition-colors"
                         >
                           📞 {selectedReturn.returnDeliveryBoy.phone}
                         </a>
                       )}
                       {selectedReturn.returnStatus === "return_drop_pending" && (
-                        <p className="text-[10px] font-bold text-brand-800 italic mt-1 bg-white/50 p-2 rounded-lg">
+                        <p className="text-xs font-bold text-brand-800 italic mt-1 bg-white/50 p-2 rounded-lg">
                           Rider is at the seller location. Sharing the OTP will confirm the drop.
                         </p>
                       )}
@@ -587,7 +587,7 @@ const Returns = () => {
                         <HiOutlineInboxStack className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className={`text-[10px] font-black uppercase tracking-widest leading-none mb-1 ${selectedReturn.returnStatus === "qc_passed" ? "text-emerald-600" : "text-rose-600"
+                        <p className={`text-xs font-black uppercase tracking-widest leading-none mb-1 ${selectedReturn.returnStatus === "qc_passed" ? "text-emerald-600" : "text-rose-600"
                           }`}>Quality Check Results</p>
                         <p className="text-sm font-bold text-slate-900 leading-none">
                           {selectedReturn.returnStatus === "qc_passed" ? "QC Passed" : "QC Failed"}
@@ -596,14 +596,14 @@ const Returns = () => {
                     </div>
                     {selectedReturn.returnQcNote && (
                       <div className="bg-white/60 p-3 rounded-xl border border-black/5">
-                        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1">QC Decision Note:</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">QC Decision Note:</p>
                         <p className="text-sm text-slate-800 italic leading-relaxed">
                           "{selectedReturn.returnQcNote}"
                         </p>
                       </div>
                     )}
                     {selectedReturn.returnQcAt && (
-                      <p className="text-[10px] font-medium text-slate-500">
+                      <p className="text-xs font-medium text-slate-500">
                         Reviewed on: {new Date(selectedReturn.returnQcAt).toLocaleString()}
                       </p>
                     )}
@@ -612,7 +612,7 @@ const Returns = () => {
 
                 {/* Quality Check Comparison (2-Way) */}
                 <div className="space-y-3 pt-2">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
+                  <p className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-1">
                     Product Comparison (QC)
                   </p>
                   <div className="grid grid-cols-2 gap-3">
@@ -625,7 +625,7 @@ const Returns = () => {
                           className="h-full w-full object-cover"
                         />
                         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-900/60 to-transparent p-2">
-                          <p className="text-[9px] font-black text-white uppercase leading-none">Listing</p>
+                          <p className="text-xs font-black text-white uppercase leading-none">Listing</p>
                         </div>
                       </div>
                     </div>
@@ -641,13 +641,13 @@ const Returns = () => {
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="flex flex-col items-center gap-1.5 text-slate-400 px-3 text-center">
+                          <div className="flex flex-col items-center gap-1.5 text-slate-500 px-3 text-center">
                             <HiOutlineInboxStack className="h-5 w-5" />
                             <p className="text-[8px] font-bold leading-tight uppercase">Not Picked Yet</p>
                           </div>
                         )}
                         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-emerald-900/60 to-transparent p-2">
-                          <p className="text-[9px] font-black text-white uppercase leading-none">Return</p>
+                          <p className="text-xs font-black text-white uppercase leading-none">Return</p>
                         </div>
                       </div>
                     </div>
@@ -657,7 +657,7 @@ const Returns = () => {
                       <div className={`h-2 w-2 rounded-full ${selectedReturn.returnPickupCondition === 'good' ? 'bg-emerald-500' :
                           selectedReturn.returnPickupCondition === 'damaged' ? 'bg-rose-500' : 'bg-amber-500'
                         }`} />
-                      <p className="text-[11px] font-bold text-slate-600">
+                      <p className="text-xs font-bold text-slate-600">
                         Rider Condition Report: <span className="uppercase text-slate-900">{selectedReturn.returnPickupCondition}</span>
                       </p>
                     </div>

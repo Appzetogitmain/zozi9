@@ -20,6 +20,7 @@ import {
   rejectReturnPickup,
   updateReturnStatus,
   uploadReturnPickupProof,
+  processToDelivery,
 } from "../controller/orderController.js";
 import {
   createOrderWithFinancialSnapshot,
@@ -115,6 +116,13 @@ router.put(
   allowRoles("admin", "seller"),
   requireApprovedSeller,
   updateOrderStatus,
+);
+router.post(
+  "/:orderId/process-delivery",
+  verifyToken,
+  allowRoles("admin", "seller"),
+  requireApprovedSeller,
+  processToDelivery,
 );
 router.get(
   "/seller-returns",

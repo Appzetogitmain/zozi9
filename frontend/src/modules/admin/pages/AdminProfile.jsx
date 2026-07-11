@@ -117,7 +117,7 @@ const AdminProfile = () => {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={logout}
-                        className="flex items-center gap-2 px-5 py-3 bg-white ring-1 ring-slate-200 text-slate-700 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:text-red-600 transition-all shadow-sm"
+                        className="flex items-center gap-2 px-5 py-3 bg-white ring-1 ring-slate-200 text-slate-700 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-50 hover:text-red-600 transition-all shadow-sm"
                     >
                         <LogOut className="h-4 w-4" />
                         Sign Out
@@ -133,7 +133,7 @@ const AdminProfile = () => {
                             <div className="relative group cursor-pointer">
                                 <div className="h-32 w-32 rounded-full ring-4 ring-slate-50 bg-slate-100 flex items-center justify-center overflow-hidden">
                                     {/* Placeholder Avatar */}
-                                    <span className="text-4xl font-black text-slate-300">
+                                    <span className="text-4xl font-black text-slate-400">
                                         {profile.name?.charAt(0)}
                                     </span>
                                 </div>
@@ -144,7 +144,7 @@ const AdminProfile = () => {
                             <h2 className="mt-6 ds-h2 font-black text-slate-900">{profile.name}</h2>
                             <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 ring-1 ring-brand-200">
                                 <Shield className="h-3 w-3" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">{profile.role}</span>
+                                <span className="text-xs font-black uppercase tracking-widest">{profile.role}</span>
                             </div>
                         </div>
                         <div className="p-2 bg-slate-50/50">
@@ -154,7 +154,7 @@ const AdminProfile = () => {
                                     "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all",
                                     activeTab === 'profile'
                                         ? "bg-white text-brand-600 shadow-sm ring-1 ring-slate-100"
-                                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-100/50"
+                                        : "text-slate-500 hover:text-slate-600 hover:bg-slate-100/50"
                                 )}
                             >
                                 <User className="h-4 w-4" />
@@ -166,7 +166,7 @@ const AdminProfile = () => {
                                     "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all mt-1",
                                     activeTab === 'security'
                                         ? "bg-white text-brand-600 shadow-sm ring-1 ring-slate-100"
-                                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-100/50"
+                                        : "text-slate-500 hover:text-slate-600 hover:bg-slate-100/50"
                                 )}
                             >
                                 <Lock className="h-4 w-4" />
@@ -190,7 +190,7 @@ const AdminProfile = () => {
                             <form onSubmit={handleProfileUpdate} className="p-8 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Full Name</label>
+                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Full Name</label>
                                         <input
                                             type="text"
                                             value={profile.name}
@@ -200,9 +200,9 @@ const AdminProfile = () => {
                                         />
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Address</label>
+                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Email Address</label>
                                         <div className="relative group">
-                                            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                                             <input
                                                 type="email"
                                                 value={profile.email}
@@ -219,7 +219,7 @@ const AdminProfile = () => {
                                         type="submit"
                                         disabled={isSaving}
                                         className={cn(
-                                            "flex items-center gap-2 px-4 py-4 bg-black  text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-brand-100 active:scale-95",
+                                            "flex items-center gap-2 px-4 py-4 bg-black  text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-brand-100 active:scale-95",
                                             isSaving ? "opacity-70 cursor-wait" : "hover:bg-brand-700"
                                         )}
                                     >
@@ -240,9 +240,9 @@ const AdminProfile = () => {
                             </div>
                             <form onSubmit={handlePasswordUpdate} className="p-8 space-y-6">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Current Password</label>
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Current Password</label>
                                     <div className="relative group">
-                                        <Key className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                        <Key className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                                         <input
                                             type="password"
                                             value={security.currentPassword}
@@ -254,7 +254,7 @@ const AdminProfile = () => {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">New Password</label>
+                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">New Password</label>
                                         <div className="relative group">
                                             <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-500" />
                                             <input
@@ -267,7 +267,7 @@ const AdminProfile = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Confirm New Password</label>
+                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Confirm New Password</label>
                                         <div className="relative group">
                                             <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-500" />
                                             <input
@@ -286,7 +286,7 @@ const AdminProfile = () => {
                                         type="submit"
                                         disabled={isSaving}
                                         className={cn(
-                                            "flex items-center gap-2 px-4 py-4 bg-black  text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-brand-100 active:scale-95",
+                                            "flex items-center gap-2 px-4 py-4 bg-black  text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-brand-100 active:scale-95",
                                             isSaving ? "opacity-70 cursor-wait" : "hover:bg-brand-700"
                                         )}
                                     >

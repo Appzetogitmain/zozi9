@@ -378,7 +378,7 @@ const ContentManager = () => {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={openCreateModal}
-                        className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all"
+                        className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all"
                     >
                         <HiOutlinePlus className="h-5 w-5" />
                         ADD COMPONENT
@@ -401,8 +401,8 @@ const ContentManager = () => {
                             key={opt.id}
                             onClick={() => setPageType(opt.id)}
                             className={cn(
-                                "px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all",
-                                pageType === opt.id ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                                "px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all",
+                                pageType === opt.id ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-600"
                             )}
                         >
                             {opt.label}
@@ -411,7 +411,7 @@ const ContentManager = () => {
                 </div>
                 {pageType === 'header' && (
                     <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Header Category</span>
+                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest">Header Category</span>
                         <select
                             value={selectedHeaderId}
                             onChange={(e) => setSelectedHeaderId(e.target.value)}
@@ -436,17 +436,17 @@ const ContentManager = () => {
                                 Configured Sections ({sections.length})
                             </h3>
                             {isLoading && (
-                                <span className="text-[10px] font-bold text-slate-400">Loading...</span>
+                                <span className="text-xs font-bold text-slate-500">Loading...</span>
                             )}
                         </div>
 
                         {sections.length === 0 && !isLoading && (
                             <div className="text-center py-16 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-100">
                                 <HiOutlineSparkles className="h-10 w-10 text-slate-200 mx-auto mb-3" />
-                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">
+                                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">
                                     No sections configured yet
                                 </p>
-                                <p className="text-xs text-slate-400 mt-1">
+                                <p className="text-xs text-slate-500 mt-1">
                                     Click &quot;Add Component&quot; to start designing this page.
                                 </p>
                             </div>
@@ -458,7 +458,7 @@ const ContentManager = () => {
                                 return (
                                     <Card key={section._id} className="p-4 border-none shadow-lg ring-1 ring-slate-100 bg-white rounded-xl group">
                                         <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
+                                            <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-500 shrink-0">
                                                 {section.displayType === 'banners' && <HiOutlinePhoto className="h-6 w-6" />}
                                                 {section.displayType === 'categories' && <HiOutlineSparkles className="h-6 w-6" />}
                                                 {section.displayType === 'subcategories' && <HiOutlineSparkles className="h-6 w-6" />}
@@ -466,7 +466,7 @@ const ContentManager = () => {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                                    <span className="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">
                                                         #{idx + 1} • {displayMeta?.label || section.displayType}
                                                     </span>
                                                     <Badge
@@ -479,7 +479,7 @@ const ContentManager = () => {
                                                 <h4 className="text-sm font-black text-slate-900 mb-1">
                                                     {section.title || '(No heading)'}
                                                 </h4>
-                                                <p className="text-[11px] text-slate-500">
+                                                <p className="text-xs text-slate-500">
                                                     {section.displayType === 'banners' && `${section.config?.banners?.items?.length || 0} banners configured`}
                                                     {section.displayType === 'categories' && `${section.config?.categories?.categoryIds?.length || 0} categories • ${section.config?.categories?.rows || 1} rows`}
                                                     {section.displayType === 'subcategories' && `${section.config?.subcategories?.subcategoryIds?.length || 0} subcategories • ${section.config?.subcategories?.rows || 1} rows`}
@@ -492,7 +492,7 @@ const ContentManager = () => {
                                                         disabled={idx === 0}
                                                         onClick={() => handleReorder('up', section)}
                                                         className={cn(
-                                                            "p-1.5 rounded-xl border text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-all",
+                                                            "p-1.5 rounded-xl border text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-all",
                                                             idx === 0 && "opacity-30 cursor-not-allowed"
                                                         )}
                                                     >
@@ -502,7 +502,7 @@ const ContentManager = () => {
                                                         disabled={idx === sections.length - 1}
                                                         onClick={() => handleReorder('down', section)}
                                                         className={cn(
-                                                            "p-1.5 rounded-xl border text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-all",
+                                                            "p-1.5 rounded-xl border text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-all",
                                                             idx === sections.length - 1 && "opacity-30 cursor-not-allowed"
                                                         )}
                                                     >
@@ -512,13 +512,13 @@ const ContentManager = () => {
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => openEditModal(section)}
-                                                        className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
+                                                        className="p-2 text-slate-500 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
                                                     >
                                                         <HiOutlinePencilSquare className="h-5 w-5" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteSection(section._id)}
-                                                        className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                                                        className="p-2 text-slate-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all"
                                                     >
                                                         <HiOutlineTrash className="h-5 w-5" />
                                                     </button>
@@ -543,7 +543,7 @@ const ContentManager = () => {
                     {/* Display type & status */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Display Type</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Display Type</label>
                             <select
                                 value={formData.displayType}
                                 onChange={(e) => {
@@ -559,7 +559,7 @@ const ContentManager = () => {
                             </select>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Status</label>
                             <select
                                 value={formData.status}
                                 onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
@@ -573,8 +573,8 @@ const ContentManager = () => {
 
                     {/* Heading - required for category/subcategory/product */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            Section Heading {['categories', 'subcategories', 'products'].includes(formData.displayType) && <span className="text-rose-500">*</span>}
+                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
+                            Section Heading {['categories', 'subcategories', 'products'].includes(formData.displayType) && <span className="text-rose-700">*</span>}
                         </label>
                         <input
                             value={formData.title}
@@ -588,13 +588,13 @@ const ContentManager = () => {
                     {formData.displayType === 'banners' && (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <span className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                     Banner Items
                                 </span>
                                 <button
                                     type="button"
                                     onClick={addBannerItem}
-                                    className="flex items-center gap-1 text-[10px] font-black text-primary"
+                                    className="flex items-center gap-1 text-xs font-black text-primary"
                                 >
                                     <HiOutlinePlus className="h-3 w-3" />
                                     Add banner
@@ -614,7 +614,7 @@ const ContentManager = () => {
                                                                 className="w-full h-full object-cover"
                                                             />
                                                         ) : (
-                                                            <HiOutlinePhoto className="h-6 w-6 text-slate-300" />
+                                                            <HiOutlinePhoto className="h-6 w-6 text-slate-400" />
                                                         )}
                                                     </div>
                                                     <div className="flex-1 space-y-1">
@@ -634,11 +634,11 @@ const ContentManager = () => {
                                                             onClick={() =>
                                                                 bannerFileInputsRef.current[idx]?.click()
                                                             }
-                                                            className="inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors"
+                                                            className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors"
                                                         >
                                                             {item.imageUrl ? 'Change image' : 'Choose image file'}
                                                         </button>
-                                                        <p className="text-[10px] text-slate-400">
+                                                        <p className="text-xs text-slate-500">
                                                             {item.isUploading
                                                                 ? 'Uploading...'
                                                                 : item.imageUrl
@@ -684,7 +684,7 @@ const ContentManager = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => removeBannerItem(idx)}
-                                                    className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                                                    className="p-2 text-slate-400 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all"
                                                 >
                                                     <HiOutlineXMark className="h-4 w-4" />
                                                 </button>
@@ -700,7 +700,7 @@ const ContentManager = () => {
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                         Categories to show
                                     </label>
                                     <input
@@ -712,7 +712,7 @@ const ContentManager = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                         Rows (4 columns on mobile)
                                     </label>
                                     <input
@@ -725,7 +725,7 @@ const ContentManager = () => {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                     Choose categories to show
                                 </label>
                                 <div className="flex flex-wrap gap-2">
@@ -744,7 +744,7 @@ const ContentManager = () => {
                                                     }))
                                                 }
                                                 className={cn(
-                                                    "px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                                                    "px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
                                                     isSelected
                                                         ? "bg-primary text-white border-primary"
                                                         : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-white"
@@ -755,7 +755,7 @@ const ContentManager = () => {
                                         );
                                     })}
                                 </div>
-                                <p className="text-[10px] text-slate-400">
+                                <p className="text-xs text-slate-500">
                                     Pick the categories you want to show. One row displays 4 categories.
                                 </p>
                             </div>
@@ -765,7 +765,7 @@ const ContentManager = () => {
                     {formData.displayType === 'subcategories' && (
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                     Parent categories
                                 </label>
                                 <div className="flex flex-wrap gap-2">
@@ -799,7 +799,7 @@ const ContentManager = () => {
                                                     })
                                                 }
                                                 className={cn(
-                                                    "px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                                                    "px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
                                                     isSelected
                                                         ? "bg-primary text-white border-primary"
                                                         : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-white"
@@ -812,7 +812,7 @@ const ContentManager = () => {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                     Subcategories
                                 </label>
                                 <div className="flex flex-wrap gap-2">
@@ -834,7 +834,7 @@ const ContentManager = () => {
                                                     }))
                                                 }
                                                 className={cn(
-                                                    "px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                                                    "px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
                                                     isSelected
                                                         ? "bg-primary text-white border-primary"
                                                         : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-white"
@@ -845,12 +845,12 @@ const ContentManager = () => {
                                         );
                                     })}
                                 </div>
-                                <p className="text-[10px] text-slate-400">
+                                <p className="text-xs text-slate-500">
                                     Displayed in 4-column grids per row.
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                     Rows
                                 </label>
                                 <input
@@ -868,7 +868,7 @@ const ContentManager = () => {
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                         Rows
                                     </label>
                                     <input
@@ -881,7 +881,7 @@ const ContentManager = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                         Columns
                                     </label>
                                     <input
@@ -900,12 +900,12 @@ const ContentManager = () => {
                                     checked={formData.singleRowScrollable}
                                     onChange={(e) => setFormData(prev => ({ ...prev, singleRowScrollable: e.target.checked }))}
                                 />
-                                <label htmlFor="singleRowScrollable" className="text-[11px] font-bold text-slate-600">
+                                <label htmlFor="singleRowScrollable" className="text-xs font-bold text-slate-600">
                                     Show products in a single horizontally scrollable row
                                 </label>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                     Filter by categories / subcategories (optional)
                                 </label>
                                 <div className="grid grid-cols-2 gap-3">
@@ -940,7 +940,7 @@ const ContentManager = () => {
                                                         })
                                                     }
                                                     className={cn(
-                                                        "px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                                                        "px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
                                                         isSelected
                                                             ? "bg-primary text-white border-primary"
                                                             : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-white"
@@ -970,7 +970,7 @@ const ContentManager = () => {
                                                             }))
                                                         }
                                                         className={cn(
-                                                            "px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                                                            "px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
                                                             isSelected
                                                                 ? "bg-primary text-white border-primary"
                                                                 : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-white"
@@ -982,7 +982,7 @@ const ContentManager = () => {
                                             })}
                                     </div>
                                 </div>
-                                <p className="text-[10px] text-slate-400">
+                                <p className="text-xs text-slate-500">
                                     You can later extend this to select specific products.
                                 </p>
                             </div>
@@ -990,7 +990,7 @@ const ContentManager = () => {
                     )}
                     <button
                         onClick={handleSaveSection}
-                        className="w-full py-4 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                        className="w-full py-4 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
                     >
                         {editingItem ? 'SAVE CHANGES' : 'PUBLISH SECTION'}
                     </button>

@@ -4,7 +4,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import BottomNav from "../components/BottomNav";
 import { Toaster, toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { BellRing, MapPin } from "lucide-react";
+import { BellRing, MapPin, Clock } from "lucide-react";
 import { deliveryApi } from "../services/deliveryApi";
 import { useAuth } from "@core/context/AuthContext";
 import {
@@ -168,6 +168,9 @@ const DeliveryLayout = () => {
       expiresAt: payload.deliverySearchExpiresAt || null,
       isReturnPickup: payload.type === "RETURN_PICKUP" || payload.isReturnPickup === true,
       items: payload.items || [],
+      timeSlot: p.timeSlot,
+      deliveryType: p.deliveryType,
+      scheduledSlot: p.scheduledSlot,
     });
     return true;
   }, []);
@@ -206,6 +209,9 @@ const DeliveryLayout = () => {
       expiresAt: newOrder.deliverySearchExpiresAt || null,
       isReturnPickup,
       items: newOrder.items || [],
+      timeSlot: newOrder.timeSlot,
+      deliveryType: newOrder.deliveryType,
+      scheduledSlot: newOrder.scheduledSlot,
     });
   }, []);
 
@@ -632,11 +638,27 @@ const DeliveryLayout = () => {
                     <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-4">
                       {activeOrder.isReturnPickup ? "Collect return item" : "Accept or reject"}
                     </p>
-                    <div className="flex items-center gap-2 mb-6">
+                    <div className="flex items-center gap-2 mb-4">
                       <span className="text-2xl font-black text-brand-600">₹{activeOrder.earnings}</span>
                       <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-outfit">
                         Earnings
                       </span>
+                    </div>
+
+                    <div className="w-full flex items-center gap-3 mb-6 p-3 bg-brand-50/50 rounded-2xl border border-brand-100/50">
+                      <div className="h-8 w-8 rounded-xl bg-white flex items-center justify-center shadow-sm border border-slate-100 flex-shrink-0">
+                        <Clock className="h-4 w-4 text-brand-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">
+                          Expected Delivery
+                        </p>
+                        <p className="text-sm font-black text-slate-900 truncate">
+                          {activeOrder.deliveryType === 'scheduled' 
+                            ? (activeOrder.scheduledSlot?.start ? `${activeOrder.scheduledSlot.start} - ${activeOrder.scheduledSlot.end}` : (activeOrder.timeSlot || 'Scheduled'))
+                            : "Express (Now)"}
+                        </p>
+                      </div>
                     </div>
 
                     <div className="w-full space-y-4 mb-6">

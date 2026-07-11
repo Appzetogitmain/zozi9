@@ -61,6 +61,7 @@ export const customerApi = {
     axiosInstance.post("/orders/checkout/preview", data, { timeout: 120000 }),
   createOrder: (data) =>
     axiosInstance.post("/orders", data, { timeout: 120000 }),
+  getDeliverySlots: () => axiosInstance.get('/delivery-slots', { timeout: 120000 }),
   verifyOnlineOrderPayment: (orderId, data) =>
     axiosInstance.post(`/orders/${orderId}/payment/verify-online`, data),
   markOrderDelivered: (orderId, data) =>

@@ -74,7 +74,7 @@ const Earnings = () => {
     return <div className="flex items-center justify-center h-screen font-black text-slate-600">LOADING EARNINGS...</div>;
   }
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-5 pb-16">
       <BlurFade delay={0.1}>
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold text-gray-800 hidden md:block">
@@ -115,14 +115,14 @@ const Earnings = () => {
             </Button>
             <ShimmerButton
               onClick={() => navigate("/seller/withdrawals")}
-              className="px-6 py-2 rounded-xl text-sm font-bold text-white shadow-lg">
+              className="px-4 py-2 rounded-xl text-sm font-bold text-white shadow-lg">
               <span className="text-white">Withdraw Funds</span>
             </ShimmerButton>
           </div>
         </div>
       </BlurFade>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <BlurFade delay={0.2}>
           <Card className="bg-gradient-to-br from-brand-600 to-teal-700 text-white border-none shadow-lg h-full">
             <div className="flex justify-between items-start">
@@ -142,7 +142,7 @@ const Earnings = () => {
         </BlurFade>
 
         <BlurFade delay={0.3}>
-          <Card className="h-full border-none shadow-md bg-white p-6 flex flex-col justify-between group hover:shadow-xl transition-all duration-300">
+          <Card className="h-full border-none shadow-md bg-white p-4 flex flex-col justify-between group hover:shadow-xl transition-all duration-300">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-xs font-black text-slate-600 uppercase tracking-widest mb-1">
@@ -176,7 +176,7 @@ const Earnings = () => {
       </div>
 
       <BlurFade delay={0.4}>
-        <Card className="p-6 border-none shadow-md bg-white">
+        <Card className="p-4 border-none shadow-md bg-white">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-brand-500" />
@@ -245,8 +245,8 @@ const Earnings = () => {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="w-full max-w-md relative z-10 bg-white rounded-lg shadow-2xl overflow-hidden p-8 text-center">
-              <div className="h-16 w-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+              className="w-full max-w-md relative z-10 bg-white rounded-lg shadow-2xl overflow-hidden p-5 text-center">
+              <div className="h-12 w-12 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
                 <Banknote className="h-8 w-8 text-brand-600" />
               </div>
 

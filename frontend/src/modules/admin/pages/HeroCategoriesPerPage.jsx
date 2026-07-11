@@ -218,22 +218,22 @@ export default function HeroCategoriesPerPage() {
 
       <Card className="p-4 md:p-6 border border-slate-100 bg-white rounded-xl shadow-sm">
         {loading ? (
-          <div className="py-12 text-center text-slate-400 font-bold">Loading…</div>
+          <div className="py-12 text-center text-slate-500 font-bold">Loading…</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-slate-100">
-                  <th className="pb-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <th className="pb-3 text-xs font-black text-slate-500 uppercase tracking-widest">
                     Page
                   </th>
-                  <th className="pb-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <th className="pb-3 text-xs font-black text-slate-500 uppercase tracking-widest">
                     Hero (top banners)
                   </th>
-                  <th className="pb-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <th className="pb-3 text-xs font-black text-slate-500 uppercase tracking-widest">
                     Categories below hero
                   </th>
-                  <th className="pb-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <th className="pb-3 text-xs font-black text-slate-500 uppercase tracking-widest">
                     Action
                   </th>
                 </tr>
@@ -256,7 +256,7 @@ export default function HeroCategoriesPerPage() {
                           {row.bannerCount} banner(s)
                         </span>
                       ) : (
-                        <span className="text-xs text-slate-400 italic">Not set</span>
+                        <span className="text-xs text-slate-500 italic">Not set</span>
                       )}
                     </td>
                     <td className="py-4 pr-4">
@@ -266,14 +266,14 @@ export default function HeroCategoriesPerPage() {
                           {row.categoryCount === 1 ? "y" : "ies"}
                         </span>
                       ) : (
-                        <span className="text-xs text-slate-400 italic">Not set</span>
+                        <span className="text-xs text-slate-500 italic">Not set</span>
                       )}
                     </td>
                     <td className="py-4">
                       <button
                         type="button"
                         onClick={() => openEdit(row)}
-                        className="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:underline"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
                       >
                         <HiOutlinePencilSquare className="w-3.5 h-3.5" />
                         Edit
@@ -287,7 +287,7 @@ export default function HeroCategoriesPerPage() {
         )}
       </Card>
 
-      <p className="mt-4 text-xs text-slate-400">
+      <p className="mt-4 text-xs text-slate-500">
         This is a <strong>separate</strong> hero section. Experience sections in Create Sections
         are unchanged and used for the main content area below.
       </p>
@@ -322,13 +322,13 @@ export default function HeroCategoriesPerPage() {
           <div className="space-y-6">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                   Hero banners
                 </label>
                 <button
                   type="button"
                   onClick={addBannerItem}
-                  className="flex items-center gap-1 text-[10px] font-bold text-primary"
+                  className="flex items-center gap-1 text-xs font-bold text-primary"
                 >
                   <HiOutlinePlus className="h-3 w-3" />
                   Add banner
@@ -348,7 +348,7 @@ export default function HeroCategoriesPerPage() {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <HiOutlinePhoto className="h-6 w-6 text-slate-300" />
+                              <HiOutlinePhoto className="h-6 w-6 text-slate-400" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0 space-y-1">
@@ -361,7 +361,7 @@ export default function HeroCategoriesPerPage() {
                             />
                             <label
                               htmlFor={`hero-banner-file-${idx}`}
-                              className="inline-block px-2 py-1 rounded-lg bg-slate-100 text-[10px] font-bold text-slate-600 cursor-pointer hover:bg-slate-200"
+                              className="inline-block px-2 py-1 rounded-lg bg-slate-100 text-xs font-bold text-slate-600 cursor-pointer hover:bg-slate-200"
                             >
                               {item.isUploading ? "Uploading…" : item.imageUrl ? "Change" : "Upload"}
                             </label>
@@ -384,7 +384,7 @@ export default function HeroCategoriesPerPage() {
                         <button
                           type="button"
                           onClick={() => removeBannerItem(idx)}
-                          className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                          className="p-2 text-slate-400 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all"
                         >
                           <HiOutlineXMark className="w-4 h-4" />
                         </button>
@@ -396,7 +396,7 @@ export default function HeroCategoriesPerPage() {
             </div>
 
             <div>
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest block mb-2">
                 Categories below hero
               </label>
               <div className="flex flex-wrap gap-2">
@@ -408,7 +408,7 @@ export default function HeroCategoriesPerPage() {
                       type="button"
                       onClick={() => toggleCategory(c._id)}
                       className={cn(
-                        "px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                        "px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
                         isSelected
                           ? "bg-primary text-white border-primary"
                           : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-white"
@@ -420,7 +420,7 @@ export default function HeroCategoriesPerPage() {
                 })}
               </div>
               {allCategories.length === 0 && (
-                <p className="text-xs text-slate-400">No main categories found. Add categories in Header / Main Categories first.</p>
+                <p className="text-xs text-slate-500">No main categories found. Add categories in Header / Main Categories first.</p>
               )}
             </div>
           </div>

@@ -177,14 +177,14 @@ const StockManagement = () => {
     }
 
     return (
-        <div className="space-y-6 pb-16">
+        <div className="space-y-4 pb-16">
             <BlurFade delay={0.1}>
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
                             Stock Management
-                            <Badge variant="warning" className="text-[9px] px-1.5 py-0 font-bold tracking-wider uppercase bg-amber-100 text-amber-700">
+                            <Badge variant="warning" className="text-xs px-1.5 py-0 font-bold tracking-wider uppercase bg-amber-100 text-amber-700">
                                 Inventory Control
                             </Badge>
                         </h1>
@@ -211,7 +211,7 @@ const StockManagement = () => {
                                                 <stat.icon className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest">{stat.label}</p>
+                                                <p className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest">{stat.label}</p>
                                                 <h4 className="text-xl font-black text-slate-900 tracking-tight">{stat.value}</h4>
                                             </div>
                                         </div>
@@ -244,7 +244,7 @@ const StockManagement = () => {
                                                     setPage(1);
                                                 }}
                                                 className={cn(
-                                                    "px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all",
+                                                    "px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
                                                     filterStatus === status
                                                         ? "bg-white text-slate-900 shadow-md"
                                                         : "text-slate-600 hover:text-slate-700"
@@ -258,7 +258,7 @@ const StockManagement = () => {
                                 <div className="flex items-center gap-2">
                                     <Button
                                         onClick={() => navigate('/seller/products/add')}
-                                        className="rounded-xl px-4 py-2 text-[10px] font-bold shadow-lg shadow-primary/20"
+                                        className="rounded-xl px-4 py-2 text-xs font-bold shadow-lg shadow-primary/20"
                                     >
                                         <HiOutlinePlus className="h-4 w-4 mr-2" />
                                         ADD NEW PRODUCT
@@ -271,11 +271,11 @@ const StockManagement = () => {
                                 <table className="w-full text-left">
                                     <thead>
                                         <tr className="bg-slate-50/50 border-b border-slate-100">
-                                            <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">Product Information</th>
-                                            <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">Inventory Capacity</th>
-                                            <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">Stock Health</th>
-                                            <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">Price</th>
-                                            <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest text-right whitespace-nowrap">Actions</th>
+                                            <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest">Product Information</th>
+                                            <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest">Inventory Capacity</th>
+                                            <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest">Stock Health</th>
+                                            <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest">Price</th>
+                                            <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest text-right whitespace-nowrap">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-50">
@@ -283,7 +283,7 @@ const StockManagement = () => {
                                             <tr>
                                                 <td
                                                     colSpan={5}
-                                                    className="px-6 py-10 text-center text-slate-600 text-xs font-black tracking-widest uppercase"
+                                                    className="px-4 py-10 text-center text-slate-600 text-xs font-black tracking-widest uppercase"
                                                 >
                                                     No products found for this filter.
                                                 </td>
@@ -300,7 +300,7 @@ const StockManagement = () => {
                                                             exit={{ opacity: 0 }}
                                                             className="group hover:bg-slate-50/80 transition-all cursor-default"
                                                         >
-                                                            <td className="px-6 py-5">
+                                                            <td className="px-4 py-3">
                                                                 <div className="flex items-center gap-4 group">
                                                                     <div className="h-12 w-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 group-hover:scale-105 transition-transform overflow-hidden">
                                                                         {item.mainImage ? (
@@ -313,13 +313,13 @@ const StockManagement = () => {
                                                                         <h4 className="text-sm font-black text-slate-900 group-hover:text-primary transition-colors">
                                                                             {item.name}
                                                                         </h4>
-                                                                        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">
+                                                                        <p className="text-xs text-slate-600 font-bold uppercase tracking-widest">
                                                                             Product Code: {item.sku || 'N/A'}
                                                                         </p>
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td className="px-6 py-5">
+                                                            <td className="px-4 py-3">
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="flex flex-col">
                                                                         <span
@@ -331,25 +331,25 @@ const StockManagement = () => {
                                                                             {item.stock} units
                                                                         </span>
                                                                         {item.stock <= item.threshold && (
-                                                                            <span className="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded w-fit mt-0.5">
+                                                                            <span className="text-xs font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded w-fit mt-0.5">
                                                                                 Low Stock
                                                                             </span>
                                                                         )}
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td className="px-6 py-5">
+                                                            <td className="px-4 py-3">
                                                                 <Badge
                                                                     variant={item.status === 'In Stock' ? 'success' : 'destructive'}
-                                                                    className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg"
+                                                                    className="text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-lg"
                                                                 >
                                                                     {item.status}
                                                                 </Badge>
                                                             </td>
-                                                            <td className="px-6 py-5">
+                                                            <td className="px-4 py-3">
                                                                 <p className="text-sm font-black text-slate-900">₹{item.price}</p>
                                                             </td>
-                                                            <td className="px-6 py-5 text-right">
+                                                            <td className="px-4 py-3 text-right">
                                                                 <button
                                                                     onClick={() => openAdjustModal(item)}
                                                                     className="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 transition-colors"
@@ -386,7 +386,7 @@ const StockManagement = () => {
                 /* History View */
                 <BlurFade delay={0.2}>
                     <Card className="border-none shadow-xl shadow-slate-200/50 rounded-3xl p-0 overflow-hidden">
-                        <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/20">
+                        <div className="p-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/20">
                             <div>
                                 <h3 className="text-base font-black text-slate-900">Inventory Movement Log</h3>
                                 <p className="text-sm text-slate-600 font-medium">Audit trail for all stock adjustments and sales.</p>
@@ -396,7 +396,7 @@ const StockManagement = () => {
                             {history.length === 0 ? (
                                 <div className="p-10 text-center text-slate-600 font-black uppercase tracking-widest">No history found</div>
                             ) : history.map((log) => (
-                                <div key={log._id} className="p-6 hover:bg-slate-50/50 transition-colors flex items-center justify-between group">
+                                <div key={log._id} className="p-4 hover:bg-slate-50/50 transition-colors flex items-center justify-between group">
                                     <div className="flex items-center gap-5">
                                         <div className={cn(
                                             "h-12 w-12 rounded-2xl flex items-center justify-center shadow-sm",
@@ -410,14 +410,14 @@ const StockManagement = () => {
                                             <div className="flex items-center gap-2">
                                                 <h4 className="text-sm font-black text-slate-900">{log.product?.name || 'Unknown Product'}</h4>
                                                 <Badge className={cn(
-                                                    "text-[9px] font-bold px-1.5 py-0",
+                                                    "text-xs font-bold px-1.5 py-0",
                                                     log.type === 'Restock' ? "bg-brand-100 text-brand-700" :
                                                         log.type === 'Sale' ? "bg-brand-100 text-brand-700" : "bg-rose-100 text-rose-700"
                                                 )}>
                                                     {log.type.toUpperCase()}
                                                 </Badge>
                                             </div>
-                                            <p className="text-[11px] text-slate-600 font-semibold mt-1">Note: {log.note || 'N/A'}</p>
+                                            <p className="text-xs text-slate-600 font-semibold mt-1">Note: {log.note || 'N/A'}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
@@ -427,7 +427,7 @@ const StockManagement = () => {
                                         )}>
                                             {log.quantity > 0 ? `+${log.quantity}` : log.quantity}
                                         </div>
-                                        <div className="flex items-center justify-end gap-1.5 text-[10px] font-bold text-slate-600">
+                                        <div className="flex items-center justify-end gap-1.5 text-xs font-bold text-slate-600">
                                             <HiOutlineCalendarDays className="h-3.5 w-3.5" />
                                             {new Date(log.createdAt).toLocaleDateString()} • {new Date(log.createdAt).toLocaleTimeString()}
                                         </div>
@@ -456,14 +456,14 @@ const StockManagement = () => {
                             exit={{ opacity: 0, scale: 0.95, y: 10 }}
                             className="w-full max-w-md relative z-10 bg-white rounded-3xl shadow-2xl overflow-hidden"
                         >
-                            <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                            <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg shadow-slate-900/20">
                                         <HiOutlineArrowsUpDown className="h-5 w-5" />
                                     </div>
                                     <div>
                                         <h3 className="text-base font-black text-slate-900">Adjust Inventory</h3>
-                                        <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest leading-none mt-1">Update product stock</p>
+                                        <p className="text-xs font-bold text-slate-600 uppercase tracking-widest leading-none mt-1">Update product stock</p>
                                     </div>
                                 </div>
                                 <button onClick={() => setIsAdjustModalOpen(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-600">
@@ -471,7 +471,7 @@ const StockManagement = () => {
                                 </button>
                             </div>
 
-                            <div className="p-8 space-y-6">
+                            <div className="p-5 space-y-4">
                                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-4">
                                     <div className="h-12 w-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 overflow-hidden">
                                         {selectedItem.mainImage ? (
@@ -480,7 +480,7 @@ const StockManagement = () => {
                                     </div>
                                     <div>
                                         <h4 className="text-sm font-black text-slate-900">{selectedItem.name}</h4>
-                                        <p className="text-[10px] font-bold text-slate-600">CURRENT STOCK: <span className="text-slate-900 font-black">{selectedItem.stock} UNITS</span></p>
+                                        <p className="text-xs font-bold text-slate-600">CURRENT STOCK: <span className="text-slate-900 font-black">{selectedItem.stock} UNITS</span></p>
                                     </div>
                                 </div>
 
@@ -510,7 +510,7 @@ const StockManagement = () => {
                                                 type="number"
                                                 value={adjustValue}
                                                 onChange={(e) => setAdjustValue(e.target.value)}
-                                                className="w-full pl-10 pr-4 py-4 bg-slate-50 border-none rounded-2xl text-2xl font-black text-slate-900 focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-2xl text-2xl font-black text-slate-900 focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                                                 placeholder="0"
                                             />
                                         </div>
@@ -528,17 +528,17 @@ const StockManagement = () => {
                                 </div>
                             </div>
 
-                            <div className="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
+                            <div className="p-4 bg-slate-50 border-t border-slate-100 flex gap-3">
                                 <Button
                                     onClick={() => setIsAdjustModalOpen(false)}
                                     variant="outline"
-                                    className="flex-1 py-4 text-xs font-bold rounded-2xl bg-white"
+                                    className="flex-1 py-2.5 text-xs font-bold rounded-2xl bg-white"
                                 >
                                     CANCEL
                                 </Button>
                                 <Button
                                     onClick={handleFullAdjustment}
-                                    className="flex-1 py-4 text-xs font-bold rounded-2xl shadow-xl shadow-primary/20"
+                                    className="flex-1 py-2.5 text-xs font-bold rounded-2xl shadow-xl shadow-primary/20"
                                 >
                                     SAVE CHANGES
                                 </Button>

@@ -44,7 +44,7 @@ const ApplicationPending = () => {
           initial={{ opacity: 0, y: 20, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.4 }}
-          className="w-full rounded-3xl border border-white/10 bg-white/[0.04] p-6 md:p-10 shadow-2xl backdrop-blur-xl"
+          className="w-full rounded-3xl border border-white/10 bg-white/[0.04] p-4 md:p-10 shadow-2xl backdrop-blur-xl"
         >
           <div className="mb-8 flex items-center justify-between gap-4">
             <div className="inline-flex items-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-2">
@@ -56,7 +56,7 @@ const ApplicationPending = () => {
               <span className="text-sm font-bold text-white/90">{appName} Seller</span>
             </div>
             <div
-              className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-widest ${
+              className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-black uppercase tracking-widest ${
                 isRejected
                   ? "bg-rose-500/20 text-rose-200"
                   : "bg-amber-400/20 text-amber-100"
@@ -80,7 +80,7 @@ const ApplicationPending = () => {
 
           {rejectionReason ? (
             <div className="mt-6 rounded-2xl border border-rose-300/25 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
-              <span className="font-black uppercase tracking-widest text-[11px]">Reason</span>
+              <span className="font-black uppercase tracking-widest text-xs">Reason</span>
               <p className="mt-1 font-medium">{rejectionReason}</p>
             </div>
           ) : null}

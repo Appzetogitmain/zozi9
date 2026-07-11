@@ -222,7 +222,7 @@ const Analytics = () => {
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8 pb-20 sm:pb-16">
+    <div className="space-y-4 sm:space-y-5 pb-20 sm:pb-16">
       <BlurFade delay={0.1}>
         {/* Header */}
         <div className="flex flex-col gap-4">
@@ -231,7 +231,7 @@ const Analytics = () => {
               Advanced Analytics
               <Badge
                 variant="success"
-                className="text-[9px] px-1.5 py-0 font-bold tracking-wider uppercase bg-brand-100 text-brand-700">
+                className="text-xs px-1.5 py-0 font-bold tracking-wider uppercase bg-brand-100 text-brand-700">
                 Real-time Insights
               </Badge>
             </h1>
@@ -268,7 +268,7 @@ const Analytics = () => {
       </BlurFade>
 
       {/* Quick Stats Grid - show for all tabs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats
           .filter((_, i) => {
             if (activeTab === "Customers") return i === 0 || i === 1; // Total Sales, Total Orders only
@@ -287,7 +287,7 @@ const Analytics = () => {
                       ? "#fffbeb"
                       : "#fff1f2"
               }>
-              <div className="p-6 relative z-10 flex items-start justify-between">
+              <div className="p-4 relative z-10 flex items-start justify-between">
                 <div>
                   <p className="text-xs font-black text-slate-600 uppercase tracking-widest">
                     {stat.label}
@@ -328,7 +328,7 @@ const Analytics = () => {
       </div>
 
       {hasNoData && (activeTab === "Overview" || activeTab === "Sales") && (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-4 flex items-center gap-3">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 flex items-center gap-3">
           <HiOutlineChartBar className="h-6 w-6 text-slate-600 shrink-0" />
           <p className="text-sm font-semibold text-slate-600">
             Sales report is connected. Data will appear here once you have orders.
@@ -337,10 +337,10 @@ const Analytics = () => {
       )}
 
       {(activeTab === "Overview" || activeTab === "Sales") && (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Sales Performance Chart */}
         <BlurFade delay={0.4} className="lg:col-span-2">
-          <Card className="border-none shadow-xl shadow-slate-200/50 rounded-3xl p-6 bg-white overflow-hidden group h-full">
+          <Card className="border-none shadow-xl shadow-slate-200/50 rounded-3xl p-4 bg-white overflow-hidden group h-full">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h3 className="text-lg font-black text-slate-900">
@@ -445,12 +445,12 @@ const Analytics = () => {
 
         {/* Category Mix (Radar Chart) */}
         <BlurFade delay={0.5} className="lg:col-span-1">
-          <Card className="border-none shadow-xl shadow-slate-200/50 rounded-lg p-6 bg-white flex flex-col items-center justify-center group h-full">
+          <Card className="border-none shadow-xl shadow-slate-200/50 rounded-lg p-4 bg-white flex flex-col items-center justify-center group h-full">
             <div className="w-full text-center mb-6">
               <h3 className="text-lg font-black text-slate-900">
                 Category Mix
               </h3>
-              <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">
+              <p className="text-xs text-slate-600 font-bold uppercase tracking-widest">
                 Inventory Distribution
               </p>
             </div>
@@ -488,10 +488,10 @@ const Analytics = () => {
                 <div
                   key={idx}
                   className="bg-slate-50 p-3 rounded-lg flex flex-col items-center border border-slate-100/50">
-                  <p className="text-[10px] font-black text-slate-900">
+                  <p className="text-xs font-black text-slate-900">
                     {cat.A}
                   </p>
-                  <p className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase">
+                  <p className="text-xs sm:text-xs font-bold text-slate-600 uppercase">
                     {cat.subject}
                   </p>
                 </div>
@@ -502,12 +502,12 @@ const Analytics = () => {
       </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Top Selling Products - Overview & Sales */}
         {(activeTab === "Overview" || activeTab === "Sales") && (
         <BlurFade delay={0.6}>
           <Card className="border-none shadow-xl shadow-slate-200/50 rounded-lg p-0 overflow-hidden bg-white">
-            <div className="p-6 border-b border-slate-50">
+            <div className="p-4 border-b border-slate-50">
               <h3 className="text-lg font-black text-slate-900">
                 Top Performing Products
               </h3>
@@ -523,7 +523,7 @@ const Analytics = () => {
                     setSelectedProduct(product);
                     setIsProductModalOpen(true);
                   }}
-                  className="px-6 py-5 flex items-center justify-between hover:bg-slate-50/50 transition-colors group cursor-pointer">
+                  className="px-4 py-3 flex items-center justify-between hover:bg-slate-50/50 transition-colors group cursor-pointer">
                   <div className="flex items-center gap-4">
                     <div className="h-10 w-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 font-black text-xs group-hover:bg-primary group-hover:text-white transition-all">
                       {i + 1}
@@ -543,7 +543,7 @@ const Analytics = () => {
                     </p>
                     <div
                       className={cn(
-                        "flex items-center justify-end text-[10px] font-black mt-0.5",
+                        "flex items-center justify-end text-xs font-black mt-0.5",
                         product.trend > 0
                           ? "text-brand-600"
                           : "text-rose-600",
@@ -573,7 +573,7 @@ const Analytics = () => {
         {/* Traffic Sources & Customer Insights - Overview & Customers */}
         {(activeTab === "Overview" || activeTab === "Customers") && (
         <BlurFade delay={0.7}>
-          <Card className="border-none shadow-xl shadow-slate-200/50 rounded-3xl p-6 bg-white overflow-hidden group h-full">
+          <Card className="border-none shadow-xl shadow-slate-200/50 rounded-3xl p-4 bg-white overflow-hidden group h-full">
             <div className="mb-8">
               <h3 className="text-lg font-black text-slate-900">
                 New Customers
@@ -583,7 +583,7 @@ const Analytics = () => {
               </p>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex flex-col md:flex-row items-center gap-5">
               <div className="h-[250px] w-full md:w-1/2">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -639,10 +639,10 @@ const Analytics = () => {
                 <div className="h-10 w-10 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center mx-auto mb-2">
                   <HiOutlineMapPin className="h-5 w-5" />
                 </div>
-                <p className="text-[10px] font-black text-slate-900 tracking-tight">
+                <p className="text-xs font-black text-slate-900 tracking-tight">
                   {statsData?.insights?.topCity || "N/A"}
                 </p>
-                <p className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest">
+                <p className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest">
                   Top City
                 </p>
               </div>
@@ -650,10 +650,10 @@ const Analytics = () => {
                 <div className="h-10 w-10 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center mx-auto mb-2">
                   <HiOutlineClock className="h-5 w-5" />
                 </div>
-                <p className="text-[10px] font-black text-slate-900 tracking-tight">
+                <p className="text-xs font-black text-slate-900 tracking-tight">
                   {statsData?.insights?.peakTime || "N/A"}
                 </p>
-                <p className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest">
+                <p className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest">
                   Peak Time
                 </p>
               </div>
@@ -661,10 +661,10 @@ const Analytics = () => {
                 <div className="h-10 w-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mx-auto mb-2">
                   <HiOutlineDevicePhoneMobile className="h-5 w-5" />
                 </div>
-                <p className="text-[10px] font-black text-slate-900 tracking-tight">
+                <p className="text-xs font-black text-slate-900 tracking-tight">
                   {statsData?.insights?.topDevice || "N/A"}
                 </p>
-                <p className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest">
+                <p className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest">
                   Top Device
                 </p>
               </div>
@@ -679,9 +679,9 @@ const Analytics = () => {
         onClose={() => setIsProductModalOpen(false)}
         title="Product Insights">
         {selectedProduct && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl">
-              <div className="h-16 w-16 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center text-slate-600">
+              <div className="h-12 w-12 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center text-slate-600">
                 <HiOutlineShoppingBag className="h-8 w-8" />
               </div>
               <div>
@@ -696,7 +696,7 @@ const Analytics = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-brand-50 rounded-2xl">
-                <p className="text-[10px] font-black text-brand-700 uppercase tracking-widest">
+                <p className="text-xs font-black text-brand-700 uppercase tracking-widest">
                   Revenue
                 </p>
                 <p className="text-xl font-black text-brand-900">
@@ -704,7 +704,7 @@ const Analytics = () => {
                 </p>
               </div>
               <div className="p-4 bg-brand-50 rounded-2xl">
-                <p className="text-[10px] font-black text-brand-700 uppercase tracking-widest">
+                <p className="text-xs font-black text-brand-700 uppercase tracking-widest">
                   Units Sold
                 </p>
                 <p className="text-xl font-black text-brand-900">
@@ -720,14 +720,14 @@ const Analytics = () => {
               <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full bg-primary w-[75%]" />
               </div>
-              <p className="text-[10px] text-slate-600 font-bold text-right pt-1">
+              <p className="text-xs text-slate-600 font-bold text-right pt-1">
                 +{selectedProduct.trend}% faster than last week
               </p>
             </div>
 
             <Button
               onClick={() => setIsProductModalOpen(false)}
-              className="w-full py-4 rounded-2xl font-black shadow-xl shadow-primary/20">
+              className="w-full py-2.5 rounded-2xl font-black shadow-xl shadow-primary/20">
               CLOSE DETAILS
             </Button>
           </div>

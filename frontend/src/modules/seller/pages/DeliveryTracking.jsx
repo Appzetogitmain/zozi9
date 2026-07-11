@@ -183,7 +183,7 @@ const DeliveryTracking = () => {
   };
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="space-y-4 pb-16">
       <BlurFade delay={0.1}>
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
@@ -191,7 +191,7 @@ const DeliveryTracking = () => {
               Delivery Tracking
               <Badge
                 variant="primary"
-                className="text-[9px] px-1.5 py-0 font-bold tracking-wider uppercase bg-brand-100 text-brand-700">
+                className="text-xs px-1.5 py-0 font-bold tracking-wider uppercase bg-brand-100 text-brand-700">
                 Live Fleet
               </Badge>
             </h1>
@@ -232,7 +232,7 @@ const DeliveryTracking = () => {
                       <stat.icon className="h-5 w-5" />
                     </div>
                     <div className="flex flex-col">
-                      <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest">
+                      <p className="text-xs font-black text-slate-600 uppercase tracking-widest">
                         {stat.label}
                       </p>
                       <h4 className="text-xl font-black text-slate-900 tracking-tight leading-none mt-0.5">
@@ -256,7 +256,7 @@ const DeliveryTracking = () => {
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={cn(
-                          "relative py-3.5 px-5 text-[9px] font-black uppercase tracking-widest transition-all duration-300",
+                          "relative py-3.5 px-5 text-xs font-black uppercase tracking-widest transition-all duration-300",
                           activeTab === tab
                             ? "text-primary bg-white/50"
                             : "text-slate-600 hover:text-slate-700",
@@ -273,11 +273,11 @@ const DeliveryTracking = () => {
                   </div>
                   <div className="py-2 lg:py-0 w-full lg:w-64">
                     <div className="relative group">
-                      <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 group-focus-within:text-primary transition-all" />
+                      <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500 group-focus-within:text-primary transition-all" />
                       <input
                         type="text"
                         placeholder="Search ID or Partner..."
-                        className="w-full pl-9 pr-3 py-1.5 bg-slate-100/50 border-none rounded-lg text-xs font-bold text-slate-700 placeholder:text-slate-400 focus:ring-1 focus:ring-primary/10 transition-all outline-none"
+                        className="w-full pl-9 pr-3 py-1.5 bg-slate-100/50 border-none rounded-lg text-xs font-bold text-slate-700 placeholder:text-slate-500 focus:ring-1 focus:ring-primary/10 transition-all outline-none"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
@@ -287,7 +287,7 @@ const DeliveryTracking = () => {
               </div>
 
               {/* Delivery List */}
-              <div className="p-4 sm:p-6 space-y-4">
+              <div className="p-4 sm:p-4 space-y-4">
                 <AnimatePresence mode="popLayout">
                   {paginatedDeliveries.map((dlv, idx) => (
                     <motion.div
@@ -322,7 +322,7 @@ const DeliveryTracking = () => {
                               </h3>
                               <a
                                 href={`tel:${dlv.deliveryBoy.phone}`}
-                                className="inline-flex items-center gap-1 mt-1 text-[9px] font-bold text-slate-500 hover:text-primary transition-colors"
+                                className="inline-flex items-center gap-1 mt-1 text-xs font-bold text-slate-500 hover:text-primary transition-colors"
                               >
                                 <HiOutlinePhone className="h-2.5 w-2.5 shrink-0" />
                                 <span className="truncate">{dlv.deliveryBoy.phone}</span>
@@ -336,7 +336,7 @@ const DeliveryTracking = () => {
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-2 mb-0.5">
-                                <span className="text-[10px] font-black text-slate-900 tracking-tight">
+                                <span className="text-xs font-black text-slate-900 tracking-tight">
                                   #{dlv.orderId}
                                 </span>
                                 <Badge
@@ -346,23 +346,23 @@ const DeliveryTracking = () => {
                                   {dlv.status}
                                 </Badge>
                               </div>
-                              <h4 className="text-[10px] font-bold text-slate-500 flex items-center gap-1 flex-wrap">
-                                <HiOutlineUser className="h-3 w-3 text-slate-400 shrink-0" />
+                              <h4 className="text-xs font-bold text-slate-500 flex items-center gap-1 flex-wrap">
+                                <HiOutlineUser className="h-3 w-3 text-slate-500 shrink-0" />
                                 <span className="text-slate-900 capitalize font-black">{dlv.customerName}</span>
                               </h4>
                             </div>
                             <div className="sm:text-right shrink-0">
-                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">
+                              <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none">
                                 Timing
                               </p>
-                              <p className="text-[10px] font-black text-primary tracking-tight mt-0.5">
+                              <p className="text-xs font-black text-primary tracking-tight mt-0.5">
                                 {dlv.startTime || "—"}
                               </p>
                             </div>
                           </div>
 
                           <div className="bg-slate-50/30 px-3 py-1.5 rounded-md border border-slate-100/30 min-w-0">
-                            <p className="text-[10px] font-bold text-slate-600 leading-tight truncate">
+                            <p className="text-xs font-bold text-slate-600 leading-tight truncate">
                               <HiOutlineMapPin className="inline h-2.5 w-2.5 text-primary mr-1 -mt-0.5" />
                               {dlv.address}
                             </p>
@@ -382,7 +382,7 @@ const DeliveryTracking = () => {
 
                 {filteredDeliveries.length === 0 && (
                   <div className="flex flex-col items-center justify-center py-20 bg-slate-50/50 rounded-lg border border-dashed border-slate-200">
-                    <div className="h-20 w-20 bg-white rounded-lg flex items-center justify-center shadow-sm mb-4">
+                    <div className="h-14 w-14 bg-white rounded-lg flex items-center justify-center shadow-sm mb-4">
                       <HiOutlineTruck className="h-10 w-10 text-slate-200" />
                     </div>
                     <h3 className="text-base font-black text-slate-900">
@@ -397,7 +397,7 @@ const DeliveryTracking = () => {
 
               {/* Pagination */}
               {filteredDeliveries.length > 0 && (
-                <div className="px-4 sm:px-6 pb-4">
+                <div className="px-4 sm:px-4 pb-4">
                   <Pagination
                     page={page}
                     totalPages={Math.max(1, Math.ceil(filteredDeliveries.length / pageSize))}

@@ -109,7 +109,7 @@ const MaintenanceMode = () => {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                        <ShieldAlert className="text-red-500" />
+                        <ShieldAlert className="text-red-700" />
                         Maintenance Mode
                     </h1>
                     <p className="text-slate-500 text-sm mt-1">Control platform access during upgrades or emergencies</p>
@@ -192,13 +192,13 @@ const MaintenanceMode = () => {
                             {config.allowedIPs.map(ip => (
                                 <div key={ip} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100">
                                     <span className="text-slate-700 font-mono text-sm">{ip}</span>
-                                    <button onClick={() => handleRemoveIp(ip)} className="text-red-500 hover:text-red-600">
+                                    <button onClick={() => handleRemoveIp(ip)} className="text-red-700 hover:text-red-600">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
                             ))}
                             {config.allowedIPs.length === 0 && (
-                                <div className="text-center p-4 text-slate-400 text-sm border border-dashed border-slate-200 rounded-lg">
+                                <div className="text-center p-4 text-slate-500 text-sm border border-dashed border-slate-200 rounded-lg">
                                     No IP addresses whitelisted
                                 </div>
                             )}

@@ -19,7 +19,10 @@ import {
     HiOutlineInboxStack,
     HiOutlineMapPin,
     HiOutlinePhone,
-    HiOutlineCalendarDays
+    HiOutlineCalendarDays,
+    HiOutlineArrowPath,
+    HiOutlineArrowRight,
+    HiOutlineShoppingBag
 } from 'react-icons/hi2';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -35,6 +38,7 @@ import { getLegacyStatusFromOrder } from '@/shared/utils/orderStatus';
 import { Loader2 } from 'lucide-react';
 import Pagination from '@shared/components/ui/Pagination';
 import { DatePicker } from "@/components/ui/date-picker";
+import SellerStatCard from '../components/SellerStatCard';
 
 
 const Orders = () => {
@@ -127,7 +131,10 @@ const Orders = () => {
                 location: order.address?.location || null,
                 payment: order.payment?.method === 'cash' || order.payment?.method === 'cod'
                     ? 'Cash on Delivery'
-                    : 'Online Paid'
+                    : 'Online Paid',
+                timeSlot: order.timeSlot,
+                deliveryType: order.deliveryType,
+                scheduledSlot: order.scheduledSlot,
             }));
 
             setOrders(formattedOrders);
@@ -239,6 +246,17 @@ const Orders = () => {
         }
     };
 
+    const handleProcessToDelivery = async (orderId) => {
+        try {
+            await sellerApi.processToDelivery(orderId);
+            showToast(`Delivery broadcast started`, "success");
+            fetchOrders(page, false); // Refresh orders
+        } catch (error) {
+            console.error("Failed to process delivery:", error);
+            showToast(error.response?.data?.message || "Failed to process delivery", "error");
+        }
+    };
+
     const exportOrders = () => {
         const data = filteredOrders;
         if (!data.length) {
@@ -276,14 +294,14 @@ const Orders = () => {
     };
 
     return (
-        <div className="space-y-4 sm:space-y-6 pb-20 sm:pb-16">
+        <div className="space-y-4 sm:space-y-4 pb-20 sm:pb-16">
             <BlurFade delay={0.1}>
                 {/* Page Header */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
                     <div className="min-w-0">
                         <h1 className="text-2xl sm:text-3xl font-black text-slate-900 flex flex-wrap items-center gap-2">
                             Order Management
-                            <Badge variant="primary" className="text-[10px] px-1.5 py-0 font-bold tracking-wider uppercase bg-brand-100 text-brand-700">Real-time</Badge>
+                            <Badge variant="primary" className="text-xs px-1.5 py-0 font-bold tracking-wider uppercase bg-brand-100 text-brand-700">Real-time</Badge>
                         </h1>
                         <p className="text-slate-600 text-sm sm:text-base mt-0.5 font-medium">Process and track your customer orders with ease.</p>
                     </div>
@@ -298,7 +316,7 @@ const Orders = () => {
                         </Button>
                         <ShimmerButton
                             onClick={() => setIsQuickViewModalOpen(true)}
-                            className="px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-white shadow-xl flex items-center space-x-1.5 sm:space-x-2"
+                            className="px-4 py-2 sm:px-4 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold text-white shadow-xl flex items-center space-x-1.5 sm:space-x-2"
                         >
                             <HiOutlineEye className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-0" />
                             <span className="hidden sm:inline">QUICK VIEW</span>
@@ -317,22 +335,17 @@ const Orders = () => {
                 <>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                         {stats.map((stat, i) => (
-                            <BlurFade key={i} delay={0.1 + (i * 0.05)}>
-                                <MagicCard
-                                    className="border-none shadow-sm ring-1 ring-slate-100 p-0 overflow-hidden group bg-white"
-                                    gradientColor={stat.bg.includes('indigo') ? "#eef2ff" : stat.bg.includes('amber') ? "#fffbeb" : stat.bg.includes('emerald') ? "#ecfdf5" : "#fff1f2"}
-                                >
-                                    <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 relative z-10">
-                                        <div className={cn("h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110 duration-300 shadow-sm shrink-0", stat.bg, stat.color)}>
-                                            <stat.icon className="h-5 w-5 sm:h-6 sm:w-6" />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest truncate">{stat.label}</p>
-                                            <h4 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">{stat.value}</h4>
-                                        </div>
-                                    </div>
-                                </MagicCard>
-                            </BlurFade>
+                            <SellerStatCard
+                                key={i}
+                                label={stat.label}
+                                value={stat.value}
+                                icon={stat.icon}
+                                colorClass={stat.color}
+                                bgClass={stat.bg}
+                                delay={0.1 + (i * 0.05)}
+                                isActive={activeTab === stat.label || (activeTab === "All" && stat.label === "Total Orders")}
+                                onClick={() => setActiveTab(stat.label === "Total Orders" ? "All" : stat.label)}
+                            />
                         ))}
                     </div>
 
@@ -341,13 +354,13 @@ const Orders = () => {
                         <Card className="border-none shadow-xl ring-1 ring-slate-100 rounded-lg bg-white overflow-visible">
                             {/* Tabs */}
                             <div className="border-b border-slate-100 bg-slate-50/30 overflow-x-auto scrollbar-hide">
-                                <div className="flex px-3 sm:px-6 items-center min-w-max">
+                                <div className="flex px-3 sm:px-4 items-center min-w-max">
                                     {tabs.map((tab) => (
                                         <button
                                             key={tab}
                                             onClick={() => setActiveTab(tab)}
                                             className={cn(
-                                                "relative py-3 sm:py-4 px-2.5 sm:px-4 text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300",
+                                                "relative py-3 sm:py-2.5 px-2.5 sm:px-4 text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300",
                                                 activeTab === tab
                                                     ? "text-primary scale-105"
                                                     : "text-slate-600 hover:text-slate-700"
@@ -452,7 +465,7 @@ const Orders = () => {
                             <div className="md:hidden p-3 sm:p-4 space-y-3">
                                 {filteredOrders.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center py-12 px-4">
-                                        <div className="h-14 w-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 mb-3">
+                                        <div className="h-10 w-10 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 mb-3">
                                             <HiOutlineInboxStack className="h-7 w-7" />
                                         </div>
                                         <h3 className="text-sm font-bold text-slate-900">No orders found</h3>
@@ -479,7 +492,7 @@ const Orders = () => {
                                                         {order.date} • {order.time}
                                                     </p>
                                                     <div className="flex items-center gap-2 mt-2">
-                                                        <div className="h-7 w-7 rounded-full bg-slate-900 flex items-center justify-center text-[10px] font-black text-white shrink-0">
+                                                        <div className="h-7 w-7 rounded-full bg-slate-900 flex items-center justify-center text-xs font-black text-white shrink-0">
                                                             {order.customer.avatar}
                                                         </div>
                                                         <p className="text-xs font-bold text-slate-800 truncate">{order.customer.name}</p>
@@ -487,7 +500,7 @@ const Orders = () => {
                                                     <p className="text-sm font-black text-slate-900 mt-2">₹{order.total.toLocaleString()}</p>
                                                 </div>
                                                 <div className="flex flex-col items-end gap-2 shrink-0">
-                                                    <Badge variant={getStatusColor(order.status)} className="text-[10px] font-black uppercase px-2 py-0">
+                                                    <Badge variant={getStatusColor(order.status)} className="text-xs font-black uppercase px-2 py-0">
                                                         {order.status}
                                                     </Badge>
                                                     <select
@@ -495,7 +508,7 @@ const Orders = () => {
                                                         onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
                                                         onClick={(e) => e.stopPropagation()}
                                                         className={cn(
-                                                            "w-full min-w-[100px] text-[10px] pl-2 pr-6 py-1.5 rounded-lg font-black uppercase cursor-pointer appearance-none border outline-none",
+                                                            "w-full min-w-[100px] text-xs pl-2 pr-6 py-1.5 rounded-lg font-black uppercase cursor-pointer appearance-none border outline-none",
                                                             order.status === 'pending' ? "bg-amber-100 text-amber-700" :
                                                                 order.status === 'delivered' ? "bg-brand-100 text-brand-700" :
                                                                     order.status === 'cancelled' ? "bg-rose-100 text-rose-700" : "bg-slate-100 text-slate-700"
@@ -511,9 +524,53 @@ const Orders = () => {
                                                     <button
                                                         onClick={() => handleViewDetails(order)}
                                                         className="p-2 hover:bg-slate-100 rounded-lg text-slate-600"
+                                                        title="View Details"
                                                     >
                                                         <HiOutlineEye className="h-4 w-4" />
                                                     </button>
+                                                    {order.status === 'pending' && (
+                                                        <div className="flex gap-1">
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleStatusUpdate(order.id, 'confirmed');
+                                                                }}
+                                                                className="p-1.5 hover:bg-brand-50 hover:text-brand-600 rounded-lg text-slate-600"
+                                                                title="Accept Order"
+                                                            >
+                                                                <HiOutlineCheck className="h-4 w-4" />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleStatusUpdate(order.id, 'cancelled');
+                                                                }}
+                                                                className="p-1.5 hover:bg-rose-50 hover:text-rose-600 rounded-lg text-slate-600"
+                                                                title="Reject Order"
+                                                            >
+                                                                <HiOutlineXMark className="h-4 w-4" />
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {order.status === 'confirmed' && (!order.workflowVersion || order.workflowStatus === 'SELLER_ACCEPTED') && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleProcessToDelivery(order.id);
+                                                            }}
+                                                            className="px-2 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-xs font-bold tracking-wider shadow-sm flex items-center gap-1.5"
+                                                            title="Request Delivery Boy"
+                                                        >
+                                                            <HiOutlineTruck className="h-3.5 w-3.5" />
+                                                            PROCESS
+                                                        </button>
+                                                    )}
+                                                    {order.workflowStatus === 'DELIVERY_SEARCH' && (
+                                                        <span className="px-2 py-1.5 bg-amber-50 text-amber-600 border border-amber-200 rounded-lg text-xs font-bold tracking-wider shadow-sm flex items-center gap-1.5 cursor-wait" title="Searching for delivery partner...">
+                                                            <HiOutlineTruck className="h-3.5 w-3.5 animate-pulse" />
+                                                            SEARCHING
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -527,11 +584,11 @@ const Orders = () => {
                                 <table className="w-full text-left border-collapse min-w-[640px]">
                                     <thead>
                                         <tr className="bg-slate-50/50 border-b border-slate-100">
-                                            <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Order Details</th>
-                                            <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Customer</th>
-                                            <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Total</th>
-                                            <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-600 uppercase tracking-widest">Status</th>
-                                            <th className="px-4 lg:px-6 py-3 lg:py-4 text-xs font-bold text-slate-600 uppercase tracking-widest text-right">Actions</th>
+                                            <th className="px-4 lg:px-4 py-3 lg:py-2.5 text-xs font-bold text-slate-600 uppercase tracking-widest">Order Details</th>
+                                            <th className="px-4 lg:px-4 py-3 lg:py-2.5 text-xs font-bold text-slate-600 uppercase tracking-widest">Customer</th>
+                                            <th className="px-4 lg:px-4 py-3 lg:py-2.5 text-xs font-bold text-slate-600 uppercase tracking-widest">Total</th>
+                                            <th className="px-4 lg:px-4 py-3 lg:py-2.5 text-xs font-bold text-slate-600 uppercase tracking-widest">Status</th>
+                                            <th className="px-4 lg:px-4 py-3 lg:py-2.5 text-xs font-bold text-slate-600 uppercase tracking-widest text-right">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-50">
@@ -547,7 +604,7 @@ const Orders = () => {
                                                     key={order.id}
                                                     className="hover:bg-slate-50/50 transition-colors group"
                                                 >
-                                                    <td className="px-4 lg:px-6 py-3 lg:py-4">
+                                                    <td className="px-4 lg:px-4 py-3 lg:py-2.5">
                                                         <div>
                                                             <span className="text-xs font-bold text-slate-900 group-hover:text-primary transition-colors cursor-pointer" onClick={() => handleViewDetails(order)}>
                                                                 #{order.id}
@@ -558,9 +615,9 @@ const Orders = () => {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 lg:px-6 py-3 lg:py-4">
+                                                    <td className="px-4 lg:px-4 py-3 lg:py-2.5">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="h-8 w-8 rounded-full bg-slate-900 flex items-center justify-center text-[10px] font-black text-white shadow-sm ring-2 ring-white">
+                                                            <div className="h-8 w-8 rounded-full bg-slate-900 flex items-center justify-center text-xs font-black text-white shadow-sm ring-2 ring-white">
                                                                 {order.customer.avatar}
                                                             </div>
                                                             <div>
@@ -569,19 +626,19 @@ const Orders = () => {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 lg:px-6 py-3 lg:py-4">
+                                                    <td className="px-4 lg:px-4 py-3 lg:py-2.5">
                                                         <div className="flex flex-col">
                                                             <span className="text-xs font-bold text-slate-900">₹{order.total.toLocaleString()}</span>
                                                             <span className="text-xs font-semibold text-slate-600">{order.items.length} items</span>
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 lg:px-6 py-3 lg:py-4">
+                                                    <td className="px-4 lg:px-4 py-3 lg:py-2.5">
                                                         <div className="relative inline-block w-36">
                                                             <select
                                                                 value={order.status}
                                                                 onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
                                                                 className={cn(
-                                                                    "w-full text-[10px] pl-2.5 pr-8 py-1.5 rounded-full font-black uppercase tracking-widest cursor-pointer appearance-none focus:ring-2 focus:ring-offset-1 transition-all border-none outline-none shadow-sm",
+                                                                    "w-full text-xs pl-2.5 pr-8 py-1.5 rounded-full font-black uppercase tracking-widest cursor-pointer appearance-none focus:ring-2 focus:ring-offset-1 transition-all border-none outline-none shadow-sm",
                                                                     order.status === 'pending' ? "bg-amber-100 text-amber-700 focus:ring-amber-200" :
                                                                         order.status === 'confirmed' ? "bg-brand-100 text-brand-700 focus:ring-brand-200" :
                                                                             order.status === 'packed' ? "bg-brand-100 text-brand-700 focus:ring-brand-200" :
@@ -601,35 +658,57 @@ const Orders = () => {
                                                             <HiOutlineChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none opacity-60" />
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 lg:px-6 py-3 lg:py-4 text-right">
+                                                    <td className="px-4 lg:px-4 py-3 lg:py-2.5 text-right">
                                                         <div className="flex items-center justify-end space-x-1.5">
                                                             <button
                                                                 onClick={() => handleViewDetails(order)}
                                                                 className="p-1.5 hover:bg-white hover:text-primary rounded-lg transition-all text-slate-600 shadow-sm ring-1 ring-slate-100"
+                                                                title="View Details"
                                                             >
                                                                 <HiOutlineEye className="h-4 w-4" />
                                                             </button>
-                                                            {order.status === 'Pending' && (
+                                                            {order.status === 'pending' && (
                                                                 <>
                                                                     <button
                                                                         onClick={(e) => {
                                                                             e.stopPropagation();
-                                                                            handleStatusUpdate(order.id, 'Processing');
+                                                                            handleStatusUpdate(order.id, 'confirmed');
                                                                         }}
                                                                         className="p-1.5 hover:bg-brand-50 hover:text-brand-600 rounded-lg transition-all text-slate-600 shadow-sm ring-1 ring-slate-100"
+                                                                        title="Accept Order"
                                                                     >
                                                                         <HiOutlineCheck className="h-4 w-4" />
                                                                     </button>
                                                                     <button
                                                                         onClick={(e) => {
                                                                             e.stopPropagation();
-                                                                            handleStatusUpdate(order.id, 'Cancelled');
+                                                                            handleStatusUpdate(order.id, 'cancelled');
                                                                         }}
                                                                         className="p-1.5 hover:bg-rose-50 hover:text-rose-600 rounded-lg transition-all text-slate-600 shadow-sm ring-1 ring-slate-100"
+                                                                        title="Reject Order"
                                                                     >
                                                                         <HiOutlineXMark className="h-4 w-4" />
                                                                     </button>
                                                                 </>
+                                                            )}
+                                                            {order.status === 'confirmed' && (!order.workflowVersion || order.workflowStatus === 'SELLER_ACCEPTED') && (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleProcessToDelivery(order.id);
+                                                                    }}
+                                                                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-xs font-bold tracking-wider shadow-sm flex items-center gap-1.5"
+                                                                    title="Request Delivery Boy"
+                                                                >
+                                                                    <HiOutlineTruck className="h-3.5 w-3.5" />
+                                                                    PROCESS
+                                                                </button>
+                                                            )}
+                                                            {order.workflowStatus === 'DELIVERY_SEARCH' && (
+                                                                <span className="px-3 py-1.5 bg-amber-50 text-amber-600 border border-amber-200 rounded-lg text-xs font-bold tracking-wider shadow-sm flex items-center gap-1.5 cursor-wait" title="Searching for delivery partner...">
+                                                                    <HiOutlineTruck className="h-3.5 w-3.5 animate-pulse" />
+                                                                    SEARCHING
+                                                                </span>
                                                             )}
                                                         </div>
                                                     </td>
@@ -639,8 +718,8 @@ const Orders = () => {
                                     </tbody>
                                 </table>
                                 {filteredOrders.length === 0 && (
-                                    <div className="flex flex-col items-center justify-center py-20 px-6">
-                                        <div className="h-16 w-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 mb-4">
+                                    <div className="flex flex-col items-center justify-center py-20 px-4">
+                                        <div className="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 mb-4">
                                             <HiOutlineInboxStack className="h-8 w-8" />
                                         </div>
                                         <h3 className="text-sm font-bold text-slate-900">No orders found</h3>
@@ -650,8 +729,8 @@ const Orders = () => {
                                 )}
                             </div>
 
-                            <div className="p-3 sm:p-4 border-t border-slate-50 bg-slate-50/30 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 px-3 sm:px-6">
-                                <p className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest text-center sm:text-left">
+                            <div className="p-3 sm:p-4 border-t border-slate-50 bg-slate-50/30 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 px-3 sm:px-4">
+                                <p className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest text-center sm:text-left">
                                     Showing {filteredOrders.length} of {total || summary.totalOrders || filteredOrders.length} Orders
                                 </p>
                                 <div className="flex gap-1 justify-center sm:justify-end">
@@ -698,14 +777,14 @@ const Orders = () => {
                                     exit={{ opacity: 0, scale: 0.95, y: 10 }}
                                     className="w-full max-w-lg relative z-10 bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
                                 >
-                                    <div className="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                                    <div className="p-4 sm:p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                                         <div className="flex items-center gap-3 min-w-0">
                                             <div className="h-9 w-9 sm:h-10 sm:w-10 bg-primary text-primary-foreground rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
                                                 <HiOutlineChartBar className="h-4 w-4 sm:h-5 sm:w-5" />
                                             </div>
                                             <div className="min-w-0">
                                                 <h3 className="text-sm sm:text-base font-black text-slate-900 truncate">Quick Snapshot</h3>
-                                                <p className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest">Today's Performance</p>
+                                                <p className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest">Today's Performance</p>
                                             </div>
                                         </div>
                                         <button onClick={() => setIsQuickViewModalOpen(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-600 shrink-0">
@@ -713,27 +792,27 @@ const Orders = () => {
                                         </button>
                                     </div>
 
-                                    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+                                    <div className="p-4 sm:p-4 space-y-4 sm:space-y-4">
                                         {/* Summary Grid */}
                                         <div className="grid grid-cols-2 gap-3 sm:gap-4">
                                             <div className="p-3 sm:p-4 rounded-2xl bg-brand-50 border border-brand-100">
-                                                <p className="text-[10px] sm:text-xs font-bold text-brand-400 uppercase tracking-widest mb-1">Total Revenue</p>
+                                                <p className="text-xs sm:text-xs font-bold text-brand-400 uppercase tracking-widest mb-1">Total Revenue</p>
                                                 <p className="text-base sm:text-xl font-black text-brand-700 truncate">₹{summary.totalAmount.toLocaleString('en-IN')}</p>
                                             </div>
                                             <div className="p-3 sm:p-4 rounded-2xl bg-brand-50 border border-brand-100">
-                                                <p className="text-[10px] sm:text-xs font-bold text-brand-400 uppercase tracking-widest mb-1">Avg. Order Value</p>
+                                                <p className="text-xs sm:text-xs font-bold text-brand-400 uppercase tracking-widest mb-1">Avg. Order Value</p>
                                                 <p className="text-base sm:text-xl font-black text-brand-700">₹{summary.totalOrders ? (summary.totalAmount / summary.totalOrders).toFixed(0) : '0'}</p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="p-4 sm:p-6 bg-slate-50 border-t border-slate-100">
+                                    <div className="p-4 sm:p-4 bg-slate-50 border-t border-slate-100">
                                         <Button
                                             onClick={() => {
                                                 setIsQuickViewModalOpen(false);
                                                 setActiveTab('Pending');
                                             }}
-                                            className="w-full py-2.5 sm:py-3 text-[10px] sm:text-xs font-bold"
+                                            className="w-full py-2.5 sm:py-3 text-xs sm:text-xs font-bold"
                                         >
                                             VIEW ALL PENDING ORDERS
                                         </Button>
@@ -744,7 +823,7 @@ const Orders = () => {
                     </AnimatePresence>
                     <AnimatePresence>
                         {isDetailsModalOpen && selectedOrder && (
-                            <div className="fixed inset-0 z-[100] flex items-stretch sm:items-center justify-center p-3 sm:p-6 lg:p-12">
+                            <div className="fixed inset-0 z-[100] flex items-stretch sm:items-center justify-center p-3 sm:p-4 lg:p-12">
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
@@ -759,7 +838,7 @@ const Orders = () => {
                                     className="w-full max-w-lg sm:max-w-2xl relative z-10 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
                                 >
                                     {/* Modal Header */}
-                                    <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100">
+                                    <div className="flex items-center justify-between px-4 py-3 sm:px-4 sm:py-2.5 border-b border-slate-100">
                                         <div className="flex items-center space-x-3">
                                             <div className="h-10 w-10 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg">
                                                 <HiOutlineTruck className="h-5 w-5" />
@@ -767,22 +846,30 @@ const Orders = () => {
                                             <div>
                                                 <h3 className="text-base font-black text-slate-900">Order Details</h3>
                                                 <div className="flex items-center space-x-2 mt-0.5">
-                                                    <Badge variant={getStatusColor(selectedOrder.status)} className="text-[10px] font-black uppercase tracking-widest px-1.5 py-0">{selectedOrder.status}</Badge>
+                                                    <Badge variant={getStatusColor(selectedOrder.status)} className="text-xs font-black uppercase tracking-widest px-1.5 py-0">{selectedOrder.status}</Badge>
                                                     <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">#{selectedOrder.id}</span>
                                                 </div>
                                                 {(selectedOrder.date || selectedOrder.time) && (
-                                                    <p className="text-[11px] font-bold text-slate-500 mt-1.5 flex items-center gap-1.5">
+                                                    <p className="text-xs font-bold text-slate-500 mt-1.5 flex items-center gap-1.5">
                                                         <HiOutlineCalendarDays className="h-3.5 w-3.5" />
                                                         {selectedOrder.date}
                                                         {selectedOrder.time && (
                                                             <>
-                                                                <span className="text-slate-300">•</span>
+                                                                <span className="text-slate-400">•</span>
                                                                 <HiOutlineClock className="h-3.5 w-3.5" />
                                                                 {selectedOrder.time}
                                                             </>
                                                         )}
                                                     </p>
                                                 )}
+                                                <div className="mt-2 flex items-center gap-1.5 bg-brand-50 text-brand-700 px-2 py-1 rounded-md max-w-fit">
+                                                    <HiOutlineClock className="h-3.5 w-3.5" />
+                                                    <span className="text-xs font-bold">
+                                                        {selectedOrder.deliveryType === 'scheduled' 
+                                                            ? (selectedOrder.scheduledSlot?.start ? `${selectedOrder.scheduledSlot.start} - ${selectedOrder.scheduledSlot.end}` : (selectedOrder.timeSlot || 'Scheduled'))
+                                                            : "Express Delivery (Now)"}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                         <button onClick={() => setIsDetailsModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600">
@@ -790,8 +877,8 @@ const Orders = () => {
                                         </button>
                                     </div>
 
-                                    <div className="px-4 py-4 sm:px-6 sm:py-5 overflow-y-auto scrollbar-hide flex-1">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                                    <div className="px-4 py-2.5 sm:px-4 sm:py-3 overflow-y-auto scrollbar-hide flex-1">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-4 mb-6 sm:mb-8">
                                             <div className="space-y-3 sm:space-y-4">
                                                 <div>
                                                     <div className="flex items-center justify-between gap-2 mb-2">
@@ -810,7 +897,7 @@ const Orders = () => {
                                                                             "_blank",
                                                                         );
                                                                     }}
-                                                                    className="text-[10px] font-bold text-primary hover:underline"
+                                                                    className="text-xs font-bold text-primary hover:underline"
                                                                 >
                                                                     View on map
                                                                 </button>
@@ -881,9 +968,9 @@ const Orders = () => {
                                     </div>
 
                                     {/* Modal Footer */}
-                                    <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:items-center justify-end">
+                                    <div className="px-4 py-3 sm:px-4 sm:py-2.5 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:items-center justify-end">
                                         <div className="flex gap-2 items-center">
-                                            <button onClick={() => setIsDetailsModalOpen(false)} className="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-all">CLOSE</button>
+                                            <button onClick={() => setIsDetailsModalOpen(false)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-all">CLOSE</button>
                                             <div className="relative inline-block w-40">
                                                 <select
                                                     value={selectedOrder.status.toLowerCase()}

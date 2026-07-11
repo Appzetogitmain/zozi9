@@ -27,6 +27,9 @@ function normalizeSellerStatusFilter(statusParam) {
   if (statusParam === "returned") {
     return { returnStatus: { $ne: "none" } };
   }
+  if (statusParam === "escalated") {
+    return { isEscalated: true };
+  }
 
   return {};
 }

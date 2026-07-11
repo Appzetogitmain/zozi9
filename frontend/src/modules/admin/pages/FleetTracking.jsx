@@ -84,7 +84,7 @@ const FleetTrackingTable = () => {
           </p>
         </div>
         <div className="relative w-full md:w-80">
-          <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
             placeholder="Search Order or Partner..."
@@ -100,22 +100,22 @@ const FleetTrackingTable = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Order ID
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Delivery Boy
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center">
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
                   Route
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Customer
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-right">
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
                   Last Update
                 </th>
               </tr>
@@ -147,7 +147,7 @@ const FleetTrackingTable = () => {
                       <span className="text-xs font-semibold bg-brand-50 text-brand-700 px-2 py-1 rounded border border-brand-100">
                         {item.seller.name}
                       </span>
-                      <HiOutlineArrowRight className="text-slate-300" />
+                      <HiOutlineArrowRight className="text-slate-400" />
                       <span className="text-xs font-semibold bg-brand-50 text-brand-700 px-2 py-1 rounded border border-brand-100">
                         {item.customer.name}
                       </span>
@@ -172,7 +172,7 @@ const FleetTrackingTable = () => {
                             ? "warning"
                             : "primary"
                       }
-                      className="text-[10px] font-bold uppercase tracking-wider">
+                      className="text-xs font-bold uppercase tracking-wider">
                       {item.status}
                     </Badge>
                   </td>
@@ -202,7 +202,7 @@ const FleetTrackingTable = () => {
         </div>
 
         {filteredFleet.length === 0 && (
-          <div className="py-12 text-center text-slate-400">
+          <div className="py-12 text-center text-slate-500">
             <p className="text-sm font-medium tracking-wide">
               No active missions matching your search.
             </p>
@@ -258,20 +258,20 @@ const FleetTrackingTable = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">
                       Rating
                     </p>
-                    <div className="flex items-center gap-1.5 text-amber-500 font-bold">
+                    <div className="flex items-center gap-1.5 text-amber-700 font-bold">
                       <HiOutlineStar className="h-4 w-4 fill-amber-500" />
                       {selectedBoy.rating}
                     </div>
                   </div>
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">
                       Joined
                     </p>
                     <div className="flex items-center gap-1.5 text-slate-700 font-bold">
-                      <HiOutlineCalendarDays className="h-4 w-4 text-slate-400" />
+                      <HiOutlineCalendarDays className="h-4 w-4 text-slate-500" />
                       {selectedBoy.joined}
                     </div>
                   </div>
@@ -283,7 +283,7 @@ const FleetTrackingTable = () => {
                       <HiOutlinePhone className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
+                      <p className="text-xs font-black text-slate-500 uppercase tracking-widest leading-none mb-1">
                         Mobile Number
                       </p>
                       <p className="font-bold text-slate-900">
@@ -296,7 +296,7 @@ const FleetTrackingTable = () => {
                       <HiOutlineTruck className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
+                      <p className="text-xs font-black text-slate-500 uppercase tracking-widest leading-none mb-1">
                         Vehicle Details
                       </p>
                       <p className="font-bold text-slate-900">

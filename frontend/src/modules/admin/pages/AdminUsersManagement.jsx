@@ -353,7 +353,7 @@ const AdminUsersManagement = () => {
                                         />
                                         <button
                                             type="button"
-                                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-600"
                                             onClick={() => setShowPassword(!showPassword)}
                                         >
                                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

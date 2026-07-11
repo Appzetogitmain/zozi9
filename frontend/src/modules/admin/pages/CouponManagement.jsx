@@ -185,13 +185,13 @@ const CouponManagement = () => {
                 <div>
                     <h1 className="ds-h1 flex items-center gap-3">
                         Promo Engine
-                        <Badge variant="primary" className="text-[10px] font-black uppercase tracking-widest">v4.2 PRO</Badge>
+                        <Badge variant="primary" className="text-xs font-black uppercase tracking-widest">v4.2 PRO</Badge>
                     </h1>
                     <p className="ds-description mt-1">Design, deploy, and track high-conversion discount campaigns.</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 px-6 py-3.5 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
+                    className="flex items-center gap-2 px-6 py-3.5 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
                 >
                     <HiOutlinePlus className="h-5 w-5" />
                     CREATE NEW PROMO
@@ -217,7 +217,7 @@ const CouponManagement = () => {
                                 <s.icon className="h-6 w-6" />
                             </div>
                         </div>
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{s.label}</h4>
+                        <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest leading-none mb-1">{s.label}</h4>
                         <h3 className="text-2xl font-black text-slate-900">{s.value}</h3>
                     </Card>
                 ))}
@@ -229,7 +229,7 @@ const CouponManagement = () => {
                 <div className="p-4 border-b border-slate-50 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex items-center gap-4 flex-1">
                         <div className="relative group flex-1 max-w-md">
-                            <HiOutlineMagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                            <HiOutlineMagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-primary transition-colors" />
                             <input
                                 type="text"
                                 placeholder="Search by code or description..."
@@ -244,8 +244,8 @@ const CouponManagement = () => {
                                     key={filter}
                                     onClick={() => setStatusFilter(filter)}
                                     className={cn(
-                                        "px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                                        statusFilter === filter ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                                        "px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+                                        statusFilter === filter ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-600"
                                     )}
                                 >
                                     {filter}
@@ -260,18 +260,18 @@ const CouponManagement = () => {
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-slate-50/50 border-b border-slate-50">
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Coupon Code</th>
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Offerings</th>
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Performance</th>
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Validity</th>
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Status</th>
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest">Coupon Code</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest">Offerings</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest">Performance</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest">Validity</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest text-center">Status</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
                             {isLoading && (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-8 text-slate-400 text-sm">
+                                    <td colSpan="6" className="text-center py-8 text-slate-500 text-sm">
                                         Loading coupons...
                                     </td>
                                 </tr>
@@ -285,8 +285,8 @@ const CouponManagement = () => {
                                             </div>
                                             <div>
                                                 <span className="text-sm font-black text-slate-900 tracking-wider bg-slate-100 px-2 py-1 rounded-lg border-2 border-dashed border-slate-300">{c.code}</span>
-                                                <p className="text-[10px] font-bold text-slate-400 mt-1">{c.title}</p>
-                                                <p className="text-[10px] font-medium text-slate-400 mt-0.5 line-clamp-2">{c.description}</p>
+                                                <p className="text-xs font-bold text-slate-500 mt-1">{c.title}</p>
+                                                <p className="text-xs font-medium text-slate-500 mt-0.5 line-clamp-2">{c.description}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -296,15 +296,15 @@ const CouponManagement = () => {
                                                 {c.discountType === 'percentage' ? `${c.discountValue}% OFF` : c.discountType === 'free_delivery' ? 'Free Delivery' : `₹${c.discountValue} OFF`}
                                             </p>
                                             {c.minOrderValue > 0 && (
-                                                <p className="text-[10px] font-bold text-slate-400">Min. Order: ₹{c.minOrderValue}</p>
+                                                <p className="text-xs font-bold text-slate-500">Min. Order: ₹{c.minOrderValue}</p>
                                             )}
-                                            <p className="text-[10px] font-bold text-slate-400 capitalize">Type: {c.couponType?.replace(/_/g, ' ') || 'generic'}</p>
+                                            <p className="text-xs font-bold text-slate-500 capitalize">Type: {c.couponType?.replace(/_/g, ' ') || 'generic'}</p>
                                         </div>
                                     </td>
                                     <td className="px-4 py-6">
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-end">
-                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Redeemed</span>
+                                                <span className="text-xs font-black text-slate-500 uppercase tracking-widest">Redeemed</span>
                                                 <span className="text-xs font-black text-slate-900">{c.usedCount || 0}{c.usageLimit ? `/${c.usageLimit}` : ''}</span>
                                             </div>
                                             <div className="h-1.5 w-32 bg-slate-100 rounded-full overflow-hidden">
@@ -318,13 +318,13 @@ const CouponManagement = () => {
                                     <td className="px-4 py-6">
                                         <div className="flex items-center gap-2 text-slate-500">
                                             <HiOutlineCalendarDays className="h-4 w-4" />
-                                            <span className="text-[10px] font-bold uppercase tracking-tighter">
+                                            <span className="text-xs font-bold uppercase tracking-tighter">
                                                 {c.validFrom ? new Date(c.validFrom).toLocaleDateString() : '—'} - {c.validTill ? new Date(c.validTill).toLocaleDateString() : '—'}
                                             </span>
                                         </div>
                                     </td>
                                     <td className="px-4 py-6 text-center">
-                                        <Badge variant={c.isActive ? 'success' : 'secondary'} className="text-[9px] font-black uppercase">
+                                        <Badge variant={c.isActive ? 'success' : 'secondary'} className="text-xs font-black uppercase">
                                             {c.isActive ? 'active' : 'inactive'}
                                         </Badge>
                                     </td>
@@ -332,13 +332,13 @@ const CouponManagement = () => {
                                         <div className="flex items-center justify-end gap-2">
                                             <button
                                                 onClick={() => handleOpenModal(c)}
-                                                className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
+                                                className="p-2 text-slate-500 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
                                             >
                                                 <HiOutlinePencilSquare className="h-5 w-5" />
                                             </button>
                                             <button
                                                 onClick={() => setDeleteTarget(c)}
-                                                className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                                                className="p-2 text-slate-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all"
                                             >
                                                 <HiOutlineTrash className="h-5 w-5" />
                                             </button>
@@ -356,7 +356,7 @@ const CouponManagement = () => {
                             <HiOutlineTicket className="h-10 w-10 text-slate-200" />
                         </div>
                         <h3 className="text-lg font-black text-slate-900">No codes found</h3>
-                        <p className="text-sm font-bold text-slate-400 mt-2">Try adjusting your filters or create a new promotion.</p>
+                        <p className="text-sm font-bold text-slate-500 mt-2">Try adjusting your filters or create a new promotion.</p>
                     </div>
                 )}
             </Card>
@@ -409,7 +409,7 @@ const CouponManagement = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Promo Code</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Promo Code</label>
                             <input
                                 required
                                 value={formData.code}
@@ -419,7 +419,7 @@ const CouponManagement = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Discount Kind</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Discount Kind</label>
                             <select
                                 value={formData.discountType}
                                 onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
@@ -433,7 +433,7 @@ const CouponManagement = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Coupon Strategy</label>
+                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Coupon Strategy</label>
                         <select
                             value={formData.couponType}
                             onChange={(e) => setFormData({ ...formData, couponType: e.target.value })}
@@ -446,14 +446,14 @@ const CouponManagement = () => {
                             <option value="category_based">Category-Based Coupon</option>
                             <option value="monthly_volume">Monthly Volume Coupon</option>
                         </select>
-                        <p className="text-[10px] text-slate-400">
+                        <p className="text-xs text-slate-500">
                             Choose the logic: bulk order, MOV, free delivery, specific categories, or monthly volume buyers.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Discount Value</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Discount Value</label>
                             <input
                                 required
                                 type="number"
@@ -464,7 +464,7 @@ const CouponManagement = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Min Order Requirement</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Min Order Requirement</label>
                             <input
                                 required
                                 type="number"
@@ -478,7 +478,7 @@ const CouponManagement = () => {
 
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Max Discount (optional)</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Max Discount (optional)</label>
                             <input
                                 type="number"
                                 onWheel={(e) => e.target.blur()}
@@ -488,7 +488,7 @@ const CouponManagement = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Uses (optional)</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Total Uses (optional)</label>
                             <input
                                 type="number"
                                 onWheel={(e) => e.target.blur()}
@@ -501,7 +501,7 @@ const CouponManagement = () => {
 
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Per User Limit</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Per User Limit</label>
                             <input
                                 type="number"
                                 min={1}
@@ -515,7 +515,7 @@ const CouponManagement = () => {
 
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Start Date</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Start Date</label>
                             <input
                                 required
                                 type="date"
@@ -526,7 +526,7 @@ const CouponManagement = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">End Date</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">End Date</label>
                             <input
                                 required
                                 type="date"
@@ -539,7 +539,7 @@ const CouponManagement = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Campaign Description</label>
+                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Campaign Description</label>
                         <textarea
                             required
                             rows={3}
@@ -554,13 +554,13 @@ const CouponManagement = () => {
                         <button
                             type="button"
                             onClick={() => setIsModalOpen(false)}
-                            className="flex-1 py-4 bg-slate-100 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest"
+                            className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-xs font-black uppercase tracking-widest"
                         >
                             CANCEL
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 py-4 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20"
+                            className="flex-1 py-4 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20"
                         >
                             {editingCoupon ? 'SAVE CHANGES' : 'LAUNCH CAMPAIGN'}
                         </button>

@@ -84,6 +84,9 @@ export const createOrderWithFinancialSnapshot = async (req, res) => {
       tipAmount: validated.tipAmount || 0,
       walletAmount: validated.walletAmount || 0,
       couponId: validated.couponId || null,
+      deliveryType: validated.deliveryType || "express",
+      scheduledDate: validated.scheduledDate || null,
+      scheduledSlot: validated.scheduledSlot || null,
     };
     const idempotencyKey = String(req.headers["idempotency-key"] || "").trim() || null;
 

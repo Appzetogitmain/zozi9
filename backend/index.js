@@ -29,6 +29,7 @@ import {
 import { registerScheduledJob, startScheduledJobs } from "./app/services/distributedScheduler.js";
 import { getOrderAutoCancelJobHandler, getOrderAutoCancelJobInterval } from "./app/jobs/orderAutoCancelJob.js";
 import { getReturnWindowReleaseJobHandler, getReturnWindowReleaseJobInterval } from "./app/jobs/returnWindowReleaseJob.js";
+import { getScheduledOrdersJobHandler, getScheduledOrdersJobInterval } from "./app/jobs/notifyScheduledOrdersJob.js";
 import {
   getPayoutBatchJobHandler,
   getPayoutBatchJobInterval,
@@ -260,6 +261,13 @@ async function startScheduler() {
     'returnWindowReleaseJob',
     getReturnWindowReleaseJobInterval(),
     getReturnWindowReleaseJobHandler()
+  );
+
+  // Register scheduled orders notification job
+  registerScheduledJob(
+    'notifyScheduledOrdersJob',
+    getScheduledOrdersJobInterval(),
+    getScheduledOrdersJobHandler()
   );
   
   // Register payout batch job (if enabled)

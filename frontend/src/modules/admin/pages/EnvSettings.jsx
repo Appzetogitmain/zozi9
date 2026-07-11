@@ -78,12 +78,12 @@ const EnvSettings = () => {
 
     const InputField = ({ label, name, type = 'text', icon: Icon, isSecret = false, placeholder = '' }) => (
         <div className="space-y-3">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                 {label}
-                {name && <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-[9px] lowercase font-mono">{name}</span>}
+                {name && <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-xs lowercase font-mono">{name}</span>}
             </label>
             <div className="relative group">
-                {Icon && <Icon className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />}
+                {Icon && <Icon className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />}
                 <input
                     type={isSecret ? (showSecrets[name] ? 'text' : 'password') : type}
                     value={config[name]}
@@ -97,7 +97,7 @@ const EnvSettings = () => {
                 {isSecret && (
                     <button
                         onClick={() => toggleSecret(name)}
-                        className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                        className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 transition-colors"
                     >
                         {showSecrets[name] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -119,7 +119,7 @@ const EnvSettings = () => {
                     </h1>
                     <p className="ds-description mt-1 text-slate-500">
                         Manage critical application secrets and configurations.
-                        <span className="text-red-500 font-bold ml-1 flex items-center gap-1 inline-flex">
+                        <span className="text-red-700 font-bold ml-1 flex items-center gap-1 inline-flex">
                             <AlertTriangle className="h-3 w-3" />
                             Handle with care.
                         </span>
@@ -130,7 +130,7 @@ const EnvSettings = () => {
                         onClick={handleSave}
                         disabled={isSaving}
                         className={cn(
-                            "flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-200 active:scale-95",
+                            "flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-200 active:scale-95",
                             isSaving ? "opacity-70 cursor-wait" : "hover:bg-slate-800"
                         )}
                     >
@@ -149,7 +149,7 @@ const EnvSettings = () => {
                     onClick={() => setActiveTab('frontend')}
                     className={cn(
                         "pb-4 px-4 text-sm font-bold transition-all border-b-2",
-                        activeTab === 'frontend' ? "border-brand-500 text-brand-700" : "border-transparent text-slate-400 hover:text-slate-600"
+                        activeTab === 'frontend' ? "border-brand-500 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-600"
                     )}
                 >
                     Frontend Configuration
@@ -158,7 +158,7 @@ const EnvSettings = () => {
                     onClick={() => setActiveTab('backend')}
                     className={cn(
                         "pb-4 px-4 text-sm font-bold transition-all border-b-2",
-                        activeTab === 'backend' ? "border-brand-500 text-brand-700" : "border-transparent text-slate-400 hover:text-slate-600"
+                        activeTab === 'backend' ? "border-brand-500 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-600"
                     )}
                 >
                     Backend Configuration
@@ -173,7 +173,7 @@ const EnvSettings = () => {
                         <Card className="border-none shadow-xl ring-1 ring-slate-100 bg-white rounded-xl overflow-hidden">
                             <div className="p-6 border-b border-slate-50 bg-slate-50/30">
                                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                                    <Globe className="h-4 w-4 text-slate-400" />
+                                    <Globe className="h-4 w-4 text-slate-500" />
                                     Core Client Config
                                 </h3>
                             </div>
@@ -186,7 +186,7 @@ const EnvSettings = () => {
                         <Card className="border-none shadow-xl ring-1 ring-slate-100 bg-white rounded-xl overflow-hidden">
                             <div className="p-6 border-b border-slate-50 bg-slate-50/30">
                                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                                    <Cloud className="h-4 w-4 text-amber-500" />
+                                    <Cloud className="h-4 w-4 text-amber-700" />
                                     Firebase Client SDK
                                 </h3>
                             </div>
@@ -212,7 +212,7 @@ const EnvSettings = () => {
                         <Card className="border-none shadow-xl ring-1 ring-slate-100 bg-white rounded-xl overflow-hidden">
                             <div className="p-6 border-b border-slate-50 bg-slate-50/30">
                                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                                    <Server className="h-4 w-4 text-slate-400" />
+                                    <Server className="h-4 w-4 text-slate-500" />
                                     Server & Security
                                 </h3>
                             </div>
@@ -231,14 +231,14 @@ const EnvSettings = () => {
                         <Card className="border-none shadow-xl ring-1 ring-slate-100 bg-white rounded-xl overflow-hidden">
                             <div className="p-6 border-b border-slate-50 bg-slate-50/30">
                                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                                    <CreditCard className="h-4 w-4 text-purple-500" />
+                                    <CreditCard className="h-4 w-4 text-purple-700" />
                                     Integrations
                                 </h3>
                             </div>
                             <div className="p-4 space-y-8">
                                 {/* Cloudinary */}
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold text-slate-400 uppercase">Cloudinary (Media)</h4>
+                                    <h4 className="text-xs font-bold text-slate-500 uppercase">Cloudinary (Media)</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <InputField label="Cloud Name" name="CLOUDINARY_CLOUD_NAME" icon={Cloud} />
                                         <InputField label="API Key" name="CLOUDINARY_API_KEY" icon={Key} isSecret={true} />
@@ -249,7 +249,7 @@ const EnvSettings = () => {
                                 {/* Razorpay configuration removed */}
                                 {/* SMS Hub */}
                                 <div className="space-y-4 pt-4 border-t border-slate-100">
-                                    <h4 className="text-xs font-bold text-slate-400 uppercase">SMS India Hub</h4>
+                                    <h4 className="text-xs font-bold text-slate-500 uppercase">SMS India Hub</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <InputField label="Username" name="SMS_INDIA_HUB_USERNAME" icon={Terminal} />
                                         <InputField label="Sender ID" name="SMS_INDIA_HUB_SENDER_ID" icon={MessageSquare} />
@@ -263,15 +263,15 @@ const EnvSettings = () => {
                         <Card className="border-none shadow-xl ring-1 ring-slate-100 bg-white rounded-xl overflow-hidden">
                             <div className="p-6 border-b border-slate-50 bg-slate-50/30">
                                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                                    <Shield className="h-4 w-4 text-red-500" />
+                                    <Shield className="h-4 w-4 text-red-700" />
                                     Firebase Admin Service Account
                                 </h3>
                             </div>
                             <div className="p-4">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                                         Service Account JSON
-                                        <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-[9px] lowercase font-mono">FIREBASE_SERVICE_ACCOUNT</span>
+                                        <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-xs lowercase font-mono">FIREBASE_SERVICE_ACCOUNT</span>
                                     </label>
                                     <textarea
                                         rows={8}
@@ -280,7 +280,7 @@ const EnvSettings = () => {
                                         placeholder='{"type": "service_account", ...}'
                                         className="w-full px-5 py-4 bg-slate-900 border-none rounded-2xl text-xs font-mono text-brand-400 outline-none focus:ring-2 focus:ring-brand-500/30 transition-all resize-none"
                                     />
-                                    <p className="text-[10px] font-bold text-slate-400 italic">Paste the entire JSON content of your service account key file here.</p>
+                                    <p className="text-xs font-bold text-slate-500 italic">Paste the entire JSON content of your service account key file here.</p>
                                 </div>
                             </div>
                         </Card>

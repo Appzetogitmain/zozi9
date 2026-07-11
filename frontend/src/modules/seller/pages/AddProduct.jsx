@@ -213,7 +213,7 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-12">
+    <div className="max-w-6xl mx-auto space-y-4 pb-12">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <Button
@@ -268,7 +268,7 @@ const AddProduct = () => {
 
           <div className="pt-8 px-4">
             <div className="p-4 bg-brand-50 rounded-md border border-brand-100">
-              <p className="text-[9px] font-bold text-brand-600 uppercase tracking-widest mb-1">
+              <p className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-1">
                 Status
               </p>
               <select
@@ -285,11 +285,11 @@ const AddProduct = () => {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 p-8 overflow-y-auto">
+        <div className="flex-1 p-5 overflow-y-auto">
           {modalTab === "general" && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-2 duration-300">
+            <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-300">
               <div className="space-y-1.5 flex flex-col">
-                <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                   Product Title
                 </label>
                 <input
@@ -319,7 +319,7 @@ const AddProduct = () => {
                 />
               </div>
               <div className="space-y-1.5 flex flex-col">
-                <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                   About this item
                 </label>
                 <textarea
@@ -333,9 +333,9 @@ const AddProduct = () => {
                   placeholder="Describe the item here..."
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5 flex flex-col">
-                  <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                  <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                     Brand Name
                   </label>
                   <input
@@ -348,7 +348,7 @@ const AddProduct = () => {
                   />
                 </div>
                 <div className="space-y-1.5 flex flex-col">
-                  <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                  <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                     Product Code
                   </label>
                   <input
@@ -365,7 +365,7 @@ const AddProduct = () => {
           )}
 
           {modalTab === "variants" && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-2 duration-300">
+            <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-300">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-bold text-slate-900">
@@ -392,7 +392,7 @@ const AddProduct = () => {
                       ],
                     }))
                   }
-                  className="flex items-center space-x-2 px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-[10px] font-bold hover:bg-primary/20 transition-all">
+                  className="flex items-center space-x-2 px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 transition-all">
                   <HiOutlineSquaresPlus className="h-4 w-4" />
                   <span>ADD VARIANT</span>
                 </button>
@@ -509,7 +509,7 @@ const AddProduct = () => {
                             });
                           }
                         }}
-                        className="p-2 text-slate-300 hover:text-rose-500 transition-colors">
+                        className="p-2 text-slate-400 hover:text-rose-700 transition-colors">
                         <HiOutlineTrash className="h-4 w-4" />
                       </button>
                     </div>
@@ -520,11 +520,11 @@ const AddProduct = () => {
           )}
 
           {modalTab === "category" && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-2 duration-300">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5 flex flex-col">
-                  <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
-                    Main Group <span className="text-rose-500">*</span>
+                  <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                    Main Group <span className="text-rose-700">*</span>
                   </label>
                   <select
                     value={formData.header}
@@ -541,8 +541,8 @@ const AddProduct = () => {
                   </select>
                 </div>
                 <div className="space-y-1.5 flex flex-col">
-                  <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
-                    Specific Category <span className="text-rose-500">*</span>
+                  <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                    Specific Category <span className="text-rose-700">*</span>
                   </label>
                   <select
                     value={formData.category}
@@ -562,10 +562,10 @@ const AddProduct = () => {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-1.5 flex flex-col">
-                  <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
-                    Sub-Category <span className="text-rose-500">*</span>
+                  <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                    Sub-Category <span className="text-rose-700">*</span>
                   </label>
                   <select
                     value={formData.subcategory}
@@ -590,13 +590,13 @@ const AddProduct = () => {
           )}
 
           {modalTab === "media" && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-right-2 duration-300">
+            <div className="space-y-5 animate-in fade-in slide-in-from-right-2 duration-300">
               {/* Main Image Section */}
               <div className="space-y-3">
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                   Main Cover Photo
                 </label>
-                <div className="flex flex-col md:flex-row items-start gap-6">
+                <div className="flex flex-col md:flex-row items-start gap-4">
                   <div className="w-48 aspect-square rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center group hover:border-primary hover:bg-primary/5 transition-all cursor-pointer overflow-hidden relative">
                     <input
                       type="file"
@@ -611,7 +611,7 @@ const AddProduct = () => {
                     ) : (
                       <>
                         <HiOutlinePhoto className="h-10 w-10 text-slate-200 group-hover:text-primary transition-colors" />
-                        <p className="text-[9px] font-bold text-slate-600 mt-2 uppercase tracking-widest group-hover:text-primary">
+                        <p className="text-xs font-bold text-slate-600 mt-2 uppercase tracking-widest group-hover:text-primary">
                           Upload Cover
                         </p>
                       </>
@@ -625,7 +625,7 @@ const AddProduct = () => {
                       We show this image on the search page and the main
                       store listing. Make sure it is clear and bright.
                     </p>
-                    <button className="text-[10px] font-black text-primary uppercase tracking-wider hover:underline">
+                    <button className="text-xs font-black text-primary uppercase tracking-wider hover:underline">
                       Pick from Library
                     </button>
                   </div>
@@ -672,7 +672,7 @@ const AddProduct = () => {
             </div>
           )}
 
-          
+
         </div>
       </div>
     </div>

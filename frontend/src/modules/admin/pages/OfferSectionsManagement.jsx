@@ -249,7 +249,7 @@ const OfferSectionsManagement = () => {
             Offer Sections
             <Badge
               variant="primary"
-              className="text-[10px] font-black uppercase tracking-widest"
+              className="text-xs font-black uppercase tracking-widest"
             >
               Category → Products
             </Badge>
@@ -260,7 +260,7 @@ const OfferSectionsManagement = () => {
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 px-6 py-3.5 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
+          className="flex items-center gap-2 px-6 py-3.5 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
         >
           <HiOutlinePlus className="h-5 w-5" />
           New Section
@@ -269,11 +269,11 @@ const OfferSectionsManagement = () => {
 
       <Card className="border-none shadow-xl ring-1 ring-slate-100 bg-white rounded-xl overflow-hidden">
         <div className="p-4 border-b border-slate-50 flex items-center justify-between">
-          <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest">
             Sections ({sections.length})
           </h2>
           {isLoading && (
-            <span className="text-[10px] font-bold text-slate-400">
+            <span className="text-xs font-bold text-slate-500">
               Loading...
             </span>
           )}
@@ -311,7 +311,7 @@ const OfferSectionsManagement = () => {
                     <p className="text-sm font-black text-slate-900">
                       #{idx + 1} {section.title}
                     </p>
-                    <p className="text-[10px] font-bold text-slate-500">
+                    <p className="text-xs font-bold text-slate-500">
                       {catNames} · Sellers: {sellerNames} · {productCount} product(s)
                     </p>
                   </div>
@@ -324,7 +324,7 @@ const OfferSectionsManagement = () => {
                     }}
                     title={section.backgroundColor}
                   />
-                  <span className="text-[10px] font-bold text-slate-500">
+                  <span className="text-xs font-bold text-slate-500">
                     {section.sideImageKey || "—"}
                   </span>
                 </div>
@@ -334,7 +334,7 @@ const OfferSectionsManagement = () => {
                       disabled={idx === 0}
                       onClick={() => handleReorder("up", section)}
                       className={cn(
-                        "p-1.5 rounded-xl border text-slate-400 hover:text-slate-700 hover:bg-slate-50",
+                        "p-1.5 rounded-xl border text-slate-500 hover:text-slate-700 hover:bg-slate-50",
                         idx === 0 && "opacity-30 cursor-not-allowed"
                       )}
                     >
@@ -344,7 +344,7 @@ const OfferSectionsManagement = () => {
                       disabled={idx === sections.length - 1}
                       onClick={() => handleReorder("down", section)}
                       className={cn(
-                        "p-1.5 rounded-xl border text-slate-400 hover:text-slate-700 hover:bg-slate-50",
+                        "p-1.5 rounded-xl border text-slate-500 hover:text-slate-700 hover:bg-slate-50",
                         idx === sections.length - 1 &&
                         "opacity-30 cursor-not-allowed"
                       )}
@@ -354,13 +354,13 @@ const OfferSectionsManagement = () => {
                   </div>
                   <button
                     onClick={() => openEditModal(section)}
-                    className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-xl"
+                    className="p-2 text-slate-500 hover:text-primary hover:bg-primary/5 rounded-xl"
                   >
                     <HiOutlinePencilSquare className="h-5 w-5" />
                   </button>
                   <button
                     onClick={() => handleDelete(section._id)}
-                    className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl"
+                    className="p-2 text-slate-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl"
                   >
                     <HiOutlineTrash className="h-5 w-5" />
                   </button>
@@ -374,7 +374,7 @@ const OfferSectionsManagement = () => {
               <h3 className="text-lg font-black text-slate-900">
                 No offer sections yet
               </h3>
-              <p className="text-sm font-bold text-slate-400 mt-2">
+              <p className="text-sm font-bold text-slate-500 mt-2">
                 Click &quot;New Section&quot;: pick categories → sellers → products, then colour & side image.
               </p>
             </div>
@@ -389,7 +389,7 @@ const OfferSectionsManagement = () => {
       >
         <form onSubmit={handleSave} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
               Section title
             </label>
             <input
@@ -403,7 +403,7 @@ const OfferSectionsManagement = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
               Categories (choose one or more)
             </label>
             <div className="flex flex-wrap gap-1.5 border border-slate-100 rounded-xl p-3 bg-slate-50/50 max-h-32 overflow-y-auto">
@@ -423,7 +423,7 @@ const OfferSectionsManagement = () => {
                       }))
                     }
                     className={cn(
-                      "px-2.5 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                      "px-2.5 py-1.5 rounded-full text-xs font-bold border transition-all",
                       selected
                         ? "bg-primary text-white border-primary"
                         : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
@@ -437,7 +437,7 @@ const OfferSectionsManagement = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
               Sellers (choose one or more – products will be from these sellers)
             </label>
             <div className="flex flex-wrap gap-1.5 border border-slate-100 rounded-xl p-3 bg-slate-50/50 max-h-32 overflow-y-auto">
@@ -457,7 +457,7 @@ const OfferSectionsManagement = () => {
                       }))
                     }
                     className={cn(
-                      "px-2.5 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                      "px-2.5 py-1.5 rounded-full text-xs font-bold border transition-all",
                       selected
                         ? "bg-black  text-white border-brand-600"
                         : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
@@ -472,12 +472,12 @@ const OfferSectionsManagement = () => {
 
           {(formData.categoryIds.length > 0 || formData.sellerIds.length > 0) && (
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                 Products (from selected categories & sellers)
               </label>
               <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto pr-1 border border-slate-100 rounded-xl p-3 bg-slate-50/50">
                 {productsFiltered.length === 0 ? (
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-xs text-slate-500">
                     No products match. Add categories and/or sellers.
                   </span>
                 ) : (
@@ -496,7 +496,7 @@ const OfferSectionsManagement = () => {
                           }))
                         }
                         className={cn(
-                          "px-2.5 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                          "px-2.5 py-1.5 rounded-full text-xs font-bold border transition-all",
                           selected
                             ? "bg-primary text-white border-primary"
                             : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
@@ -512,7 +512,7 @@ const OfferSectionsManagement = () => {
           )}
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
               Banner colour
             </label>
             <div className="flex flex-wrap gap-2">
@@ -527,7 +527,7 @@ const OfferSectionsManagement = () => {
                     }))
                   }
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-2 rounded-2xl text-[11px] font-bold border-2 transition-all",
+                    "flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-bold border-2 transition-all",
                     formData.backgroundColor === opt.value
                       ? "border-slate-900 ring-2 ring-offset-2 ring-slate-400"
                       : "border-slate-200 hover:border-slate-300"
@@ -545,7 +545,7 @@ const OfferSectionsManagement = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
               Side image (choose one)
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -571,7 +571,7 @@ const OfferSectionsManagement = () => {
                     alt={opt.label}
                     className="w-full h-full object-cover"
                   />
-                  <span className="block text-[10px] font-bold text-slate-600 p-1 truncate">
+                  <span className="block text-xs font-bold text-slate-600 p-1 truncate">
                     {opt.label}
                   </span>
                 </button>
@@ -581,7 +581,7 @@ const OfferSectionsManagement = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                 Display order
               </label>
               <input
@@ -595,7 +595,7 @@ const OfferSectionsManagement = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                 Status
               </label>
               <select
@@ -615,13 +615,13 @@ const OfferSectionsManagement = () => {
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="flex-1 py-4 bg-slate-100 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest"
+              className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-xs font-black uppercase tracking-widest"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 py-4 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20"
+              className="flex-1 py-4 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20"
             >
               {editingSection ? "Save changes" : "Create section"}
             </button>

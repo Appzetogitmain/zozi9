@@ -618,7 +618,7 @@ export const createProduct = async (req, res) => {
     if (!productData.name) {
       return handleResponse(res, 400, "Product name is required");
     }
-    
+
     // Auto-generate slug
     if (!productData.slug || productData.slug.trim() === "") {
       productData.slug = slugify(productData.name);
@@ -679,7 +679,7 @@ export const createProduct = async (req, res) => {
     Object.assign(productData, moderationUpdate);
 
     const product = await Product.create(productData);
-    
+
     if (product && product._id) {
       // Enqueue search indexing asynchronously
       await enqueueProductIndex(product._id.toString());
@@ -839,7 +839,7 @@ export const updateProduct = async (req, res) => {
       { $set: productData },
       { new: true, runValidators: true },
     );
-    
+
     // Enqueue search indexing asynchronously
     await enqueueProductIndex(id);
     await invalidate(`cache:catalog:product:${id}`);
@@ -893,7 +893,7 @@ export const deleteProduct = async (req, res) => {
     if (!product) {
       return handleResponse(res, 404, "Product not found or unauthorized");
     }
-    
+
     // Enqueue search index removal asynchronously
     await enqueueProductRemoval(id);
     await invalidate(`cache:catalog:product:${id}`);

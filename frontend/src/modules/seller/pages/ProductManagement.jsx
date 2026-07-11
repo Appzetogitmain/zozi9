@@ -21,8 +21,11 @@ import {
   HiOutlineFolderOpen,
   HiOutlineSwatch,
   HiOutlineSquaresPlus,
+  HiOutlineExclamationTriangle,
+  HiOutlineXCircle,
 } from "react-icons/hi2";
 import Modal from "@shared/components/ui/Modal";
+import SellerStatCard from "../components/SellerStatCard";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -299,12 +302,12 @@ const ProductManagement = () => {
   const ApprovalBadge = ({ approvalStatus }) => {
     const normalized = String(approvalStatus || "approved").toLowerCase();
     if (normalized === "pending") {
-      return <Badge variant="warning" className="text-[10px] px-2 py-0.5">Pending Approval</Badge>;
+      return <Badge variant="warning" className="text-xs px-2 py-0.5">Pending Approval</Badge>;
     }
     if (normalized === "rejected") {
-      return <Badge variant="error" className="text-[10px] px-2 py-0.5">Rejected</Badge>;
+      return <Badge variant="error" className="text-xs px-2 py-0.5">Rejected</Badge>;
     }
-    return <Badge variant="success" className="text-[10px] px-2 py-0.5">Approved</Badge>;
+    return <Badge variant="success" className="text-xs px-2 py-0.5">Approved</Badge>;
   };
 
   const handleSave = async () => {
@@ -473,7 +476,7 @@ const ProductManagement = () => {
   };
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="space-y-4 pb-16">
 
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
@@ -481,7 +484,7 @@ const ProductManagement = () => {
             Product List
             <Badge
               variant="primary"
-              className="text-[9px] px-1.5 py-0 font-bold tracking-wider uppercase">
+              className="text-xs px-1.5 py-0 font-bold tracking-wider uppercase">
               Live
             </Badge>
           </h1>
@@ -497,7 +500,7 @@ const ProductManagement = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           {
             label: "All Items",
@@ -511,14 +514,14 @@ const ProductManagement = () => {
             label: "Active Items",
             val: stats.active,
             icon: HiOutlineCheckCircle,
-            color: "text-brand-600",
-            bg: "bg-brand-50",
+            color: "text-emerald-600",
+            bg: "bg-emerald-50",
             status: "Active",
           },
           {
             label: "Low Stock",
             val: stats.lowStock,
-            icon: HiOutlineExclamationCircle,
+            icon: HiOutlineExclamationTriangle,
             color: "text-amber-600",
             bg: "bg-amber-50",
             status: "Low Stock",
@@ -526,30 +529,23 @@ const ProductManagement = () => {
           {
             label: "Out of Stock",
             val: stats.outOfStock,
-            icon: HiOutlineArchiveBox,
+            icon: HiOutlineXCircle,
             color: "text-rose-600",
             bg: "bg-rose-50",
             status: "Out of Stock",
           },
         ].map((stat, i) => (
-          <Card
+          <SellerStatCard
             key={i}
-            className={cn(
-              "border-none shadow-sm ring-1 ring-slate-100 p-4 relative overflow-hidden group cursor-pointer",
-              filterStatus === stat.status && "ring-2 ring-brand-500",
-            )}
+            label={stat.label}
+            value={stat.val}
+            icon={stat.icon}
+            colorClass={stat.color}
+            bgClass={stat.bg}
+            delay={0.1 + (i * 0.05)}
+            isActive={filterStatus === stat.status}
             onClick={() => setFilterStatus(stat.status)}
-          >
-            <div className="flex items-center gap-3">
-              <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 duration-300", stat.bg, stat.color)}>
-                <stat.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="ds-label">{stat.label}</p>
-                <h4 className="ds-stat-medium">{stat.val}</h4>
-              </div>
-            </div>
-          </Card>
+          />
         ))}
       </div>
 
@@ -558,7 +554,7 @@ const ProductManagement = () => {
       <Card className="border-none shadow-sm ring-1 ring-slate-100 p-3 bg-white/60 backdrop-blur-xl">
         <div className="flex flex-col lg:flex-row gap-3 items-center">
           <div className="relative flex-1 group w-full">
-            <HiOutlineMagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-all" />
+            <HiOutlineMagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-primary transition-all" />
             <input
               type="text"
               value={searchTerm}
@@ -571,7 +567,7 @@ const ProductManagement = () => {
                 setSearchParams(next);
               }}
               placeholder="Search by name, SKU or slug..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-100/50 border-none rounded-xl text-xs font-semibold text-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/5 transition-all outline-none"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-100/50 border-none rounded-xl text-xs font-semibold text-slate-700 placeholder:text-slate-500 focus:ring-2 focus:ring-primary/5 transition-all outline-none"
             />
           </div>
           <div className="flex gap-2 shrink-0 w-full lg:w-auto">
@@ -637,28 +633,28 @@ const ProductManagement = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/50 border-b border-slate-100">
-                <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                   Product
                 </th>
-                <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                   Product Code
                 </th>
-                <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                   Header
                 </th>
-                <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                   Subcategory
                 </th>
-                <th className="px-6 py-3 text-center text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                   Variant
                 </th>
-                <th className="px-6 py-3 text-center text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                   Approval
                 </th>
-                <th className="px-6 py-3 text-right text-[10px] font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -668,9 +664,9 @@ const ProductManagement = () => {
                 <tr
                   key={p._id || p.id}
                   className="hover:bg-gray-50/50 transition-colors group border-b border-gray-100 last:border-b-0">
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 rounded-lg overflow-hidden bg-slate-100 ring-1 ring-slate-200">
+                      <div className="h-10 w-10 rounded-lg overflow-hidden bg-slate-100 ring-1 ring-slate-200">
                         <img
                           src={
                             p.mainImage ||
@@ -686,41 +682,41 @@ const ProductManagement = () => {
                           {p.name}
                         </p>
                         {String(p.approvalStatus || "").toLowerCase() === "pending" ? (
-                          <p className="text-[10px] font-medium text-amber-600">
+                          <p className="text-xs font-medium text-amber-600">
                             Hidden from customers until admin approval.
                           </p>
                         ) : null}
                         {String(p.approvalStatus || "").toLowerCase() === "rejected" ? (
-                          <p className="text-[10px] font-medium text-rose-600">
+                          <p className="text-xs font-medium text-rose-600">
                             {p.approvalNote ? `Rejected: ${p.approvalNote}` : "Rejected by admin. Update and resubmit."}
                           </p>
                         ) : null}
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     <span className="text-sm font-medium text-slate-900">
                       {displaySku(p)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-left">
+                  <td className="px-4 py-2.5 text-left">
                     <div className="flex flex-col">
-                      <span className="text-xs font-medium text-slate-900 uppercase tracking-tight bg-slate-100 px-3 py-0.5 rounded-full w-fit">
+                      <span className="text-xs font-bold text-slate-900 uppercase tracking-tight bg-slate-100 px-3 py-0.5 rounded-full w-fit">
                         {p.headerId?.name || "N/A"}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     <span className="text-sm font-medium text-slate-900">
                       {p.categoryId?.name || "N/A"}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     <span className="text-sm font-medium text-slate-900">
                       {p.subcategoryId?.name || "N/A"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-2.5 text-center">
                     {p.variants?.length > 0 ? (
                       <div
                         onClick={() => {
@@ -737,26 +733,26 @@ const ProductManagement = () => {
                         </Badge>
                       </div>
                     ) : (
-                      <span className="text-xs font-medium text-slate-400 bg-slate-50 border border-slate-100 px-2 py-1 rounded italic">
+                      <span className="text-xs font-medium text-slate-500 bg-slate-50 border border-slate-100 px-2 py-1 rounded italic">
                         None
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 py-2.5 text-center">
                     <div className="flex flex-col items-center gap-1">
                       <ApprovalBadge approvalStatus={p.approvalStatus} />
                       {p.approvalReviewedAt ? (
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-xs text-slate-500">
                           Reviewed
                         </span>
                       ) : p.approvalRequestedAt ? (
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-xs text-slate-500">
                           Submitted
                         </span>
                       ) : null}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 py-2.5 text-right">
                     <div className="flex items-center justify-end space-x-2">
                       <button
                         onClick={() => openEditModal(p)}
@@ -784,7 +780,7 @@ const ProductManagement = () => {
           className="absolute z-[9999] right-36 top-[350px] w-64 rounded-xl border border-slate-200 bg-white shadow-xl p-4 space-y-3"
         >
           <div>
-            <p className="text-[11px] font-semibold text-slate-600 uppercase tracking-[0.18em] mb-1">
+            <p className="text-xs font-bold text-slate-600 uppercase tracking-[0.18em] mb-1">
               Status
             </p>
             <select
@@ -800,7 +796,7 @@ const ProductManagement = () => {
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <p className="text-[11px] font-semibold text-slate-600 uppercase tracking-[0.18em] mb-1">
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-[0.18em] mb-1">
                 Min Price
               </p>
               <input
@@ -812,7 +808,7 @@ const ProductManagement = () => {
               />
             </div>
             <div>
-              <p className="text-[11px] font-semibold text-slate-600 uppercase tracking-[0.18em] mb-1">
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-[0.18em] mb-1">
                 Max Price
               </p>
               <input
@@ -836,14 +832,14 @@ const ProductManagement = () => {
                 setSearchTerm("");
                 setSearchParams({});
               }}
-              className="text-[11px] font-bold text-slate-600 hover:text-slate-700"
+              className="text-xs font-bold text-slate-600 hover:text-slate-700"
             >
               Clear
             </button>
             <button
               type="button"
               onClick={() => setIsFilterOpen(false)}
-              className="px-3 py-1.5 text-[11px] font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50"
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50"
             >
               Done
             </button>
@@ -884,7 +880,7 @@ const ProductManagement = () => {
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               className="w-full max-w-5xl relative z-10 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100vh-2rem)]">
               {/* Modal Header */}
-              <div className="flex items-center justify-between p-6 border-b border-slate-100">
+              <div className="flex items-center justify-between p-4 border-b border-slate-100">
                 <div className="flex items-center space-x-3">
                   <div className="h-10 w-10 bg-slate-900 text-white rounded-xl flex items-center justify-center">
                     <HiOutlineCube className="h-5 w-5" />
@@ -899,7 +895,7 @@ const ProductManagement = () => {
                         className="text-[7px] font-bold uppercase tracking-widest px-1 bg-brand-100 text-brand-700">
                         SELLER
                       </Badge>
-                      <HiOutlineChevronRight className="h-2.5 w-2.5 text-slate-300" />
+                      <HiOutlineChevronRight className="h-2.5 w-2.5 text-slate-400" />
                       <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">
                         {formData.sku || "PENDING SKU"}
                       </span>
@@ -952,7 +948,7 @@ const ProductManagement = () => {
 
                   <div className="pt-8 px-4">
                     <div className="p-4 bg-brand-50 rounded-2xl border border-brand-100">
-                      <p className="text-[9px] font-bold text-brand-600 uppercase tracking-widest mb-1">
+                      <p className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-1">
                         Status
                       </p>
                       <select
@@ -970,13 +966,13 @@ const ProductManagement = () => {
 
                 {/* Modal Content Area */}
                 <div
-                  className="flex-1 p-8 overflow-y-auto min-h-0 overscroll-contain custom-scrollbar"
+                  className="flex-1 p-5 overflow-y-auto min-h-0 overscroll-contain custom-scrollbar"
                   onWheel={handleModalScrollWheel}>
                   {modalTab === "general" && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-2 duration-300">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-300">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5 flex flex-col">
-                          <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                          <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                             Product Title
                           </label>
                           <input
@@ -1006,11 +1002,11 @@ const ProductManagement = () => {
                           />
                         </div>
                         <div className="space-y-1.5 flex flex-col">
-                          <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                          <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                             Web Address
                           </label>
                           <div className="flex items-center bg-slate-50 rounded-xl px-4 py-2.5">
-                            <span className="text-[10px] text-slate-600 font-bold mr-1">
+                            <span className="text-xs text-slate-600 font-bold mr-1">
                               /product/
                             </span>
                             <input
@@ -1028,7 +1024,7 @@ const ProductManagement = () => {
                         </div>
                       </div>
                       <div className="space-y-1.5 flex flex-col">
-                        <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                        <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                           About this item
                         </label>
                         <textarea
@@ -1045,9 +1041,9 @@ const ProductManagement = () => {
                           placeholder="Describe the item here..."
                         />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5 flex flex-col">
-                          <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                          <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                             Brand Name
                           </label>
                           <input
@@ -1063,7 +1059,7 @@ const ProductManagement = () => {
                           />
                         </div>
                         <div className="space-y-1.5 flex flex-col">
-                          <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                          <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                             Product Code
                           </label>
                           <input
@@ -1080,11 +1076,11 @@ const ProductManagement = () => {
                   )}
                   {/* Additional tabs populated as needed */}
                   {modalTab === "category" && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-2 duration-300">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-300">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5 flex flex-col">
-                          <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
-                            Main Group <span className="text-rose-500">*</span>
+                          <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                            Main Group <span className="text-rose-700">*</span>
                           </label>
                           <select
                             value={formData.header}
@@ -1101,8 +1097,8 @@ const ProductManagement = () => {
                           </select>
                         </div>
                         <div className="space-y-1.5 flex flex-col">
-                          <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
-                            Specific Category <span className="text-rose-500">*</span>
+                          <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                            Specific Category <span className="text-rose-700">*</span>
                           </label>
                           <select
                             value={formData.category}
@@ -1123,8 +1119,8 @@ const ProductManagement = () => {
                         </div>
                       </div>
                       <div className="space-y-1.5 flex flex-col">
-                        <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
-                          Sub-Category <span className="text-rose-500">*</span>
+                        <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                          Sub-Category <span className="text-rose-700">*</span>
                         </label>
                         <select
                           value={formData.subcategory}
@@ -1148,12 +1144,12 @@ const ProductManagement = () => {
                   )}
 
                   {modalTab === "media" && (
-                    <div className="space-y-8 animate-in fade-in slide-in-from-right-2 duration-300">
+                    <div className="space-y-5 animate-in fade-in slide-in-from-right-2 duration-300">
                       <div className="space-y-3">
                         <label className="text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                           Main Cover Photo
                         </label>
-                        <div className="flex flex-col md:flex-row items-start gap-6">
+                        <div className="flex flex-col md:flex-row items-start gap-4">
                           <div className="w-48 aspect-square rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center group hover:border-primary hover:bg-primary/5 transition-all cursor-pointer overflow-hidden relative">
                             <input
                               type="file"
@@ -1165,7 +1161,7 @@ const ProductManagement = () => {
                             ) : (
                               <div className="flex flex-col items-center">
                                 <HiOutlinePhoto className="h-10 w-10 text-slate-200" />
-                                <p className="text-[10px] text-slate-600 font-bold mt-2">UPLOAD</p>
+                                <p className="text-xs text-slate-600 font-bold mt-2">UPLOAD</p>
                               </div>
                             )}
                           </div>
@@ -1195,12 +1191,12 @@ const ProductManagement = () => {
                               />
                               <div className="flex flex-col items-center">
                                 <HiOutlinePhoto className="h-8 w-8 text-slate-200" />
-                                <p className="text-[10px] text-slate-600 font-bold mt-2">UPLOAD</p>
+                                <p className="text-xs text-slate-600 font-bold mt-2">UPLOAD</p>
                               </div>
                             </div>
                           ))}
                         </div>
-                        <p className="text-[10px] text-slate-500 font-medium">
+                        <p className="text-xs text-slate-500 font-medium">
                           Existing gallery images are shown here. Uploading new images will append them to the gallery.
                         </p>
                       </div>
@@ -1208,7 +1204,7 @@ const ProductManagement = () => {
                   )}
 
                   {modalTab === "variants" && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-2 duration-300">
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-300">
                       <div className="flex items-center justify-between">
                         <h4 className="text-sm font-bold">Product Variants</h4>
                         <button
@@ -1229,7 +1225,7 @@ const ProductManagement = () => {
                               ],
                             }))
                           }
-                          className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-[10px] font-bold">+ ADD</button>
+                          className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-xs font-bold">+ ADD</button>
                       </div>
                       <div className="space-y-3">
                         {formData.variants.map((v, i) => (
@@ -1273,7 +1269,7 @@ const ProductManagement = () => {
                                   const news = [...formData.variants];
                                   news[i].sku = e.target.value;
                                   setFormData({ ...formData, variants: news });
-                                }} placeholder="SKU" className="w-full bg-white px-3 py-2 rounded-xl text-[10px] ring-1 ring-slate-100 outline-none" />
+                                }} placeholder="SKU" className="w-full bg-white px-3 py-2 rounded-xl text-xs ring-1 ring-slate-100 outline-none" />
                               </div>
                               <button type="button" onClick={() => {
                                 setFormData((prev) => {
@@ -1290,7 +1286,7 @@ const ProductManagement = () => {
                                     });
                                   return { ...prev, variants: remaining };
                                 });
-                              }} className="text-rose-500 p-2 hover:bg-rose-50 rounded-lg shrink-0 mb-0.5">
+                              }} className="text-rose-700 p-2 hover:bg-rose-50 rounded-lg shrink-0 mb-0.5">
                                 <HiOutlineTrash className="h-4 w-4" />
                               </button>
                             </div>
@@ -1303,10 +1299,10 @@ const ProductManagement = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-3">
+              <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-3">
                 <button
                   onClick={() => setIsProductModalOpen(false)}
-                  className="px-6 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">
                   CLOSE
                 </button>
                 <button
@@ -1335,13 +1331,13 @@ const ProductManagement = () => {
             </button>
             <button
               onClick={confirmDelete}
-              className="px-6 py-2.5 bg-rose-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-rose-100 hover:bg-rose-700 transition-all active:scale-95">
+              className="px-4 py-2.5 bg-rose-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-rose-100 hover:bg-rose-700 transition-all active:scale-95">
               Delete product
             </button>
           </div>
         }>
-        <div className="px-6 py-6 flex flex-col items-center text-center space-y-5">
-          <div className="h-18 w-18 md:h-20 md:w-20 bg-rose-50 rounded-full flex items-center justify-center text-rose-500">
+        <div className="px-4 py-2.5 flex flex-col items-center text-center space-y-5">
+          <div className="h-18 w-18 md:h-20 md:w-20 bg-rose-50 rounded-full flex items-center justify-center text-rose-700">
             <HiOutlineTrash className="h-9 w-9 md:h-10 md:w-10" />
           </div>
           <div className="space-y-2 max-w-md">
@@ -1368,7 +1364,7 @@ const ProductManagement = () => {
       >
         <div className="py-2">
           <div className="flex items-center gap-4 mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-            <div className="h-16 w-16 bg-white rounded-xl shadow-sm overflow-hidden flex items-center justify-center border border-slate-100">
+            <div className="h-12 w-12 bg-white rounded-xl shadow-sm overflow-hidden flex items-center justify-center border border-slate-100">
               {viewingVariants?.mainImage || viewingVariants?.galleryImages?.[0] || viewingVariants?.image ? (
                 <img src={viewingVariants.mainImage || viewingVariants.galleryImages?.[0] || viewingVariants.image} alt="" className="h-full w-full object-cover" />
               ) : (
@@ -1388,34 +1384,34 @@ const ProductManagement = () => {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-600 uppercase tracking-widest">Variant Specification</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">Unit Price</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">Available Stock</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-600 uppercase tracking-widest text-right">Variant SKU</th>
+                  <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest">Variant Specification</th>
+                  <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest text-center">Unit Price</th>
+                  <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest text-center">Available Stock</th>
+                  <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest text-right">Variant SKU</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
                 {viewingVariants?.variants?.map((v, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/30 transition-all cursor-default">
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2.5">
                       <div className="flex flex-col">
                         <span className="text-xs font-black text-slate-700 group-hover:text-primary transition-colors">{v.name}</span>
-                        <span className="text-[9px] text-slate-600 font-bold uppercase tracking-widest mt-0.5">Variation {idx + 1}</span>
+                        <span className="text-xs text-slate-600 font-bold uppercase tracking-widest mt-0.5">Variation {idx + 1}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-4 py-2.5 text-center">
                       <div className="flex flex-col items-center">
                         <span className={cn("text-xs font-bold", v.salePrice > 0 ? "text-slate-600 line-through scale-90" : "text-slate-900")}>₹{v.price}</span>
                         {v.salePrice > 0 && <span className="text-xs font-bold text-brand-600">₹{v.salePrice}</span>}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <Badge variant={v.stock === 0 ? "rose" : v.stock <= 10 ? "amber" : "emerald"} className="text-[10px] font-black uppercase tracking-widest px-2 shadow-sm">
+                    <td className="px-4 py-2.5 text-center">
+                      <Badge variant={v.stock === 0 ? "rose" : v.stock <= 10 ? "amber" : "emerald"} className="text-xs font-black uppercase tracking-widest px-2 shadow-sm">
                         {v.stock === 0 ? 'OUT OF STOCK' : `${v.stock} UNITS`}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <span className="text-[10px] font-bold text-slate-600 font-mono tracking-tighter uppercase bg-slate-100 px-2 py-1 rounded-lg">
+                    <td className="px-4 py-2.5 text-right">
+                      <span className="text-xs font-bold text-slate-600 font-mono tracking-tighter uppercase bg-slate-100 px-2 py-1 rounded-lg">
                         {v.sku || 'N/A'}
                       </span>
                     </td>
@@ -1428,7 +1424,7 @@ const ProductManagement = () => {
           <div className="mt-8 flex justify-end">
             <button
               onClick={() => setIsVariantsViewModalOpen(false)}
-              className="bg-slate-900 text-white px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:-translate-y-0.5 transition-all active:scale-95"
+              className="bg-slate-900 text-white px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl hover:-translate-y-0.5 transition-all active:scale-95"
             >
               CLOSE VIEWER
             </button>

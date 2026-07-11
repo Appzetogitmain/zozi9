@@ -134,7 +134,7 @@ const CustomerDetail = () => {
         return (
             <div className="h-[80vh] flex flex-col items-center justify-center space-y-4">
                 <RotateCw className="h-10 w-10 text-primary animate-spin" />
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Loading Profile...</p>
+                <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">Loading Profile...</p>
             </div>
         );
     }
@@ -142,7 +142,7 @@ const CustomerDetail = () => {
     if (!customer) {
         return (
             <div className="h-[80vh] flex flex-col items-center justify-center space-y-4">
-                <p className="text-lg font-bold text-gray-400">Customer not found</p>
+                <p className="text-lg font-bold text-gray-500">Customer not found</p>
                 <button onClick={() => navigate('/admin/customers')} className="text-primary font-bold">Back to Customers</button>
             </div>
         );
@@ -162,7 +162,7 @@ const CustomerDetail = () => {
                     <div>
                         <div className="flex items-center gap-2">
                             <h1 className="ds-h1">Customer Profile</h1>
-                            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest">{customer.id}</Badge>
+                            <Badge variant="outline" className="text-xs font-bold uppercase tracking-widest">{customer.id}</Badge>
                         </div>
                         <p className="ds-description mt-1">Full profile and shopping history for this customer.</p>
                     </div>
@@ -206,7 +206,7 @@ const CustomerDetail = () => {
                         <div className="flex-1 text-center md:text-left space-y-6">
                             <div>
                                 <h3 className="text-3xl font-black text-slate-900">{customer.name}</h3>
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">
                                     Customer since {new Date(customer.joinedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                                 </p>
                             </div>
@@ -227,7 +227,7 @@ const CustomerDetail = () => {
                                         )}>
                                             <stat.icon className="h-4 w-4" />
                                         </div>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{stat.label}</p>
                                         <h5 className="text-lg font-black text-slate-900 mt-1">{stat.value}</h5>
                                         <p className="text-xs font-bold text-slate-500 mt-0.5">{stat.trend}</p>
                                     </div>
@@ -241,10 +241,10 @@ const CustomerDetail = () => {
                 <div className="space-y-4">
                     <Card className="p-6 !bg-black  text-white rounded-xl border-none shadow-lg shadow-brand-200 relative overflow-hidden group">
                         <div className="relative z-10">
-                            <p className="text-[10px] font-black opacity-90 uppercase tracking-widest mb-1">Lifetime Value</p>
+                            <p className="text-xs font-black opacity-90 uppercase tracking-widest mb-1">Lifetime Value</p>
                             <h4 className="text-3xl font-black text-white">₹{(customer.totalSpent || 0).toLocaleString()}</h4>
                             <div className="mt-4 flex items-center gap-2">
-                                <div className="p-1 px-2 rounded-full bg-white/25 text-white text-[10px] font-black uppercase tracking-tighter">
+                                <div className="p-1 px-2 rounded-full bg-white/25 text-white text-xs font-black uppercase tracking-tighter">
                                     {customer.totalOrders} Orders
                                 </div>
                                 <TrendingUp className="h-4 w-4 text-white/90" />
@@ -254,14 +254,14 @@ const CustomerDetail = () => {
                     </Card>
 
                     <Card className="p-6 bg-white rounded-xl border-none shadow-md ring-1 ring-slate-100">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Recent Activity</p>
+                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-3">Recent Activity</p>
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-amber-50 rounded-xl text-amber-500">
+                            <div className="p-2 bg-amber-50 rounded-xl text-amber-700">
                                 <RotateCw className="h-4 w-4" />
                             </div>
                             <div>
                                 <p className="text-xs font-bold text-slate-700">Last Order placed</p>
-                                <p className="text-[10px] font-semibold text-slate-400">
+                                <p className="text-xs font-semibold text-slate-500">
                                     {customer.lastOrderDate ? new Date(customer.lastOrderDate).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Never'}
                                 </p>
                             </div>
@@ -294,10 +294,10 @@ const CustomerDetail = () => {
                                             isDefault ? "bg-slate-50 ring-slate-200 shadow-sm" : "bg-white ring-slate-100 hover:ring-brand-100"
                                         )}>
                                             <div className="flex items-center justify-between mb-2">
-                                                <Badge variant={isDefault ? 'primary' : 'secondary'} className="text-[9px] font-black">
+                                                <Badge variant={isDefault ? 'primary' : 'secondary'} className="text-xs font-black">
                                                     {type}
                                                 </Badge>
-                                                <MapPin className="h-3.5 w-3.5 text-slate-300" />
+                                                <MapPin className="h-3.5 w-3.5 text-slate-400" />
                                             </div>
                                             <p className="text-xs font-bold text-slate-600 leading-relaxed whitespace-pre-wrap break-words">{fullAddress}</p>
                                         </div>
@@ -306,7 +306,7 @@ const CustomerDetail = () => {
                             ) : (
                                 <div className="col-span-2 py-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                                     <MapPin className="h-10 w-10 text-slate-200 mx-auto mb-3" />
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">No saved addresses</p>
+                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">No saved addresses</p>
                                 </div>
                             )}
                         </div>
@@ -321,18 +321,18 @@ const CustomerDetail = () => {
                             </h4>
                             <div className="flex items-center gap-3">
                                 <div className="relative group">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400 group-focus-within:text-brand-500" />
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-500 group-focus-within:text-brand-500" />
                                     <input
                                         type="text"
                                         placeholder="Search Orders..."
                                         value={orderSearch}
                                         onChange={(e) => setOrderSearch(e.target.value)}
-                                        className="pl-8 pr-4 py-2 bg-slate-50 border-none rounded-xl text-[10px] font-bold outline-none ring-1 ring-transparent focus:ring-brand-500/20 w-40"
+                                        className="pl-8 pr-4 py-2 bg-slate-50 border-none rounded-xl text-xs font-bold outline-none ring-1 ring-transparent focus:ring-brand-500/20 w-40"
                                     />
                                 </div>
                                 <button
                                     onClick={handleExportCSV}
-                                    className="text-[10px] font-black text-brand-600 uppercase hover:underline"
+                                    className="text-xs font-black text-brand-600 uppercase hover:underline"
                                 >
                                     Export CSV
                                 </button>
@@ -349,17 +349,17 @@ const CustomerDetail = () => {
                                         >
                                             <td className="px-4 py-5">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="p-2 bg-slate-50 rounded-xl group-hover:bg-white group-hover:shadow-sm transition-all text-slate-400 group-hover:text-brand-500">
+                                                    <div className="p-2 bg-slate-50 rounded-xl group-hover:bg-white group-hover:shadow-sm transition-all text-slate-500 group-hover:text-brand-500">
                                                         <Package className="h-4 w-4" />
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-black text-slate-900">{order.id}</p>
-                                                        <p className="text-[10px] font-bold text-slate-400">{order.itemsCount} Items</p>
+                                                        <p className="text-xs font-bold text-slate-500">{order.itemsCount} Items</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="py-5">
-                                                <p className="text-[10px] font-black text-slate-400 uppercase">
+                                                <p className="text-xs font-black text-slate-500 uppercase">
                                                     {new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </td>
@@ -375,7 +375,7 @@ const CustomerDetail = () => {
                                     ))}
                                     {filteredOrders.length === 0 && (
                                         <tr>
-                                            <td colSpan="4" className="px-4 py-5 text-center text-xs font-bold text-slate-400">
+                                            <td colSpan="4" className="px-4 py-5 text-center text-xs font-bold text-slate-500">
                                                 No orders found matching your search.
                                             </td>
                                         </tr>
@@ -387,7 +387,7 @@ const CustomerDetail = () => {
                             <div className="p-4 bg-slate-50/50 flex justify-center border-t border-slate-50">
                                 <button
                                     onClick={() => setVisibleOrders(safeOrders.length)}
-                                    className="text-[10px] font-black text-brand-600 uppercase hover:underline flex items-center gap-2"
+                                    className="text-xs font-black text-brand-600 uppercase hover:underline flex items-center gap-2"
                                 >
                                     SHOW ALL ORDERS
                                     <ChevronRight className="h-3 w-3" />
@@ -411,7 +411,7 @@ const CustomerDetail = () => {
                         />
                         <button
                             onClick={handleSaveNotes}
-                            className="w-full mt-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                            className="w-full mt-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-black uppercase tracking-widest transition-all"
                         >
                             UPDATE NOTES
                         </button>
@@ -422,14 +422,14 @@ const CustomerDetail = () => {
                         <div className="space-y-4">
                             <button
                                 onClick={() => setIsNotifModalOpen(true)}
-                                className="w-full py-4 bg-black  hover:bg-brand-500 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-xl shadow-brand-900/20 flex items-center justify-center gap-2"
+                                className="w-full py-4 bg-black  hover:bg-brand-500 text-white rounded-2xl font-black text-xs font-bold uppercase tracking-widest transition-all shadow-xl shadow-brand-900/20 flex items-center justify-center gap-2"
                             >
                                 <MessageSquare className="h-4 w-4" />
                                 SEND NOTIFICATION
                             </button>
                             <button
                                 onClick={() => setIsRestrictModalOpen(true)}
-                                className="w-full py-4 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-2xl font-black text-[11px] uppercase tracking-widest border border-rose-500/20 transition-all flex items-center justify-center gap-2"
+                                className="w-full py-4 bg-rose-500/10 hover:bg-rose-500 text-rose-700 hover:text-white rounded-2xl font-black text-xs font-bold uppercase tracking-widest border border-rose-500/20 transition-all flex items-center justify-center gap-2"
                             >
                                 <Ban className="h-4 w-4" />
                                 {customer.status === 'active' ? 'BLOCK ACCOUNT' : 'UNBLOCK ACCOUNT'}
@@ -444,7 +444,7 @@ const CustomerDetail = () => {
                 <form onSubmit={handleUpdateProfile} className="space-y-6">
                     <div className="space-y-4">
                         <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Full Name</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest block mb-2">Full Name</label>
                             <input
                                 type="text"
                                 value={editForm.name}
@@ -453,7 +453,7 @@ const CustomerDetail = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Phone Number</label>
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest block mb-2">Phone Number</label>
                             <input
                                 type="text"
                                 value={editForm.phone}
@@ -462,7 +462,7 @@ const CustomerDetail = () => {
                             />
                         </div>
                     </div>
-                    <button type="submit" className="w-full py-4 bg-black  hover:bg-brand-500 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-lg active:scale-95">
+                    <button type="submit" className="w-full py-4 bg-black  hover:bg-brand-500 text-white rounded-2xl font-black text-xs font-bold uppercase tracking-widest transition-all shadow-lg active:scale-95">
                         SAVE CHANGES
                     </button>
                 </form>
@@ -477,7 +477,7 @@ const CustomerDetail = () => {
                         </p>
                     </div>
                     <div>
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Message</label>
+                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest block mb-2">Message</label>
                         <textarea
                             value={notifMessage}
                             onChange={(e) => setNotifMessage(e.target.value)}
@@ -488,7 +488,7 @@ const CustomerDetail = () => {
                     <button
                         onClick={handleSendNotif}
                         disabled={!notifMessage.trim()}
-                        className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                        className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs font-bold uppercase tracking-widest transition-all shadow-lg active:scale-95 disabled:opacity-50"
                     >
                         SEND MESSAGE
                     </button>
@@ -512,10 +512,10 @@ const CustomerDetail = () => {
                         </p>
                     </div>
                     <div className="flex gap-3">
-                        <button onClick={() => setIsRestrictModalOpen(false)} className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-slate-200 transition-all">
+                        <button onClick={() => setIsRestrictModalOpen(false)} className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black text-xs font-bold uppercase tracking-widest hover:bg-slate-200 transition-all">
                             CANCEL
                         </button>
-                        <button onClick={handleRestrictAccount} className="flex-1 py-4 bg-rose-500 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-rose-600 shadow-xl shadow-rose-200 transition-all">
+                        <button onClick={handleRestrictAccount} className="flex-1 py-4 bg-rose-500 text-white rounded-2xl font-black text-xs font-bold uppercase tracking-widest hover:bg-rose-600 shadow-xl shadow-rose-200 transition-all">
                             CONFIRM
                         </button>
                     </div>

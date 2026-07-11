@@ -142,7 +142,7 @@ const AdminAuth = () => {
                                 >
                                     {isLogin ? 'Login' : 'Sign Up'}
                                 </motion.h1>
-                                <p className="text-gray-400 font-medium text-base">
+                                <p className="text-gray-500 font-medium text-base">
                                     {isLogin
                                         ? `Welcome to ${appName} Admin Platform`
                                         : 'Start managing your platform today'}
@@ -158,7 +158,7 @@ const AdminAuth = () => {
                                             exit={{ height: 0, opacity: 0, y: -10 }}
                                             className="group relative"
                                         >
-                                            <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-600 transition-colors">
+                                            <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-brand-600 transition-colors">
                                                 <User size={20} />
                                             </div>
                                             <input
@@ -168,14 +168,14 @@ const AdminAuth = () => {
                                                 value={formData.name}
                                                 onChange={handleChange}
                                                 placeholder="Full Name"
-                                                className="w-full pl-14 pr-5 py-5 bg-[#f8f9ff] border-2 border-transparent rounded-[24px] text-sm font-bold text-gray-700 outline-none focus:bg-white focus:border-brand-100 focus:ring-8 focus:ring-brand-50/50 transition-all placeholder:text-gray-300"
+                                                className="w-full pl-14 pr-5 py-5 bg-[#f8f9ff] border-2 border-transparent rounded-[24px] text-sm font-bold text-gray-700 outline-none focus:bg-white focus:border-brand-100 focus:ring-8 focus:ring-brand-50/50 transition-all placeholder:text-gray-400"
                                             />
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
 
                                 <div className="group relative">
-                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-600 transition-colors">
+                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-brand-600 transition-colors">
                                         <Mail size={20} />
                                     </div>
                                     <input
@@ -185,12 +185,12 @@ const AdminAuth = () => {
                                         value={formData.email}
                                         onChange={handleChange}
                                         placeholder="Username or email"
-                                        className="w-full pl-14 pr-5 py-5 bg-[#f8f9ff] border-2 border-transparent rounded-[24px] text-sm font-bold text-gray-700 outline-none focus:bg-white focus:border-brand-100 focus:ring-8 focus:ring-brand-50/50 transition-all placeholder:text-gray-300"
+                                        className="w-full pl-14 pr-5 py-5 bg-[#f8f9ff] border-2 border-transparent rounded-[24px] text-sm font-bold text-gray-700 outline-none focus:bg-white focus:border-brand-100 focus:ring-8 focus:ring-brand-50/50 transition-all placeholder:text-gray-400"
                                     />
                                 </div>
 
                                 <div className="group relative">
-                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-600 transition-colors">
+                                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-brand-600 transition-colors">
                                         <Lock size={20} />
                                     </div>
                                     <input
@@ -202,12 +202,12 @@ const AdminAuth = () => {
                                         value={formData.password}
                                         onChange={handleChange}
                                         placeholder="Password"
-                                        className="w-full pl-14 pr-14 py-5 bg-[#f8f9ff] border-2 border-transparent rounded-[24px] text-sm font-bold text-gray-700 outline-none focus:bg-white focus:border-brand-100 focus:ring-8 focus:ring-brand-50/50 transition-all placeholder:text-gray-300"
+                                        className="w-full pl-14 pr-14 py-5 bg-[#f8f9ff] border-2 border-transparent rounded-[24px] text-sm font-bold text-gray-700 outline-none focus:bg-white focus:border-brand-100 focus:ring-8 focus:ring-brand-50/50 transition-all placeholder:text-gray-400"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-600 transition-colors focus:outline-none"
+                                        className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-brand-600 transition-colors focus:outline-none"
                                     >
                                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                     </button>
@@ -285,7 +285,7 @@ const AdminAuth = () => {
             </motion.div>
 
             {/* Verification Label */}
-            <div className="absolute bottom-8 text-gray-400 font-bold text-[10px] tracking-[5px] uppercase flex items-center gap-3">
+            <div className="absolute bottom-8 text-gray-500 font-bold text-xs tracking-[5px] uppercase flex items-center gap-3">
                 <div className="w-8 h-[1px] bg-gray-200"></div>
                 {`Protected by ${appName} Security`}
                 <div className="w-8 h-[1px] bg-gray-200"></div>

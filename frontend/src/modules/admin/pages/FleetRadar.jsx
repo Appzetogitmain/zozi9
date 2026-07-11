@@ -78,9 +78,9 @@ const FleetRadar = () => {
         <div>
           <h1 className="ds-h1 flex items-center gap-3">
             Fleet Control Radar
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-500/10 text-rose-500 rounded-full">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-500/10 text-rose-700 rounded-full">
               <div className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest">
+              <span className="text-xs font-black uppercase tracking-widest">
                 Live: {currentTime}
               </span>
             </div>
@@ -92,19 +92,19 @@ const FleetRadar = () => {
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-4">
             <div className="text-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
                 Active Riders
               </p>
               <h4 className="text-xl font-black text-slate-900">42 / 50</h4>
             </div>
             <div className="text-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
                 Avg Deliv. Time
               </p>
               <h4 className="text-xl font-black text-brand-600">14.2m</h4>
             </div>
             <div className="text-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
                 SLA Health
               </p>
               <h4 className="text-xl font-black text-primary">98.5%</h4>
@@ -146,14 +146,14 @@ const FleetRadar = () => {
                         className={cn(
                           "h-5 w-5",
                           r.status === "delayed"
-                            ? "text-rose-500"
+                            ? "text-rose-700"
                             : "text-primary",
                         )}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className="text-[11px] font-black truncate">
+                        <p className="text-xs font-black truncate">
                           {r.name}
                         </p>
                         <Badge
@@ -174,7 +174,7 @@ const FleetRadar = () => {
                       </div>
                       <p
                         className={cn(
-                          "text-[9px] font-bold opacity-60 mt-0.5",
+                          "text-xs font-bold opacity-60 mt-0.5",
                           selectedRider?.id === r.id
                             ? "text-white"
                             : "text-slate-500",
@@ -220,7 +220,7 @@ const FleetRadar = () => {
                       selectedRider?.id === r.id
                         ? "text-white"
                         : r.status === "delayed"
-                          ? "text-rose-500"
+                          ? "text-rose-700"
                           : "text-primary/60",
                     )}
                   />
@@ -249,7 +249,7 @@ const FleetRadar = () => {
                           <h4 className="text-sm font-black">
                             {selectedRider.name}
                           </h4>
-                          <p className="text-[10px] font-bold text-white/40">
+                          <p className="text-xs font-bold text-white/40">
                             {selectedRider.id}
                           </p>
                         </div>
@@ -270,7 +270,7 @@ const FleetRadar = () => {
                               className={cn(
                                 "h-3.5 w-3.5",
                                 selectedRider.battery < 20
-                                  ? "text-rose-500 animate-pulse"
+                                  ? "text-rose-700 animate-pulse"
                                   : "text-brand-500",
                               )}
                             />
@@ -325,7 +325,7 @@ const FleetRadar = () => {
           <div className="absolute bottom-8 right-8 flex flex-col gap-2">
             <div className="bg-slate-950/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10 flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(37,99,235,0.8)]" />
-              <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">
+              <span className="text-xs font-black text-white/70 uppercase tracking-widest">
                 Real-time Telemetry Active
               </span>
             </div>

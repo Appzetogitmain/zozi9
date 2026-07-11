@@ -64,7 +64,7 @@ const AdminLegalPages = () => {
                 {/* Sidebar for Selection */}
                 <div className="w-full lg:w-64 shrink-0 space-y-6">
                     <Card className="p-4 bg-white border-slate-100 shadow-sm rounded-2xl">
-                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Select Role</h3>
+                        <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Select Role</h3>
                         <div className="flex flex-col gap-2">
                             {['CUSTOMER', 'SELLER', 'DELIVERY'].map(r => (
                                 <button
@@ -79,7 +79,7 @@ const AdminLegalPages = () => {
                     </Card>
 
                     <Card className="p-4 bg-white border-slate-100 shadow-sm rounded-2xl">
-                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Select Page</h3>
+                        <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Select Page</h3>
                         <div className="flex flex-col gap-2">
                             {[
                                 { id: 'TERMS', label: 'Terms & Conditions' },
@@ -109,7 +109,7 @@ const AdminLegalPages = () => {
                                     <h2 className="text-lg font-black text-slate-800">
                                         {type === 'TERMS' ? 'Terms & Conditions' : 'Privacy Policy'}
                                     </h2>
-                                    <p className="text-xs font-bold text-slate-400">
+                                    <p className="text-xs font-bold text-slate-500">
                                         For {role.charAt(0) + role.slice(1).toLowerCase()}s
                                     </p>
                                 </div>

@@ -430,7 +430,7 @@ const SellerLocations = () => {
             Seller Locations
             <Badge
               variant="primary"
-              className="text-[9px] px-1.5 py-0 font-bold tracking-wider uppercase">
+              className="text-xs px-1.5 py-0 font-bold tracking-wider uppercase">
               Google Maps
             </Badge>
           </h1>
@@ -445,9 +445,9 @@ const SellerLocations = () => {
               onClick={() => setMapView("coverage")}
               disabled={!mapUnlocked}
               className={cn(
-                "px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all",
+                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
                 !mapUnlocked
-                  ? "text-slate-400 cursor-not-allowed"
+                  ? "text-slate-500 cursor-not-allowed"
                   : mapView === "coverage"
                     ? "bg-white text-slate-900 shadow-sm"
                     : "text-slate-500 hover:text-slate-700",
@@ -458,9 +458,9 @@ const SellerLocations = () => {
               onClick={() => setMapView("density")}
               disabled={!mapUnlocked}
               className={cn(
-                "px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all",
+                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
                 !mapUnlocked
-                  ? "text-slate-400 cursor-not-allowed"
+                  ? "text-slate-500 cursor-not-allowed"
                   : mapView === "density"
                     ? "bg-white text-slate-900 shadow-sm"
                     : "text-slate-500 hover:text-slate-700",
@@ -472,7 +472,7 @@ const SellerLocations = () => {
           {mapUnlocked && (
             <button
               onClick={() => setMapUnlocked(false)}
-              className="px-3 py-2.5 bg-white ring-1 ring-slate-200 rounded-xl shadow-sm text-[11px] font-bold text-slate-600 hover:text-slate-900 transition-all"
+              className="px-3 py-2.5 bg-white ring-1 ring-slate-200 rounded-xl shadow-sm text-xs font-bold text-slate-600 hover:text-slate-900 transition-all"
               title="Lock map to save API cost">
               Lock Map
             </button>
@@ -491,7 +491,7 @@ const SellerLocations = () => {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 shrink-0">
         <Card className="border-none ring-1 ring-slate-100 p-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
             Sellers
           </p>
           <p className="text-2xl font-black text-slate-900 mt-1">
@@ -499,7 +499,7 @@ const SellerLocations = () => {
           </p>
         </Card>
         <Card className="border-none ring-1 ring-slate-100 p-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
             Mapped
           </p>
           <p className="text-2xl font-black text-brand-600 mt-1">
@@ -507,7 +507,7 @@ const SellerLocations = () => {
           </p>
         </Card>
         <Card className="border-none ring-1 ring-slate-100 p-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
             Avg Radius
           </p>
           <p className="text-2xl font-black text-slate-900 mt-1">
@@ -515,7 +515,7 @@ const SellerLocations = () => {
           </p>
         </Card>
         <Card className="border-none ring-1 ring-slate-100 p-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
             Active Orders
           </p>
           <p className="text-2xl font-black text-slate-900 mt-1">
@@ -528,7 +528,7 @@ const SellerLocations = () => {
         <Card className="border-none shadow-xl ring-1 ring-slate-100 rounded-2xl overflow-hidden flex flex-col min-h-0">
           <div className="p-4 border-b border-slate-100 space-y-3">
             <div className="relative">
-              <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
               <input
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
@@ -541,7 +541,7 @@ const SellerLocations = () => {
               <select
                 value={lifecycle}
                 onChange={(event) => setLifecycle(event.target.value)}
-                className="px-3 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-[11px] font-bold text-slate-700 outline-none">
+                className="px-3 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-xs font-bold text-slate-700 outline-none">
                 {LIFECYCLE_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -551,7 +551,7 @@ const SellerLocations = () => {
               <select
                 value={sort}
                 onChange={(event) => setSort(event.target.value)}
-                className="px-3 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-[11px] font-bold text-slate-700 outline-none">
+                className="px-3 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-xs font-bold text-slate-700 outline-none">
                 {SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -564,7 +564,7 @@ const SellerLocations = () => {
               <select
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="px-3 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-[11px] font-bold text-slate-700 outline-none">
+                className="px-3 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-xs font-bold text-slate-700 outline-none">
                 <option value="all">All categories</option>
                 {filtersMeta.categories.map((option) => (
                   <option key={option} value={option}>
@@ -575,7 +575,7 @@ const SellerLocations = () => {
               <select
                 value={city}
                 onChange={(event) => setCity(event.target.value)}
-                className="px-3 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-[11px] font-bold text-slate-700 outline-none">
+                className="px-3 py-2 rounded-xl bg-white ring-1 ring-slate-200 text-xs font-bold text-slate-700 outline-none">
                 <option value="all">All cities</option>
                 {filtersMeta.cities.map((option) => (
                   <option key={option} value={option}>
@@ -593,7 +593,7 @@ const SellerLocations = () => {
               </div>
             ) : error ? (
               <div className="h-full flex flex-col items-center justify-center gap-3 text-center">
-                <HiOutlineExclamationTriangle className="h-8 w-8 text-rose-400" />
+                <HiOutlineExclamationTriangle className="h-8 w-8 text-rose-700" />
                 <p className="text-sm font-bold text-slate-600">{error}</p>
               </div>
             ) : items.length ? (
@@ -627,7 +627,7 @@ const SellerLocations = () => {
                         </p>
                       <p
                         className={cn(
-                          "text-[10px] mt-1 truncate",
+                          "text-xs mt-1 truncate",
                           selectedSellerId === seller.id
                             ? "text-slate-200"
                             : "text-slate-500",
@@ -637,7 +637,7 @@ const SellerLocations = () => {
                       <div className="mt-2 flex items-center gap-2 flex-wrap">
                         <span
                           className={cn(
-                            "text-[9px] font-black px-2 py-0.5 rounded-full border uppercase tracking-wide",
+                            "text-xs font-black px-2 py-0.5 rounded-full border uppercase tracking-wide",
                             selectedSellerId === seller.id
                               ? "bg-white/10 border-white/20 text-white"
                               : lifecycleClassMap[seller.lifecycle] ||
@@ -647,7 +647,7 @@ const SellerLocations = () => {
                         </span>
                         <span
                           className={cn(
-                            "text-[9px] font-bold",
+                            "text-xs font-bold",
                             selectedSellerId === seller.id
                               ? "text-slate-100"
                               : "text-slate-500",
@@ -656,7 +656,7 @@ const SellerLocations = () => {
                         </span>
                         <span
                           className={cn(
-                            "text-[9px] font-bold",
+                            "text-xs font-bold",
                             selectedSellerId === seller.id
                               ? "text-slate-100"
                               : "text-slate-500",
@@ -666,7 +666,7 @@ const SellerLocations = () => {
                         {!seller.hasValidLocation && (
                           <span
                             className={cn(
-                              "text-[9px] font-bold px-2 py-0.5 rounded-full border",
+                              "text-xs font-bold px-2 py-0.5 rounded-full border",
                               selectedSellerId === seller.id
                                 ? "bg-white/10 border-white/20 text-white"
                                 : "bg-amber-50 text-amber-700 border-amber-100",
@@ -682,7 +682,7 @@ const SellerLocations = () => {
               })
             ) : (
               <div className="h-full flex flex-col items-center justify-center gap-3 text-center px-4">
-                <HiOutlineGlobeAlt className="h-10 w-10 text-slate-300" />
+                <HiOutlineGlobeAlt className="h-10 w-10 text-slate-400" />
                 <p className="text-sm font-bold text-slate-500">
                   No sellers matched the selected filters.
                 </p>
@@ -723,7 +723,7 @@ const SellerLocations = () => {
                   <HiOutlineMap className="h-4 w-4" />
                   Open Live Map
                 </button>
-                <p className="text-[11px] font-semibold text-slate-500">
+                <p className="text-xs font-semibold text-slate-500">
                   Tip: keep map closed while filtering to minimize Google Maps
                   charges.
                 </p>
@@ -741,7 +741,7 @@ const SellerLocations = () => {
           )}
 
           <div className="absolute bottom-5 left-5 z-20">
-            <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl text-[10px] font-bold text-slate-700 flex items-center gap-2 shadow-lg ring-1 ring-slate-200">
+            <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl text-xs font-bold text-slate-700 flex items-center gap-2 shadow-lg ring-1 ring-slate-200">
               <HiOutlineInformationCircle className="h-4 w-4 text-slate-500" />
               {mapUnlocked
                 ? "Circles represent seller service radius. Density colors indicate live order load."

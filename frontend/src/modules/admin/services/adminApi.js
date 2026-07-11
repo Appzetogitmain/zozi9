@@ -160,4 +160,10 @@ export const adminApi = {
     // Legal Pages
     getLegalPage: (role, type) => axiosInstance.get(`/legal/${role}/${type}`),
     updateLegalPage: (role, type, data) => axiosInstance.put(`/legal/${role}/${type}`, data),
+
+    // Delivery Slots
+    getDeliverySlots: (params) => axiosInstance.get('/delivery-slots', { params }),
+    createDeliverySlot: (data) => axiosInstance.post('/delivery-slots', data),
+    updateDeliverySlot: (id, data) => axiosInstance.put(`/delivery-slots/${id}`, data),
+    deleteDeliverySlot: (id) => axiosInstance.delete(`/delivery-slots/${id}`),
 };

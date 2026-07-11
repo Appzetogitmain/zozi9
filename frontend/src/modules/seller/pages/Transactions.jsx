@@ -142,7 +142,7 @@ const Transactions = () => {
   }
 
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-5 pb-16">
       <BlurFade delay={0.1}>
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -151,7 +151,7 @@ const Transactions = () => {
               Transaction Ledger
               <Badge
                 variant="primary"
-                className="text-[10px] sm:text-xs px-1.5 py-0 font-bold tracking-wider uppercase bg-brand-100 text-brand-700">
+                className="text-xs sm:text-xs px-1.5 py-0 font-bold tracking-wider uppercase bg-brand-100 text-brand-700">
                 Audit Trail
               </Badge>
             </h1>
@@ -203,16 +203,16 @@ const Transactions = () => {
       </BlurFade>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {stats.map((stat, i) => (
           <BlurFade key={i} delay={0.1 + i * 0.05}>
             <MagicCard
               className="border-none shadow-md overflow-hidden bg-white p-0"
               gradientColor="#f8fafc">
-              <div className="p-6 relative z-10 flex items-center gap-4">
+              <div className="p-4 relative z-10 flex items-center gap-4">
                 <div
                   className={cn(
-                    "h-14 w-14 rounded-lg flex items-center justify-center shadow-lg shadow-black/5",
+                    "h-10 w-10 rounded-lg flex items-center justify-center shadow-lg shadow-black/5",
                     stat.bg,
                     stat.color,
                   )}>
@@ -235,7 +235,7 @@ const Transactions = () => {
       <BlurFade delay={0.4}>
         <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden rounded-lg p-0 bg-white">
           {/* Toolbar */}
-          <div className="p-6 border-b border-slate-50 flex flex-col md:flex-row gap-4 items-center justify-between bg-white">
+          <div className="p-4 border-b border-slate-50 flex flex-col md:flex-row gap-4 items-center justify-between bg-white">
             <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 shrink-0">
               {["All", "Order Payment", "Withdrawal", "Refund"].map((tab) => (
                 <button
@@ -267,19 +267,19 @@ const Transactions = () => {
             <table className="w-full text-left min-w-[720px]">
               <thead>
                 <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
+                  <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Transaction Details
                   </th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
+                  <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Reference
                   </th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
+                  <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Amount
                   </th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
+                  <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest text-right">
+                  <th className="px-4 py-2.5 text-xs font-black text-slate-600 uppercase tracking-widest text-right">
                     Actions
                   </th>
                 </tr>
@@ -288,7 +288,7 @@ const Transactions = () => {
                 <AnimatePresence>
                   {filteredTransactions.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center text-slate-600 text-sm font-medium">
+                      <td colSpan={5} className="px-4 py-12 text-center text-slate-600 text-sm font-medium">
                         {ledger.length === 0 ? "No transactions yet." : "No matches for your search or filter."}
                       </td>
                     </tr>
@@ -303,7 +303,7 @@ const Transactions = () => {
                         setIsDetailModalOpen(true);
                       }}
                       className="group hover:bg-slate-50/50 transition-all cursor-pointer">
-                      <td className="px-6 py-5">
+                      <td className="px-4 py-3">
                         <div className="flex items-center gap-4">
                           <div
                             className={cn(
@@ -322,26 +322,26 @@ const Transactions = () => {
                             <p className="text-sm font-black text-slate-900 group-hover:text-primary transition-colors">
                               {txn.id ?? txn.ref ?? "—"}
                             </p>
-                            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                            <p className="text-xs font-bold text-slate-600 uppercase tracking-widest">
                               {txn.type ?? "—"}
                             </p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5">
+                      <td className="px-4 py-3">
                         <p className="text-xs font-bold text-slate-900">
                           {txn.customer ?? "—"}
                         </p>
                         <div className="flex items-center gap-1.5 mt-1">
-                          <Badge className="text-[10px] sm:text-xs px-1 py-0 bg-slate-100 text-slate-600 font-bold border-none">
+                          <Badge className="text-xs sm:text-xs px-1 py-0 bg-slate-100 text-slate-600 font-bold border-none">
                             {txn.ref ?? "—"}
                           </Badge>
-                          <span className="text-[10px] sm:text-xs text-slate-600 font-bold uppercase tracking-tighter">
+                          <span className="text-xs sm:text-xs text-slate-600 font-bold uppercase tracking-tighter">
                             {txn.date ?? (txn.createdAt ? new Date(txn.createdAt).toLocaleDateString() : "—")} • {txn.time ?? (txn.createdAt ? new Date(txn.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—")}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-5">
+                      <td className="px-4 py-3">
                         <p
                           className={cn(
                             "text-sm font-black tracking-tight",
@@ -352,11 +352,11 @@ const Transactions = () => {
                           {Number(txn.amount ?? 0) > 0 ? "+" : ""}₹
                           {Math.abs(Number(txn.amount ?? 0)).toLocaleString()}
                         </p>
-                        <p className="text-[10px] sm:text-xs font-bold text-slate-600 mt-0.5">
+                        <p className="text-xs sm:text-xs font-bold text-slate-600 mt-0.5">
                           Settlement: {(txn.status ?? "") === "Settled" ? "Complete" : "T+2"}
                         </p>
                       </td>
-                      <td className="px-6 py-5">
+                      <td className="px-4 py-3">
                         <Badge
                           variant={
                             txn.status === "Settled"
@@ -365,7 +365,7 @@ const Transactions = () => {
                                 ? "warning"
                                 : "default"
                           }
-                          className="text-[10px] sm:text-xs font-black uppercase tracking-widest px-2-5 py-0.5 rounded-lg">
+                          className="text-xs sm:text-xs font-black uppercase tracking-widest px-2-5 py-0.5 rounded-lg">
                           {txn.status === "Settled" ? (
                             <HiOutlineCheckCircle className="mr-1 h-3 w-3" />
                           ) : (
@@ -374,7 +374,7 @@ const Transactions = () => {
                           {txn.status}
                         </Badge>
                       </td>
-                      <td className="px-6 py-5 text-right">
+                      <td className="px-4 py-3 text-right">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -416,8 +416,8 @@ const Transactions = () => {
         onClose={() => setIsDetailModalOpen(false)}
         title="Transaction Receipt">
         {selectedTxn && (
-          <div className="space-y-6">
-            <div className="text-center p-6 bg-slate-50 rounded-lg border border-slate-100">
+          <div className="space-y-4">
+            <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100">
               <p className="text-xs font-black text-slate-600 uppercase tracking-widest mb-1">
                 Total Amount
               </p>
@@ -429,7 +429,7 @@ const Transactions = () => {
                 {Number(selectedTxn.amount ?? 0) > 0 ? "+" : ""}₹
                 {Math.abs(Number(selectedTxn.amount ?? 0)).toLocaleString()}
               </h2>
-              <Badge className="mt-4 uppercase font-black text-[10px] sm:text-xs px-3 py-1">
+              <Badge className="mt-4 uppercase font-black text-xs sm:text-xs px-3 py-1">
                 {selectedTxn.status ?? "—"}
               </Badge>
             </div>
@@ -475,7 +475,7 @@ const Transactions = () => {
 
             <div className="p-4 bg-amber-50 rounded-lg border border-amber-100 flex gap-3">
               <HiOutlineClock className="h-5 w-5 text-amber-600 shrink-0" />
-              <p className="text-[10px] text-amber-800 font-bold leading-relaxed">
+              <p className="text-xs text-amber-800 font-bold leading-relaxed">
                 This transaction is scheduled for settlement in your bank
                 account via T+2 rolling cycle. Settlements usually occur before
                 6:00 PM.
@@ -486,12 +486,12 @@ const Transactions = () => {
               <Button
                 variant="outline"
                 onClick={() => window.print()}
-                className="rounded-lg py-4 font-black bg-white">
+                className="rounded-lg py-2.5 font-black bg-white">
                 PRINT RECEIPT
               </Button>
               <Button
                 onClick={() => setIsDetailModalOpen(false)}
-                className="rounded-lg py-4 font-black shadow-xl shadow-primary/20">
+                className="rounded-lg py-2.5 font-black shadow-xl shadow-primary/20">
                 CLOSE
               </Button>
             </div>

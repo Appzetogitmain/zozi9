@@ -246,7 +246,7 @@ const Dashboard = () => {
       />
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
           <Card key={stat.label} className="hover:shadow-lg transition-shadow">
             <div className="flex items-start justify-between">
@@ -275,7 +275,7 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {quickActions.map((action) => {
           const isPrimary = action.variant === "primary";
           const isEmerald = action.variant === "outline-emerald";
@@ -284,7 +284,7 @@ const Dashboard = () => {
               key={action.title}
               onClick={() => navigate(action.path)}
               className={cn(
-                "p-6 rounded-xl text-left transition-all duration-200 shadow-sm hover:shadow-md border-2",
+                "p-4 rounded-xl text-left transition-all duration-200 shadow-sm hover:shadow-md border-2",
                 isPrimary && "bg-primary border-primary text-white hover:bg-primary/90 hover:border-primary/90",
                 action.variant === "outline" && "bg-white border-slate-200 text-slate-900 hover:border-primary hover:bg-primary/5",
                 isEmerald && "bg-white border-slate-200 text-slate-900 hover:border-brand-500 hover:bg-brand-50"
@@ -324,7 +324,7 @@ const Dashboard = () => {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Revenue Chart */}
         <Card title="Revenue Overview" subtitle="Last 7 days performance" className="lg:col-span-2">
           <div className="h-[300px] min-h-[280px] w-full mt-4">
@@ -447,10 +447,10 @@ const Dashboard = () => {
             <tbody className="divide-y divide-slate-50">
               {safeOrders.slice(0, 5).map((order) => (
                 <tr key={order.orderId} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="py-4 px-4 align-middle">
+                  <td className="py-2.5 px-4 align-middle">
                     <span className="text-sm font-semibold text-slate-900">{order.orderId}</span>
                   </td>
-                  <td className="py-4 px-4 align-middle">
+                  <td className="py-2.5 px-4 align-middle">
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-600">
                         {order.customer?.name?.split(" ").map(n => n[0]).join("") || "C"}
@@ -458,18 +458,18 @@ const Dashboard = () => {
                       <span className="text-sm font-medium text-slate-700">{order.customer?.name || "Customer"}</span>
                     </div>
                   </td>
-                  <td className="py-4 px-4 align-middle">
+                  <td className="py-2.5 px-4 align-middle">
                     <span className="text-sm text-slate-600">{new Date(order.createdAt).toLocaleDateString()}</span>
                   </td>
-                  <td className="py-4 px-4 align-middle">
+                  <td className="py-2.5 px-4 align-middle">
                     <span className="text-sm font-semibold text-slate-900">₹{order.pricing?.total || 0}</span>
                   </td>
-                  <td className="py-4 px-4 align-middle">
+                  <td className="py-2.5 px-4 align-middle">
                     <Badge variant={getStatusColor(order.status)} className="capitalize">
                       {order.status}
                     </Badge>
                   </td>
-                  <td className="py-4 px-4 text-center align-middle">
+                  <td className="py-2.5 px-4 text-center align-middle">
                     <button
                       onClick={() => {
                         setSelectedOrder(normalizeOrderForModal(order));
@@ -489,7 +489,7 @@ const Dashboard = () => {
 
       <AnimatePresence>
         {isOrderModalOpen && selectedOrder && (
-          <div className="fixed inset-0 z-[100] flex items-stretch sm:items-center justify-center p-3 sm:p-6 lg:p-12">
+          <div className="fixed inset-0 z-[100] flex items-stretch sm:items-center justify-center p-3 sm:p-4 lg:p-12">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -504,7 +504,7 @@ const Dashboard = () => {
               className="w-full max-w-lg sm:max-w-2xl relative z-10 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
               {/* Modal Header - same as Orders */}
-              <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100">
+              <div className="flex items-center justify-between px-4 py-3 sm:px-4 sm:py-2.5 border-b border-slate-100">
                 <div className="flex items-center space-x-3">
                   <div className="h-10 w-10 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg">
                     <HiOutlineTruck className="h-5 w-5" />
@@ -516,11 +516,11 @@ const Dashboard = () => {
                     <div className="flex items-center space-x-2 mt-0.5">
                       <Badge
                         variant={getStatusColor(selectedOrder.status)}
-                        className="text-[10px] font-black uppercase tracking-widest px-1.5 py-0"
+                        className="text-xs font-black uppercase tracking-widest px-1.5 py-0"
                       >
                         {selectedOrder.status}
                       </Badge>
-                      <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                      <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">
                         #{selectedOrder.id}
                       </span>
                     </div>
@@ -534,8 +534,8 @@ const Dashboard = () => {
                 </button>
               </div>
 
-              <div className="px-4 py-4 sm:px-6 sm:py-5 overflow-y-auto scrollbar-hide flex-1">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+              <div className="px-4 py-2.5 sm:px-4 sm:py-3 overflow-y-auto scrollbar-hide flex-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-4 mb-6 sm:mb-8">
                   <div className="space-y-3 sm:space-y-4">
                     <div>
                       <h4 className="text-xs font-black text-slate-600 uppercase tracking-widest mb-2 flex items-center gap-2">
@@ -555,7 +555,7 @@ const Dashboard = () => {
                         <p className="text-xs font-bold text-slate-800">
                           {selectedOrder.customer.name}
                         </p>
-                        <p className="text-[11px] font-semibold text-slate-600 mt-0.5">
+                        <p className="text-xs font-semibold text-slate-600 mt-0.5">
                           {selectedOrder.customer.phone}
                         </p>
                       </div>
@@ -563,7 +563,7 @@ const Dashboard = () => {
                   </div>
                   <div className="space-y-3 sm:space-y-4">
                     <div className="bg-primary/5 p-3 sm:p-4 rounded-3xl border border-primary/10">
-                      <h4 className="text-[10px] font-black text-primary uppercase tracking-widest mb-3">
+                      <h4 className="text-xs font-black text-primary uppercase tracking-widest mb-3">
                         Order Summary
                       </h4>
                       <div className="space-y-2">
@@ -635,7 +635,7 @@ const Dashboard = () => {
                           <p className="text-xs font-bold text-slate-900">
                             {item.name}
                           </p>
-                          <p className="text-[10px] font-semibold text-slate-600 mt-0.5">
+                          <p className="text-xs font-semibold text-slate-600 mt-0.5">
                             ₹{Number(item.price).toFixed(2)} × {item.qty}
                           </p>
                         </div>
@@ -651,11 +651,11 @@ const Dashboard = () => {
               </div>
 
               {/* Modal Footer - same as Orders */}
-              <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:items-center justify-end">
+              <div className="px-4 py-3 sm:px-4 sm:py-2.5 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:items-center justify-end">
                 <div className="flex gap-2 items-center">
                   <button
                     onClick={() => setIsOrderModalOpen(false)}
-                    className="px-6 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all"
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all"
                   >
                     CLOSE
                   </button>
@@ -666,7 +666,7 @@ const Dashboard = () => {
                         handleStatusUpdate(selectedOrder.id, e.target.value)
                       }
                       className={cn(
-                        "w-full text-[10px] pl-3 pr-8 py-2 rounded-xl font-black uppercase tracking-wider border appearance-none cursor-pointer focus:ring-2 focus:ring-offset-1 transition-all outline-none shadow-sm",
+                        "w-full text-xs pl-3 pr-8 py-2 rounded-xl font-black uppercase tracking-wider border appearance-none cursor-pointer focus:ring-2 focus:ring-offset-1 transition-all outline-none shadow-sm",
                         getStatusColor(selectedOrder.status) === "warning"
                           ? "bg-amber-100 text-amber-700 focus:ring-amber-200"
                           : getStatusColor(selectedOrder.status) === "info"

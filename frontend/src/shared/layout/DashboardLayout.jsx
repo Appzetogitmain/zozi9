@@ -442,6 +442,20 @@ const DashboardLayout = ({ children, navItems, title }) => {
                                     You have a new order <span className="text-primary font-bold">#{newOrderAlert.orderId}</span> for <span className="text-slate-900 font-bold">₹{newOrderAlert.pricing?.total || newOrderAlert.total}</span>
                                 </p>
 
+                                <div className="flex items-center gap-3 mb-6 p-3 bg-brand-50 rounded-xl border border-brand-100 w-full justify-center">
+                                    <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                                        <Clock className="h-4 w-4 text-brand-600" />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Expected Delivery</p>
+                                        <p className="text-sm font-black text-brand-700">
+                                            {newOrderAlert.deliveryType === 'scheduled' 
+                                                ? (newOrderAlert.scheduledSlot?.start ? `${newOrderAlert.scheduledSlot.start} - ${newOrderAlert.scheduledSlot.end}` : (newOrderAlert.timeSlot || 'Scheduled'))
+                                                : "Express (Now)"}
+                                        </p>
+                                    </div>
+                                </div>
+
                                 {/* Timer Bar — width from real server deadline */}
                                 <div className="w-full bg-slate-100 h-2 rounded-full mb-8 overflow-hidden">
                                     <div

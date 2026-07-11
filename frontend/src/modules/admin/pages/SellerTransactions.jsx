@@ -153,7 +153,7 @@ const SellerTransactions = () => {
                         <Loader2 />
                     </div>
                 </div>
-                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Synchronizing Ledger...</p>
+                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Synchronizing Ledger...</p>
             </div>
         );
     }
@@ -214,7 +214,7 @@ const SellerTransactions = () => {
             <Card className="p-4 border-none shadow-xl ring-1 ring-slate-100/50 bg-white/80 backdrop-blur-xl rounded-xl">
                 <div className="flex flex-col lg:flex-row gap-4">
                     <div className="flex-1 relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-orange-500 transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-orange-500 transition-colors" />
                         <input
                             type="text"
                             placeholder="Filter by Store, Order ID, or Txn Reference..."
@@ -226,11 +226,11 @@ const SellerTransactions = () => {
 
                     <div className="flex flex-wrap items-center gap-3">
                         <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl ring-1 ring-slate-100">
-                            <Filter className="h-3.5 w-3.5 text-slate-400" />
+                            <Filter className="h-3.5 w-3.5 text-slate-500" />
                             <select
                                 value={filterType}
                                 onChange={(e) => setFilterType(e.target.value)}
-                                className="bg-transparent text-[10px] font-bold text-slate-600 uppercase outline-none cursor-pointer"
+                                className="bg-transparent text-xs font-bold text-slate-600 uppercase outline-none cursor-pointer"
                             >
                                 <option value="all">All Types</option>
                                 <option value="sale">Sales Only</option>
@@ -240,11 +240,11 @@ const SellerTransactions = () => {
                         </div>
 
                         <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl ring-1 ring-slate-100">
-                            <Building2 className="h-3.5 w-3.5 text-slate-400" />
+                            <Building2 className="h-3.5 w-3.5 text-slate-500" />
                             <select
                                 value={selectedSeller}
                                 onChange={(e) => setSelectedSeller(e.target.value)}
-                                className="bg-transparent text-[10px] font-bold text-slate-600 uppercase outline-none cursor-pointer max-w-[150px]"
+                                className="bg-transparent text-xs font-bold text-slate-600 uppercase outline-none cursor-pointer max-w-[150px]"
                             >
                                 <option value="all">All Merchants</option>
                                 {sellers.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
@@ -257,8 +257,8 @@ const SellerTransactions = () => {
                                     key={status}
                                     onClick={() => setFilterStatus(status)}
                                     className={cn(
-                                        "px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tight transition-all",
-                                        filterStatus === status ? "bg-white text-orange-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                                        "px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-tight transition-all",
+                                        filterStatus === status ? "bg-white text-orange-600 shadow-sm" : "text-slate-500 hover:text-slate-600"
                                     )}
                                 >
                                     {status}
@@ -296,21 +296,21 @@ const SellerTransactions = () => {
                                                 {txn.type === 'sale' ? <ShoppingCart className="h-5 w-5" /> : txn.type === 'payout' ? <ArrowUpRight className="h-5 w-5" /> : <Undo2 className="h-5 w-5" />}
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{txn.id}</p>
+                                                <p className="text-xs font-black text-slate-500 uppercase tracking-tighter">{txn.id}</p>
                                                 <p className="text-xs font-bold text-slate-900 mt-0.5">{txn.date}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-2">
-                                            <Building2 className="h-3.5 w-3.5 text-slate-300" />
+                                            <Building2 className="h-3.5 w-3.5 text-slate-400" />
                                             <p className="text-sm font-bold text-slate-700">{txn.seller}</p>
                                         </div>
                                     </td>
                                     <td className="px-6 py-5">
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="text-[10px] font-black text-slate-400 uppercase">{txn.type}</span>
-                                            {txn.orderId && <span className="text-[10px] font-bold text-orange-500 uppercase tracking-widest">{txn.orderId}</span>}
+                                            <span className="text-xs font-black text-slate-500 uppercase">{txn.type}</span>
+                                            {txn.orderId && <span className="text-xs font-bold text-orange-500 uppercase tracking-widest">{txn.orderId}</span>}
                                         </div>
                                     </td>
                                     <td className="px-6 py-5 text-center">
@@ -324,11 +324,11 @@ const SellerTransactions = () => {
                                     <td className="px-6 py-5 text-center">
                                         {txn.type === 'sale' ? (
                                             <div className="flex flex-col items-center">
-                                                <span className="text-[9px] font-bold text-rose-500">(-₹{txn.commissionAmount})</span>
+                                                <span className="text-xs font-bold text-rose-700">(-₹{txn.commissionAmount})</span>
                                                 <span className="text-xs font-black text-brand-600 pt-0.5">₹{txn.netPayable.toLocaleString()}</span>
                                             </div>
                                         ) : (
-                                            <span className="text-slate-300 font-bold text-[10px]">---</span>
+                                            <span className="text-slate-400 font-bold text-xs">---</span>
                                         )}
                                     </td>
                                     <td className="px-6 py-5 text-center">
@@ -342,7 +342,7 @@ const SellerTransactions = () => {
                                     <td className="px-6 py-5 text-right pr-8">
                                         <button
                                             onClick={() => setSelectedTxn(txn)}
-                                            className="p-2 hover:bg-white hover:shadow-md rounded-xl text-slate-400 hover:text-orange-500 transition-all active:scale-90"
+                                            className="p-2 hover:bg-white hover:shadow-md rounded-xl text-slate-500 hover:text-orange-500 transition-all active:scale-90"
                                         >
                                             <Eye className="h-4 w-4" />
                                         </button>
@@ -351,7 +351,7 @@ const SellerTransactions = () => {
                             ))}
                             {filteredTransactions.length === 0 && (
                                 <tr>
-                                    <td colSpan="7" className="px-6 py-32 text-center text-slate-400 font-bold">
+                                    <td colSpan="7" className="px-6 py-32 text-center text-slate-500 font-bold">
                                         <Receipt className="h-12 w-12 mx-auto mb-4 opacity-20" />
                                         No transactions match your current search criteria.
                                     </td>
@@ -395,7 +395,7 @@ const SellerTransactions = () => {
                             <h2 className="text-3xl font-black text-slate-900 tracking-tight">
                                 {selectedTxn.amount > 0 ? '' : '-'}₹{Math.abs(selectedTxn.amount).toLocaleString()}
                             </h2>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mt-2">{selectedTxn.id}</p>
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mt-2">{selectedTxn.id}</p>
                         </div>
 
                         <div className="space-y-6">
@@ -403,21 +403,21 @@ const SellerTransactions = () => {
                                 <div>
                                     <p className="ds-label">Chronology</p>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <Calendar className="h-4 w-4 text-slate-400" />
+                                        <Calendar className="h-4 w-4 text-slate-500" />
                                         <p className="text-sm font-bold text-slate-700">{selectedTxn.date}</p>
                                     </div>
                                 </div>
                                 <div>
                                     <p className="ds-label">Merchant Name</p>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <Building2 className="h-4 w-4 text-slate-400" />
+                                        <Building2 className="h-4 w-4 text-slate-500" />
                                         <p className="text-sm font-bold text-slate-700">{selectedTxn.seller}</p>
                                     </div>
                                 </div>
                                 <div>
                                     <p className="ds-label">Payment Pathway</p>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <CreditCard className="h-4 w-4 text-slate-400" />
+                                        <CreditCard className="h-4 w-4 text-slate-500" />
                                         <p className="text-sm font-bold text-slate-700">{selectedTxn.paymentMethod}</p>
                                     </div>
                                 </div>
@@ -463,11 +463,11 @@ const SellerTransactions = () => {
                                         </div>
                                         <div className="space-y-2">
                                             <div className="flex justify-between">
-                                                <span className="text-[10px] font-bold text-brand-600/60 uppercase">Reference Identifier</span>
+                                                <span className="text-xs font-bold text-brand-600/60 uppercase">Reference Identifier</span>
                                                 <span className="text-xs font-mono font-black text-brand-900 line-clamp-1">{selectedTxn.referenceId}</span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-[10px] font-bold text-brand-600/60 uppercase">Settlement Target</span>
+                                                <span className="text-xs font-bold text-brand-600/60 uppercase">Settlement Target</span>
                                                 <span className="text-xs font-black text-brand-900">{selectedTxn.bankDetails}</span>
                                             </div>
                                         </div>
@@ -552,7 +552,7 @@ const SellerTransactions = () => {
                                             toast.error('Failed to download voucher');
                                         }
                                     }}
-                                    className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl active:scale-[0.98] transition-all hover:bg-slate-800"
+                                    className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs font-bold uppercase tracking-widest shadow-xl active:scale-[0.98] transition-all hover:bg-slate-800"
                                 >
                                     Download Voucher
                                 </button>

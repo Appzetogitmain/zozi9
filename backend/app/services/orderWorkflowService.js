@@ -60,6 +60,9 @@ function deliveryBroadcastPayloadFromOrder(order, extra = {}) {
       pickup,
       drop,
       total: order.pricing?.total ?? 0,
+      timeSlot: order.timeSlot,
+      deliveryType: order.deliveryType,
+      scheduledSlot: order.scheduledSlot,
     },
     deliverySearchExpiresAt: order.deliverySearchExpiresAt,
     ...extra,
@@ -238,15 +241,9 @@ export async function sellerAcceptAtomic(sellerId, orderId) {
     },
     {
       $set: {
-        workflowStatus: WORKFLOW_STATUS.DELIVERY_SEARCH,
-        status: legacyStatusFromWorkflow(WORKFLOW_STATUS.DELIVERY_SEARCH),
+        workflowStatus: WORKFLOW_STATUS.SELLER_ACCEPTED,
+        status: legacyStatusFromWorkflow(WORKFLOW_STATUS.SELLER_ACCEPTED),
         sellerAcceptedAt: now,
-        deliverySearchExpiresAt: new Date(now.getTime() + deliveryMs),
-        deliverySearchMeta: {
-          radiusMeters: INITIAL_DELIVERY_RADIUS_M(),
-          attempt: 1,
-          lastBroadcastAt: now,
-        },
       },
       // CRITICAL FIX: Remove expiresAt to prevent TTL index from auto-deleting the order
       $unset: { expiresAt: 1 },
@@ -263,6 +260,62 @@ export async function sellerAcceptAtomic(sellerId, orderId) {
   }
 
   await removeSellerTimeoutJob(orderId);
+  emitOrderStatusUpdate(
+    updated.orderId,
+    {
+      workflowStatus: WORKFLOW_STATUS.SELLER_ACCEPTED,
+    },
+    updated.customer?._id || updated.customer,
+  );
+
+  emitNotificationEvent(NOTIFICATION_EVENTS.ORDER_CONFIRMED, {
+    orderId: updated.orderId,
+    customerId: updated.customer?._id || updated.customer,
+    userId: updated.customer?._id || updated.customer,
+    sellerId: updated.seller?._id || updated.seller,
+  });
+
+  return updated;
+}
+
+/**
+ * Seller manually triggers delivery search: SELLER_ACCEPTED -> DELIVERY_SEARCH
+ */
+export async function processToDeliveryAtomic(sellerId, orderId) {
+  orderId = await requireCanonicalOrderId(orderId);
+  const now = new Date();
+  const deliveryMs = DEFAULT_DELIVERY_TIMEOUT_MS();
+
+  const updated = await Order.findOneAndUpdate(
+    {
+      orderId,
+      seller: sellerId,
+      workflowVersion: { $gte: 2 },
+      workflowStatus: WORKFLOW_STATUS.SELLER_ACCEPTED,
+    },
+    {
+      $set: {
+        workflowStatus: WORKFLOW_STATUS.DELIVERY_SEARCH,
+        status: legacyStatusFromWorkflow(WORKFLOW_STATUS.DELIVERY_SEARCH),
+        deliverySearchExpiresAt: new Date(now.getTime() + deliveryMs),
+        deliverySearchMeta: {
+          radiusMeters: INITIAL_DELIVERY_RADIUS_M(),
+          attempt: 1,
+          lastBroadcastAt: now,
+        },
+      },
+    },
+    { new: true },
+  )
+    .populate("customer", "name phone")
+    .populate("seller", "shopName address name location serviceRadius");
+
+  if (!updated) {
+    const err = new Error("Order not available for delivery processing");
+    err.statusCode = 409;
+    throw err;
+  }
+
   await scheduleDeliveryTimeoutJob(orderId, 1);
 
   await DeliveryAssignment.create({
@@ -286,13 +339,6 @@ export async function sellerAcceptAtomic(sellerId, orderId) {
     updated.seller,
     deliveryBroadcastPayloadFromOrder(updated),
   );
-
-  emitNotificationEvent(NOTIFICATION_EVENTS.ORDER_CONFIRMED, {
-    orderId: updated.orderId,
-    customerId: updated.customer?._id || updated.customer,
-    userId: updated.customer?._id || updated.customer,
-    sellerId: updated.seller?._id || updated.seller,
-  });
 
   return updated;
 }
@@ -578,6 +624,14 @@ export async function processDeliveryTimeoutJob({ orderId, attempt }) {
     return;
   }
 
+  // Max attempts reached: Escalate instead of cancel
+  const nextRadius = Math.round(
+    (meta.radiusMeters || INITIAL_DELIVERY_RADIUS_M()) *
+      DELIVERY_RADIUS_MULTIPLIER(),
+  );
+  const deliveryMs = DEFAULT_DELIVERY_TIMEOUT_MS();
+  const nextExpiry = new Date(now.getTime() + deliveryMs);
+
   const updated = await Order.findOneAndUpdate(
     {
       orderId,
@@ -586,10 +640,14 @@ export async function processDeliveryTimeoutJob({ orderId, attempt }) {
     },
     {
       $set: {
-        workflowStatus: WORKFLOW_STATUS.CANCELLED,
-        status: "cancelled",
-        cancelledBy: "system",
-        cancelReason: "No delivery partner (timeout)",
+        deliverySearchExpiresAt: nextExpiry,
+        isEscalated: true,
+        escalationReason: "No delivery partner found after max attempts",
+        deliverySearchMeta: {
+          radiusMeters: nextRadius,
+          attempt: currentAttempt + 1,
+          lastBroadcastAt: now,
+        },
       },
     },
     { new: true },
@@ -597,17 +655,35 @@ export async function processDeliveryTimeoutJob({ orderId, attempt }) {
 
   if (!updated) return;
 
-  await compensateOrderCancellation(updated, orderId);
-  emitOrderStatusUpdate(orderId, { workflowStatus: WORKFLOW_STATUS.CANCELLED }, updated.customer);
-  emitNotificationEvent(NOTIFICATION_EVENTS.ORDER_CANCELLED, {
+  await scheduleDeliveryTimeoutJob(orderId, currentAttempt + 1);
+
+  const orderRichForEscalation = await Order.findOne({ orderId })
+    .populate("seller", "shopName address name location serviceRadius")
+    .lean();
+
+  if (orderRichForEscalation) {
+    await emitDeliveryBroadcastForSeller(
+      orderRichForEscalation.seller,
+      deliveryBroadcastPayloadFromOrder(orderRichForEscalation, {
+        retryAttempt: currentAttempt + 1,
+      }),
+    );
+  }
+
+  // Notify Admin, Seller, and Customer of escalation
+  // The system will keep searching infinitely until admin intervenes or a driver accepts.
+  emitNotificationEvent("ADMIN_ESCALATION", {
+    orderId: updated.orderId,
+    reason: "No delivery partner (timeout)",
+  });
+  emitNotificationEvent(NOTIFICATION_EVENTS.ORDER_UPDATE, {
     orderId: updated.orderId,
     customerId: updated.customer,
     userId: updated.customer,
     sellerId: updated.seller,
     customerMessage:
-      "Order was cancelled because no delivery partner was available.",
-    sellerMessage:
-      `Order #${updated.orderId} was cancelled because no delivery partner was available.`,
+      "We are experiencing high demand. Still searching for a delivery partner...",
+    sellerMessage: `Order #${updated.orderId} delivery search escalated to admin due to timeout. Still searching...`,
   });
 }
 

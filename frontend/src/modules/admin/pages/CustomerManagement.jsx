@@ -172,7 +172,7 @@ const CustomerManagement = () => {
             <Card className="ds-card-compact">
                 <div className="flex flex-col lg:flex-row gap-3">
                     <div className="flex-1 relative group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 ds-icon-sm text-gray-400 group-focus-within:text-primary transition-colors" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 ds-icon-sm text-gray-500 group-focus-within:text-primary transition-colors" />
                         <input
                             type="text"
                             placeholder="Search by name, email or phone..."
@@ -190,7 +190,7 @@ const CustomerManagement = () => {
                                     onClick={() => setFilterStatus(status)}
                                     className={cn(
                                         "px-3 py-1.5 rounded-md ds-caption transition-all",
-                                        filterStatus === status ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600"
+                                        filterStatus === status ? "bg-white text-primary shadow-sm" : "text-gray-500 hover:text-gray-600"
                                     )}
                                 >
                                     {status}
@@ -229,9 +229,9 @@ const CustomerManagement = () => {
                                     <td colSpan="5" className="px-6 py-20 text-center">
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="p-4 bg-gray-50 rounded-full">
-                                                <Users className="h-8 w-8 text-gray-300" />
+                                                <Users className="h-8 w-8 text-gray-400" />
                                             </div>
-                                            <p className="ds-h4 text-gray-400">No customers found</p>
+                                            <p className="ds-h4 text-gray-500">No customers found</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -254,8 +254,8 @@ const CustomerManagement = () => {
                                                     </p>
                                                     <p className="ds-body-sm text-gray-500">{cust.email || 'No email'}</p>
                                                     <div className="flex items-center gap-1.5 mt-0.5">
-                                                        <Phone className="ds-icon-sm text-gray-300" />
-                                                        <span className="text-[9px] text-gray-400">{cust.phone}</span>
+                                                        <Phone className="ds-icon-sm text-gray-400" />
+                                                        <span className="text-xs text-gray-500">{cust.phone}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -266,7 +266,7 @@ const CustomerManagement = () => {
                                                     <ShoppingBag className="ds-icon-sm text-primary" />
                                                     {cust.totalOrders} Orders
                                                 </div>
-                                                <p className="ds-body-sm text-gray-400 mt-0.5">Last: {getTimeAgo(cust.lastOrderDate)}</p>
+                                                <p className="ds-body-sm text-gray-500 mt-0.5">Last: {getTimeAgo(cust.lastOrderDate)}</p>
                                             </div>
                                         </td>
                                         <td className="ds-table-cell ds-h4">
@@ -288,7 +288,7 @@ const CustomerManagement = () => {
                                                 >
                                                     <Eye className="ds-icon-sm" />
                                                 </button>
-                                                <button className="p-2 bg-gray-50 text-gray-400 rounded-lg hover:bg-gray-900 hover:text-white transition-all">
+                                                <button className="p-2 bg-gray-50 text-gray-500 rounded-lg hover:bg-gray-900 hover:text-white transition-all">
                                                     <MoreVertical className="ds-icon-sm" />
                                                 </button>
                                             </div>

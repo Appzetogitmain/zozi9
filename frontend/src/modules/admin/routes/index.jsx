@@ -98,6 +98,8 @@ const EnvSettings = React.lazy(() => import("../pages/EnvSettings"));
 const AdminProfile = React.lazy(() => import("../pages/AdminProfile"));
 const AdminLegalPages = React.lazy(() => import("../pages/AdminLegalPages"));
 const MaintenanceMode = React.lazy(() => import("../pages/MaintenanceMode"));
+const TimeSlotsManagement = React.lazy(() => import("../pages/TimeSlotsManagement"));
+const EscalationDashboard = React.lazy(() => import("../pages/EscalationDashboard"));
 
 const navItems = [
   {
@@ -159,10 +161,17 @@ const navItems = [
       { label: "Active Drivers", path: "/admin/delivery-boys/active" },
       { label: "Waiting for Review", path: "/admin/delivery-boys/pending" },
       { label: "Track Drivers", path: "/admin/tracking" },
-      { label: "Send Money", path: "/admin/delivery-funds" },
+      { label: "Settings", path: "/admin/delivery/settings" },
     ],
   },
-  { label: "Wallet", path: "/admin/wallet", icon: Wallet, color: "violet" },
+  {
+    label: "Escalations",
+    path: "/admin/escalations",
+    icon: ShieldAlert,
+    color: "rose",
+  },
+  {
+    label: "Financial Center", path: "/admin/wallet", icon: Wallet, color: "violet" },
   {
     label: "Money Requests",
     path: "/admin/withdrawals",
@@ -212,6 +221,7 @@ const navItems = [
       { label: "General Settings", path: "/admin/settings" },
       { label: "Environment Variables", path: "/admin/env-settings", icon: Server },
       { label: "Maintenance Mode", path: "/admin/maintenance", icon: ShieldAlert },
+      { label: "Time Slots", path: "/admin/time-slots" },
       { label: "Legal Pages", path: "/admin/legal" },
     ],
   },
@@ -271,8 +281,10 @@ const AdminRoutes = () => {
         />
         <Route path="/categories/header" element={<HeaderCategories />} />
         <Route path="/categories/level2" element={<Level2Categories />} />
+        <Route path="time-slots" element={<TimeSlotsManagement />} />
+        <Route path="escalations" element={<EscalationDashboard />} />
+        <Route path="categories/hierarchy" element={<CategoryHierarchy />} />
         <Route path="/categories/sub" element={<SubCategories />} />
-        <Route path="/categories/hierarchy" element={<CategoryHierarchy />} />
         <Route path="/products" element={<ProductManagement />} />
         <Route path="/sellers/active" element={<ActiveSellers />} />
         <Route path="/sellers/active/:id" element={<SellerDetail />} />
@@ -308,6 +320,7 @@ const AdminRoutes = () => {
         <Route path="/settings" element={<AdminSettings />} />
         <Route path="/env-settings" element={<EnvSettings />} />
         <Route path="/maintenance" element={<MaintenanceMode />} />
+        <Route path="/time-slots" element={<TimeSlotsManagement />} />
         <Route path="/legal" element={<AdminLegalPages />} />
         <Route path="/env" element={<EnvSettings />} />
         <Route path="*" element={<Navigate to="/" replace />} />

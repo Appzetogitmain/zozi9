@@ -221,7 +221,7 @@ const OffersManagement = () => {
                 <div>
                     <h1 className="ds-h1 flex items-center gap-3">
                         Offers Manager
-                        <Badge variant="primary" className="text-[10px] font-black uppercase tracking-widest">
+                        <Badge variant="primary" className="text-xs font-black uppercase tracking-widest">
                             Beta
                         </Badge>
                     </h1>
@@ -231,7 +231,7 @@ const OffersManagement = () => {
                 </div>
                 <button
                     onClick={openCreateModal}
-                    className="flex items-center gap-2 px-6 py-3.5 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
+                    className="flex items-center gap-2 px-6 py-3.5 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
                 >
                     <HiOutlinePlus className="h-5 w-5" />
                     NEW OFFER
@@ -240,11 +240,11 @@ const OffersManagement = () => {
 
             <Card className="border-none shadow-xl ring-1 ring-slate-100 bg-white rounded-xl overflow-hidden">
                 <div className="p-4 border-b border-slate-50 flex items-center justify-between">
-                    <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest">
                         Active Offers ({offers.length})
                     </h2>
                     {isLoading && (
-                        <span className="text-[10px] font-bold text-slate-400">Loading...</span>
+                        <span className="text-xs font-bold text-slate-500">Loading...</span>
                     )}
                 </div>
 
@@ -271,71 +271,71 @@ const OffersManagement = () => {
                                             #{idx + 1} • {offer.title}
                                         </p>
                                         {offer.code && (
-                                            <p className="text-[10px] font-mono font-bold text-slate-500 mt-0.5">
+                                            <p className="text-xs font-mono font-bold text-slate-500 mt-0.5">
                                                 CODE: {offer.code}
                                             </p>
                                         )}
                                         {offer.appliesOnOrderNumber && (
-                                            <p className="text-[10px] font-bold text-brand-600 mt-0.5">
+                                            <p className="text-xs font-bold text-brand-600 mt-0.5">
                                                 On order #{offer.appliesOnOrderNumber}
                                             </p>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
+                                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">
                                             Categories
                                         </p>
                                         <div className="flex flex-wrap gap-1.5">
                                             {(offer.categoryIds || []).map(id => (
                                                 <span
                                                     key={id}
-                                                    className="px-2 py-1 rounded-full bg-slate-100 text-[10px] font-bold text-slate-700"
+                                                    className="px-2 py-1 rounded-full bg-slate-100 text-xs font-bold text-slate-700"
                                                 >
                                                     {categoryMap[id]?.name || 'Unknown'}
                                                 </span>
                                             ))}
                                             {(!offer.categoryIds || offer.categoryIds.length === 0) && (
-                                                <span className="text-[10px] text-slate-400">None selected</span>
+                                                <span className="text-xs text-slate-500">None selected</span>
                                             )}
                                         </div>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">
                                             Products
                                         </p>
                                         <div className="flex flex-wrap gap-1.5">
                                             {(offer.productIds || []).slice(0, 3).map(id => (
                                                 <span
                                                     key={id}
-                                                    className="px-2 py-1 rounded-full bg-slate-100 text-[10px] font-bold text-slate-700"
+                                                    className="px-2 py-1 rounded-full bg-slate-100 text-xs font-bold text-slate-700"
                                                 >
                                                     {productMap[id]?.name || 'Product'}
                                                 </span>
                                             ))}
                                             {offer.productIds && offer.productIds.length > 3 && (
-                                                <span className="text-[10px] text-slate-500">
+                                                <span className="text-xs text-slate-500">
                                                     +{offer.productIds.length - 3} more
                                                 </span>
                                             )}
                                             {(!offer.productIds || offer.productIds.length === 0) && (
-                                                <span className="text-[10px] text-slate-400">None selected</span>
+                                                <span className="text-xs text-slate-500">None selected</span>
                                             )}
                                         </div>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">
                                             Meta
                                         </p>
                                         <div className="flex items-center gap-3">
-                                            <span className="text-[10px] font-bold text-slate-500">
+                                            <span className="text-xs font-bold text-slate-500">
                                                 Order: {offer.order ?? idx}
                                             </span>
                                             <Badge
                                                 variant={offer.status === 'active' ? 'success' : 'secondary'}
-                                                className="text-[9px] font-black uppercase"
+                                                className="text-xs font-black uppercase"
                                             >
                                                 {offer.status}
                                             </Badge>
@@ -349,7 +349,7 @@ const OffersManagement = () => {
                                             disabled={idx === 0}
                                             onClick={() => handleReorder('up', offer)}
                                             className={cn(
-                                                "p-1.5 rounded-xl border text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-all",
+                                                "p-1.5 rounded-xl border text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-all",
                                                 idx === 0 && "opacity-30 cursor-not-allowed"
                                             )}
                                         >
@@ -359,7 +359,7 @@ const OffersManagement = () => {
                                             disabled={idx === offers.length - 1}
                                             onClick={() => handleReorder('down', offer)}
                                             className={cn(
-                                                "p-1.5 rounded-xl border text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-all",
+                                                "p-1.5 rounded-xl border text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-all",
                                                 idx === offers.length - 1 && "opacity-30 cursor-not-allowed"
                                             )}
                                         >
@@ -369,13 +369,13 @@ const OffersManagement = () => {
                                     <div className="flex items-center gap-1">
                                         <button
                                             onClick={() => openEditModal(offer)}
-                                            className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
+                                            className="p-2 text-slate-500 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
                                         >
                                             <HiOutlinePencilSquare className="h-5 w-5" />
                                         </button>
                                         <button
                                             onClick={() => handleDelete(offer._id)}
-                                            className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                                            className="p-2 text-slate-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all"
                                         >
                                             <HiOutlineTrash className="h-5 w-5" />
                                         </button>
@@ -391,7 +391,7 @@ const OffersManagement = () => {
                                 <HiOutlineSparkles className="h-8 w-8 text-slate-200" />
                             </div>
                             <h3 className="text-lg font-black text-slate-900">No offers configured yet</h3>
-                            <p className="text-sm font-bold text-slate-400 mt-2">
+                            <p className="text-sm font-bold text-slate-500 mt-2">
                                 Click &quot;New Offer&quot; to create your first offer card.
                             </p>
                         </div>
@@ -406,7 +406,7 @@ const OffersManagement = () => {
             >
                 <form onSubmit={handleSave} className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                             Offer Title
                         </label>
                         <input
@@ -417,7 +417,7 @@ const OffersManagement = () => {
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                             Description
                         </label>
                         <textarea
@@ -431,7 +431,7 @@ const OffersManagement = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                 Offer Code
                             </label>
                             <input
@@ -442,7 +442,7 @@ const OffersManagement = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                 Applies on order #
                             </label>
                             <input
@@ -457,7 +457,7 @@ const OffersManagement = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                 Style
                             </label>
                             <div className="flex gap-2">
@@ -467,7 +467,7 @@ const OffersManagement = () => {
                                         type="button"
                                         onClick={() => setFormData(prev => ({ ...prev, style: opt.id }))}
                                         className={cn(
-                                            "flex-1 px-3 py-2 rounded-2xl text-[11px] font-bold border flex items-center justify-center gap-1",
+                                            "flex-1 px-3 py-2 rounded-2xl text-xs font-bold border flex items-center justify-center gap-1",
                                             formData.style === opt.id
                                                 ? "border-slate-900 bg-slate-900 text-white"
                                                 : "border-slate-200 bg-slate-50 text-slate-600"
@@ -480,7 +480,7 @@ const OffersManagement = () => {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                 Icon
                             </label>
                             <div className="flex gap-2">
@@ -492,7 +492,7 @@ const OffersManagement = () => {
                                             type="button"
                                             onClick={() => setFormData(prev => ({ ...prev, icon: opt.id }))}
                                             className={cn(
-                                                "flex-1 px-3 py-2 rounded-2xl text-[11px] font-bold border flex items-center justify-center gap-1",
+                                                "flex-1 px-3 py-2 rounded-2xl text-xs font-bold border flex items-center justify-center gap-1",
                                                 formData.icon === opt.id
                                                     ? "border-slate-900 bg-slate-900 text-white"
                                                     : "border-slate-200 bg-slate-50 text-slate-600"
@@ -509,7 +509,7 @@ const OffersManagement = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                 Attach Categories (optional)
                             </label>
                             <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto pr-1">
@@ -528,7 +528,7 @@ const OffersManagement = () => {
                                                 }))
                                             }
                                             className={cn(
-                                                "px-2.5 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                                                "px-2.5 py-1.5 rounded-full text-xs font-bold border transition-all",
                                                 isSelected
                                                     ? "bg-primary text-white border-primary"
                                                     : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-white"
@@ -541,7 +541,7 @@ const OffersManagement = () => {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                 Attach Products (optional)
                             </label>
                             <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto pr-1">
@@ -560,7 +560,7 @@ const OffersManagement = () => {
                                                 }))
                                             }
                                             className={cn(
-                                                "px-2.5 py-1.5 rounded-full text-[11px] font-bold border transition-all",
+                                                "px-2.5 py-1.5 rounded-full text-xs font-bold border transition-all",
                                                 isSelected
                                                     ? "bg-brand-500 text-white border-brand-500"
                                                     : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-white"
@@ -576,7 +576,7 @@ const OffersManagement = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                 Display Order
                             </label>
                             <input
@@ -588,7 +588,7 @@ const OffersManagement = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">
                                 Status
                             </label>
                             <select
@@ -606,13 +606,13 @@ const OffersManagement = () => {
                         <button
                             type="button"
                             onClick={() => setIsModalOpen(false)}
-                            className="flex-1 py-4 bg-slate-100 text-slate-400 rounded-2xl text-[10px] font-black uppercase tracking-widest"
+                            className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-xs font-black uppercase tracking-widest"
                         >
                             CANCEL
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 py-4 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20"
+                            className="flex-1 py-4 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20"
                         >
                             {editingOffer ? 'SAVE CHANGES' : 'CREATE OFFER'}
                         </button>

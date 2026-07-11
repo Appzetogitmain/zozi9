@@ -56,7 +56,7 @@ const AdminDashboard = () => {
         return (
             <div className="h-[80vh] flex flex-col items-center justify-center space-y-4">
                 <Loader2 className="h-10 w-10 text-primary animate-spin" />
-                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Synchronizing Data...</p>
+                <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">Synchronizing Data...</p>
             </div>
         );
     }
@@ -240,7 +240,7 @@ const AdminDashboard = () => {
                             </ResponsiveContainer>
                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                                 <span className="text-2xl font-bold text-gray-900">72%</span>
-                                <span className="text-[10px] text-gray-400 font-semibold uppercase">Growth</span>
+                                <span className="text-xs text-gray-500 font-semibold uppercase">Growth</span>
                             </div>
                         </div>
                         <div className="space-y-3 mt-4">
@@ -283,19 +283,19 @@ const AdminDashboard = () => {
                                             <td className="py-4 text-sm font-semibold text-primary">{order.id}</td>
                                             <td className="py-4">
                                                 <div className="flex items-center space-x-2">
-                                                    <div className="h-7 w-7 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-semibold text-gray-500 ring-2 ring-white shadow-sm uppercase">
+                                                    <div className="h-7 w-7 rounded-full bg-gray-100 flex items-center justify-center text-xs font-semibold text-gray-500 ring-2 ring-white shadow-sm uppercase">
                                                         {order.customer?.[0] || "?"}
                                                     </div>
                                                     <span className="text-sm font-semibold text-gray-700">{order.customer}</span>
                                                 </div>
                                             </td>
                                             <td className="py-4">
-                                                <Badge variant={order.status} className="rounded-full px-3 py-0.5 text-[10px] font-bold tracking-tight uppercase">
+                                                <Badge variant={order.status} className="rounded-full px-3 py-0.5 text-xs font-bold tracking-tight uppercase">
                                                     {order.statusText}
                                                 </Badge>
                                             </td>
                                             <td className="py-4 text-sm font-bold text-gray-900">{order.amount}</td>
-                                            <td className="py-4 text-xs font-semibold text-gray-400">{order.time}</td>
+                                            <td className="py-4 text-xs font-semibold text-gray-500">{order.time}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -327,19 +327,19 @@ const AdminDashboard = () => {
                                         </div>
                                         <div>
                                             <p className="text-sm font-bold text-gray-900 leading-none">{product.name}</p>
-                                            <p className="text-[10px] text-gray-400 font-semibold uppercase mt-1.5">{product.cat}</p>
+                                            <p className="text-xs text-gray-500 font-semibold uppercase mt-1.5">{product.cat}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-sm font-bold text-gray-900">{product.rev}</p>
-                                        <p className="text-[10px] text-brand-600 font-bold">{product.trend}</p>
+                                        <p className="text-xs text-brand-600 font-bold">{product.trend}</p>
                                     </div>
                                 </div>
                             )) : (
-                                <div className="py-12 text-center text-slate-300 italic text-xs">No sales data yet</div>
+                                <div className="py-12 text-center text-slate-400 italic text-xs">No sales data yet</div>
                             )}
                         </div>
-                        <button className="w-full mt-6 py-3 border-2 border-dashed border-gray-100 rounded-xl text-xs font-bold text-gray-400 hover:border-primary hover:text-primary transition-all">
+                        <button className="w-full mt-6 py-3 border-2 border-dashed border-gray-100 rounded-xl text-xs font-bold text-gray-500 hover:border-primary hover:text-primary transition-all">
                             VIEW ALL PRODUCTS
                         </button>
                     </Card>

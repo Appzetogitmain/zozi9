@@ -115,7 +115,7 @@ const CategoryHierarchy = () => {
       ? "bg-brand-50 border-brand-200 text-brand-700 shadow-sm z-10"
       : "hover:bg-gray-50 border-transparent text-gray-600";
 
-    const iconColor = isSelected ? "text-brand-500" : "text-gray-400";
+    const iconColor = isSelected ? "text-brand-500" : "text-gray-500";
 
     return (
       <motion.div
@@ -149,7 +149,7 @@ const CategoryHierarchy = () => {
           </div>
           <div className="flex flex-col overflow-hidden">
             <span className="font-semibold text-sm truncate">{item.name}</span>
-            <span className="text-[10px] uppercase tracking-wider opacity-60 truncate">
+            <span className="text-xs font-bold uppercase tracking-wider opacity-60 truncate">
               {item.slug}
             </span>
           </div>
@@ -157,7 +157,7 @@ const CategoryHierarchy = () => {
 
         {hasChildren && (
           <ChevronRight
-            className={`w-4 h-4 ${isSelected ? "text-brand-400" : "text-gray-300"}`}
+            className={`w-4 h-4 ${isSelected ? "text-brand-400" : "text-gray-400"}`}
           />
         )}
       </motion.div>
@@ -217,7 +217,7 @@ const CategoryHierarchy = () => {
 
           <div className="p-2 border-b border-gray-100">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <input
                 type="text"
                 placeholder="Filter headers..."
@@ -235,11 +235,11 @@ const CategoryHierarchy = () => {
             onTouchMove={(e) => e.stopPropagation()}
           >
             {isLoading ? (
-              <div className="p-8 text-center text-gray-400 text-sm">
+              <div className="p-8 text-center text-gray-500 text-sm">
                 Loading structure...
               </div>
             ) : filteredHeaders.length === 0 ? (
-              <div className="p-8 text-center text-gray-400 text-sm">
+              <div className="p-8 text-center text-gray-500 text-sm">
                 No headers found
               </div>
             ) : (
@@ -271,7 +271,7 @@ const CategoryHierarchy = () => {
           />
 
           {!selectedHeader ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-gray-400 p-8 text-center bg-gray-50/50">
+            <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-8 text-center bg-gray-50/50">
               <ArrowRight className="w-12 h-12 mb-3 opacity-20" />
               <p className="text-sm">
                 Select a Header Category
@@ -287,7 +287,7 @@ const CategoryHierarchy = () => {
               onTouchMove={(e) => e.stopPropagation()}
             >
               {activeLevel2.length === 0 ? (
-                <div className="p-8 text-center text-gray-400 text-sm">
+                <div className="p-8 text-center text-gray-500 text-sm">
                   No Level 2 categories in <br />
                   <span className="font-bold text-gray-600">
                     "{selectedHeader.name}"
@@ -323,7 +323,7 @@ const CategoryHierarchy = () => {
           />
 
           {!selectedLevel2 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-gray-400 p-8 text-center bg-gray-50/50">
+            <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-8 text-center bg-gray-50/50">
               <ArrowRight className="w-12 h-12 mb-3 opacity-20" />
               <p className="text-sm">
                 Select a Level 2 Category
@@ -339,7 +339,7 @@ const CategoryHierarchy = () => {
               onTouchMove={(e) => e.stopPropagation()}
             >
               {activeSubs.length === 0 ? (
-                <div className="p-8 text-center text-gray-400 text-sm">
+                <div className="p-8 text-center text-gray-500 text-sm">
                   No subcategories in <br />
                   <span className="font-bold text-gray-600">
                     "{selectedLevel2.name}"

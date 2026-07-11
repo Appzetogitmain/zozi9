@@ -21,6 +21,7 @@ import {
   deliveryAcceptAtomic,
   customerCancelV2,
   resolveWorkflowStatus,
+  processToDeliveryAtomic,
 } from "../services/orderWorkflowService.js";
 import { applyDeliveredSettlement } from "../services/orderSettlement.js";
 import {
@@ -818,6 +819,39 @@ export const getReturnDetails = async (req, res) => {
 };
 
 /* ===============================
+   PROCESS TO DELIVERY (Seller)
+================================ */
+export const processToDelivery = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { id: userId, role } = req.user;
+
+    if (role !== "seller") {
+      return handleResponse(res, 403, "Only sellers can process orders to delivery");
+    }
+
+    const orderKey = orderMatchQueryFromRouteParam(orderId);
+    if (!orderKey) {
+      return handleResponse(res, 404, "Order not found");
+    }
+
+    const order = await Order.findOne(orderKey);
+    if (!order) {
+      return handleResponse(res, 404, "Order not found");
+    }
+
+    try {
+      const updated = await processToDeliveryAtomic(userId, order.orderId);
+      return handleResponse(res, 200, "Delivery broadcast started", updated);
+    } catch (e) {
+      return handleResponse(res, e.statusCode || 500, e.message);
+    }
+  } catch (error) {
+    return handleResponse(res, 500, error.message);
+  }
+};
+
+/* ===============================
    UPDATE ORDER STATUS (Admin/Seller/Delivery)
 ================================ */
 export const updateOrderStatus = async (req, res) => {
@@ -843,7 +877,7 @@ export const updateOrderStatus = async (req, res) => {
       if (status === "confirmed") {
         try {
           const updated = await sellerAcceptAtomic(userId, canonicalOrderId);
-          return handleResponse(res, 200, "Order accepted", updated);
+          return handleResponse(res, 200, "Order accepted. Please prepare the items.", updated);
         } catch (e) {
           return handleResponse(res, e.statusCode || 500, e.message);
         }

@@ -350,10 +350,10 @@ const SupportTickets = () => {
                     <div className="p-6 border-b border-slate-50 space-y-4">
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-black text-slate-900 tracking-tight">Support Desk</h2>
-                            <Badge variant="blue" className="text-[10px] font-black">{tickets.length} ACTIVE</Badge>
+                            <Badge variant="blue" className="text-xs font-black">{tickets.length} ACTIVE</Badge>
                         </div>
                         <div className="relative group">
-                            <HiOutlineMagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <HiOutlineMagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                             <input
                                 type="text"
                                 placeholder="Search by ID or Name..."
@@ -379,7 +379,7 @@ const SupportTickets = () => {
                                 {Number(unreadByTicket?.[t.id] || 0) > 0 && (
                                     <span
                                         className={cn(
-                                            "absolute top-3 right-3 min-w-5 h-5 px-1.5 rounded-full text-[10px] font-black flex items-center justify-center shadow-lg ring-2",
+                                            "absolute top-3 right-3 min-w-5 h-5 px-1.5 rounded-full text-xs font-black flex items-center justify-center shadow-lg ring-2",
                                             selectedTicket?.id === t.id
                                                 ? "bg-rose-500 text-white ring-slate-900 shadow-rose-500/30"
                                                 : "bg-rose-500 text-white ring-white shadow-rose-500/30",
@@ -396,7 +396,7 @@ const SupportTickets = () => {
                                     >
                                         {t.priority}
                                     </Badge>
-                                    <span className={cn("text-[9px] font-bold opacity-60", selectedTicket?.id === t.id ? "text-white" : "text-slate-400")}>{t.date}</span>
+                                    <span className={cn("text-xs font-bold opacity-60", selectedTicket?.id === t.id ? "text-white" : "text-slate-500")}>{t.date}</span>
                                 </div>
                                 <h4 className="text-xs font-black truncate mb-1">{t.subject}</h4>
                                 <div className="flex items-center gap-2">
@@ -405,7 +405,7 @@ const SupportTickets = () => {
                                         {t.userType === 'Seller' && <HiOutlineBuildingStorefront className="h-3 w-3" />}
                                         {t.userType === 'Rider' && <HiOutlineTruck className="h-3 w-3" />}
                                     </div>
-                                    <span className={cn("text-[10px] font-bold", selectedTicket?.id === t.id ? "text-white/80" : "text-slate-500")}>
+                                    <span className={cn("text-xs font-bold", selectedTicket?.id === t.id ? "text-white/80" : "text-slate-500")}>
                                         {t.user} • {t.userType}
                                     </span>
                                 </div>
@@ -440,12 +440,12 @@ const SupportTickets = () => {
                         {/* Chat Header */}
                         <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30 shrink-0">
                             <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-2xl bg-white ring-1 ring-slate-100 flex items-center justify-center text-slate-400 shadow-sm">
+                                <div className="h-12 w-12 rounded-2xl bg-white ring-1 ring-slate-100 flex items-center justify-center text-slate-500 shadow-sm">
                                     <HiOutlineChatBubbleLeftRight className="h-6 w-6" />
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-black text-slate-900 leading-none mb-1">{selectedTicket.subject}</h3>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">
+                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest leading-none">
                                         Ticket ID: {selectedTicket.id} • USER: {selectedTicket.user} • STATUS: {selectedTicket.status}
                                     </p>
                                 </div>
@@ -455,7 +455,7 @@ const SupportTickets = () => {
                                     onClick={() => handleResolve(selectedTicket.id)}
                                     className={cn(
                                         "p-2.5 ring-1 ring-slate-200 rounded-xl transition-all",
-                                        selectedTicket.status === 'closed' ? "bg-brand-50 text-brand-500 ring-brand-100" : "bg-white text-slate-400 hover:text-brand-500"
+                                        selectedTicket.status === 'closed' ? "bg-brand-50 text-brand-500 ring-brand-100" : "bg-white text-slate-500 hover:text-brand-500"
                                     )}
                                     title="Mark as Resolved"
                                 >
@@ -464,7 +464,7 @@ const SupportTickets = () => {
                                 <button
                                     ref={menuButtonRef}
                                     onClick={() => setMenuOpen(v => !v)}
-                                    className="p-2.5 bg-white text-slate-400 hover:text-slate-600 ring-1 ring-slate-200 rounded-xl transition-all"
+                                    className="p-2.5 bg-white text-slate-500 hover:text-slate-600 ring-1 ring-slate-200 rounded-xl transition-all"
                                     aria-haspopup="menu"
                                     aria-expanded={menuOpen ? "true" : "false"}
                                     title="More actions"
@@ -555,7 +555,7 @@ const SupportTickets = () => {
                                             ) : null}
                                             {m.text ? <div className={m.mediaUrl ? "mt-2" : ""}>{m.text}</div> : null}
                                         </div>
-                                        <span className="text-[9px] font-bold text-slate-400 mt-2 px-1 uppercase tracking-widest">{m.time}</span>
+                                        <span className="text-xs font-bold text-slate-500 mt-2 px-1 uppercase tracking-widest">{m.time}</span>
                                     </div>
                                 ))}
                             </div>
@@ -591,7 +591,7 @@ const SupportTickets = () => {
                             <HiOutlineChatBubbleLeftRight className="h-10 w-10 text-slate-200" />
                         </div>
                         <h4 className="text-xl font-black text-slate-900 uppercase">Universal Support Hub</h4>
-                        <p className="text-sm font-bold text-slate-400 mt-2 max-w-sm mx-auto leading-relaxed">
+                        <p className="text-sm font-bold text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
                             Select a transaction or dispute ticket from the sidebar to begin resolution protocol.
                         </p>
                     </div>

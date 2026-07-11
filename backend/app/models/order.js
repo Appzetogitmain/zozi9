@@ -281,6 +281,11 @@ const orderSchema = new mongoose.Schema(
       attempt: { type: Number, default: 1 },
       lastBroadcastAt: Date,
     },
+    isEscalated: {
+      type: Boolean,
+      default: false,
+    },
+    escalationReason: String,
     pickupConfirmedAt: Date,
     pickupReadyAt: Date,
     outForDeliveryAt: Date,
@@ -292,6 +297,22 @@ const orderSchema = new mongoose.Schema(
     timeSlot: {
       type: String,
       default: "now",
+    },
+    deliveryType: {
+      type: String,
+      enum: ["express", "scheduled"],
+      default: "express",
+    },
+    scheduledDate: {
+      type: Date,
+    },
+    scheduledSlot: {
+      slotId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DeliverySlot",
+      },
+      start: String,
+      end: String,
     },
     deliveryBoy: {
       type: mongoose.Schema.Types.ObjectId,

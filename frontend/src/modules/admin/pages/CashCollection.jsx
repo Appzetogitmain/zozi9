@@ -235,7 +235,7 @@ const CashCollection = () => {
 
                 <div className="flex items-center gap-3">
                     <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-brand-500 transition-colors" />
                         <input
                             type="text"
                             placeholder="Find Rider or ID..."
@@ -279,7 +279,7 @@ const CashCollection = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-black text-slate-900">{rider.name}</p>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">
+                                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-tighter mt-0.5">
                                                         {rider.id} • {rider.totalOrders || 0} Delivered • {rider.pendingOrders || 0} Pending
                                                     </p>
                                                 </div>
@@ -289,7 +289,7 @@ const CashCollection = () => {
                                             <div className="space-y-2 max-w-[180px]">
                                                 <div className="flex justify-between items-end">
                                                     <span className="text-lg font-black text-slate-900">₹{rider.currentCash.toLocaleString()}</span>
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Limit: ₹{rider.limit}</span>
+                                                    <span className="text-xs font-bold text-slate-500 uppercase">Limit: ₹{rider.limit}</span>
                                                 </div>
                                                 <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                                                     <motion.div
@@ -306,14 +306,14 @@ const CashCollection = () => {
                                         <td className="px-6 py-6 text-center">
                                             <Badge
                                                 variant={rider.status === 'safe' ? 'success' : rider.status === 'warning' ? 'warning' : 'danger'}
-                                                className="text-[9px] font-black px-3 py-1 uppercase tracking-widest"
+                                                className="text-xs font-black px-3 py-1 uppercase tracking-widest"
                                             >
                                                 {rider.status.replace('_', ' ')}
                                             </Badge>
                                         </td>
                                         <td className="px-6 py-6 font-semibold text-slate-600">
                                             <div className="flex items-center gap-2">
-                                                <Clock className="h-3.5 w-3.5 text-slate-400" />
+                                                <Clock className="h-3.5 w-3.5 text-slate-500" />
                                                 <span className="text-xs">
                                                     {rider.lastSettlement !== 'Never'
                                                         ? new Date(rider.lastSettlement).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
@@ -325,16 +325,16 @@ const CashCollection = () => {
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
                                                     onClick={() => handleSettlement(rider)}
-                                                    className="px-4 py-2 bg-brand-50 text-brand-600 rounded-xl text-[10px] font-black hover:bg-black  hover:text-white transition-all shadow-sm active:scale-95 uppercase tracking-widest"
+                                                    className="px-4 py-2 bg-brand-50 text-brand-600 rounded-xl text-xs font-black hover:bg-black  hover:text-white transition-all shadow-sm active:scale-95 uppercase tracking-widest"
                                                 >
                                                     Settle
                                                 </button>
-                                                <button className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-200 transition-all active:scale-95">
+                                                <button className="p-2.5 bg-slate-50 text-slate-500 rounded-xl hover:bg-slate-200 transition-all active:scale-95">
                                                     <Bell className="h-4 w-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => setSelectedRider(rider)}
-                                                    className="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-900 hover:text-white transition-all active:scale-95"
+                                                    className="p-2.5 bg-slate-50 text-slate-500 rounded-xl hover:bg-slate-900 hover:text-white transition-all active:scale-95"
                                                 >
                                                     <Eye className="h-4 w-4" />
                                                 </button>
@@ -358,11 +358,11 @@ const CashCollection = () => {
                             <tbody className="divide-y divide-slate-50">
                                 {filteredHistory.map((log) => (
                                     <tr key={log.id} className="group hover:bg-slate-50/40 transition-all">
-                                        <td className="px-6 py-5 pl-8 text-[10px] font-black text-slate-400 uppercase tracking-tighter">{log.id}</td>
+                                        <td className="px-6 py-5 pl-8 text-xs font-black text-slate-500 uppercase tracking-tighter">{log.id}</td>
                                         <td className="px-6 py-5 text-sm font-bold text-slate-900">{log.rider}</td>
                                         <td className="px-6 py-5 text-center text-sm font-black text-brand-600">₹{log.amount.toLocaleString()}</td>
                                         <td className="px-6 py-5">
-                                            <Badge variant="secondary" className="text-[9px] font-black px-2 py-0.5 uppercase">
+                                            <Badge variant="secondary" className="text-xs font-black px-2 py-0.5 uppercase">
                                                 {log.method}
                                             </Badge>
                                         </td>
@@ -413,32 +413,32 @@ const CashCollection = () => {
                                     <Badge variant={selectedRider.status === 'safe' ? 'success' : 'warning'}>
                                         {selectedRider.status.toUpperCase()}
                                     </Badge>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{selectedRider.id}</span>
+                                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{selectedRider.id}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <Card className="p-6 border-none bg-slate-900 text-white rounded-xl relative overflow-hidden">
-                                <p className="text-[10px] opacity-60 font-black uppercase tracking-widest mb-2">Primary Wallet</p>
+                                <p className="text-xs opacity-60 font-black uppercase tracking-widest mb-2">Primary Wallet</p>
                                 <h4 className="text-3xl font-black italic">₹{selectedRider.currentCash.toLocaleString()}</h4>
                                 <div className="mt-4 flex items-center gap-2">
                                     <div className="h-1.5 flex-1 bg-white/10 rounded-full overflow-hidden">
                                         <div className="h-full bg-brand-400" style={{ width: `${Math.min((selectedRider.currentCash / selectedRider.limit) * 100, 100)}%` }} />
                                     </div>
-                                    <span className="text-[10px] font-bold opacity-60">{Math.min(Math.round((selectedRider.currentCash / selectedRider.limit) * 100), 100)}%</span>
+                                    <span className="text-xs font-bold opacity-60">{Math.min(Math.round((selectedRider.currentCash / selectedRider.limit) * 100), 100)}%</span>
                                 </div>
                                 <CircleDollarSign className="absolute -bottom-4 -right-4 h-20 w-20 opacity-10" />
                             </Card>
                             <Card className="p-6 border-none bg-slate-50 ring-1 ring-slate-100 rounded-xl">
-                                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-2">Pending COD Orders</p>
+                                <p className="text-xs text-slate-500 font-black uppercase tracking-widest mb-2">Pending COD Orders</p>
                                 <h4 className="text-3xl font-black text-slate-900">{selectedRider.pendingOrders}</h4>
-                                <p className="text-[10px] font-bold text-slate-400 mt-4 uppercase">Requires immediate sync</p>
+                                <p className="text-xs font-bold text-slate-500 mt-4 uppercase">Requires immediate sync</p>
                             </Card>
                         </div>
 
                         <div className="space-y-4">
-                            <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                            <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
                                 <FileText className="h-4 w-4 text-brand-600" />
                                 Collection Ledger
                             </h4>
@@ -446,7 +446,7 @@ const CashCollection = () => {
                                 {detailsLoading ? (
                                     <div className="py-8 text-center">
                                         <RotateCw className="h-6 w-6 animate-spin mx-auto text-brand-500 mb-2" />
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fetching Ledger...</p>
+                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Fetching Ledger...</p>
                                     </div>
                                 ) : (Array.isArray(riderDetails) ? riderDetails : []).length > 0 ? (
                                     (Array.isArray(riderDetails) ? riderDetails : []).map((item, i) => (
@@ -455,7 +455,7 @@ const CashCollection = () => {
                                                 <div className="h-2 w-2 rounded-full bg-brand-500 group-hover:scale-125 transition-transform" />
                                                 <div>
                                                     <p className="text-xs font-black text-slate-900">{item.reference || item.id}</p>
-                                                    <p className="text-[9px] font-bold text-slate-400 uppercase">
+                                                    <p className="text-xs font-bold text-slate-500 uppercase">
                                                         {new Date(item.createdAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                                     </p>
                                                 </div>
@@ -466,7 +466,7 @@ const CashCollection = () => {
                                 ) : (
                                     <div className="py-12 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                                         <CircleDollarSign className="h-10 w-10 text-slate-200 mx-auto mb-3" />
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">No Recent Collections</p>
+                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">No Recent Collections</p>
                                     </div>
                                 )}
                             </div>
@@ -475,7 +475,7 @@ const CashCollection = () => {
                         <div className="pt-2 flex gap-3">
                             <button
                                 onClick={() => { setSelectedRider(null); handleSettlement(selectedRider); }}
-                                className="flex-1 py-4 bg-black  hover:bg-brand-700 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl shadow-brand-100 transition-all active:scale-[0.98]"
+                                className="flex-1 py-4 bg-black  hover:bg-brand-700 text-white rounded-2xl font-black text-xs font-bold uppercase tracking-widest shadow-xl shadow-brand-100 transition-all active:scale-[0.98]"
                             >
                                 Trigger Settlement
                             </button>
@@ -509,7 +509,7 @@ const CashCollection = () => {
                         </div>
 
                         <div className="bg-slate-50 p-6 rounded-xl ring-1 ring-slate-100 mt-6">
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center mb-2">Total Amount to Settle</p>
+                            <p className="text-xs font-black text-slate-500 uppercase tracking-widest text-center mb-2">Total Amount to Settle</p>
                             <div className="flex items-center justify-center gap-2">
                                 <span className="text-xl font-black italic text-slate-900">₹</span>
                                 <input
@@ -525,7 +525,7 @@ const CashCollection = () => {
                             <button
                                 onClick={confirmSettlement}
                                 disabled={isProcessing}
-                                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl flex items-center justify-center gap-3 disabled:opacity-50 active:scale-[0.98]"
+                                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl flex items-center justify-center gap-3 disabled:opacity-50 active:scale-[0.98]"
                             >
                                 {isProcessing && <RotateCw className="h-4 w-4 animate-spin" />}
                                 {isProcessing ? 'SYNCHRONIZING...' : 'CONFIRM & DEPOSIT'}
@@ -533,7 +533,7 @@ const CashCollection = () => {
                             <button
                                 onClick={() => setIsSettleModalOpen(false)}
                                 disabled={isProcessing}
-                                className="w-full py-4 bg-white ring-1 ring-slate-200 text-slate-400 font-black text-[11px] uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all active:scale-[0.98]"
+                                className="w-full py-4 bg-white ring-1 ring-slate-200 text-slate-500 font-black text-xs font-bold uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all active:scale-[0.98]"
                             >
                                 ABORT SESSION
                             </button>

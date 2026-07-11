@@ -142,7 +142,7 @@ const SellerProfile = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-8 font-['Outfit']">
+    <div className="max-w-5xl mx-auto p-4 md:p-5 font-['Outfit']">
       {/* Header Section */}
       <div className="relative mb-24 px-4">
         {/* Banner Background */}
@@ -154,7 +154,7 @@ const SellerProfile = () => {
         </div>
 
         {/* Profile Info Row */}
-        <div className="absolute bottom-8 left-4 right-4 md:left-8 md:right-8 lg:left-12 lg:right-12 grid grid-cols-1 md:grid-cols-[176px_minmax(0,1fr)_auto] items-center md:items-end gap-6 md:gap-8">
+        <div className="absolute bottom-8 left-4 right-4 md:left-8 md:right-8 lg:left-12 lg:right-12 grid grid-cols-1 md:grid-cols-[176px_minmax(0,1fr)_auto] items-center md:items-end gap-4 md:gap-5">
           {/* Avatar Container */}
           <div className="h-44 w-44 rounded-full bg-white p-2 shadow-[0_30px_70px_rgba(0,0,0,0.15)] flex-shrink-0 mx-auto md:mx-0">
             <div className="h-full w-full rounded-full bg-slate-50 flex items-center justify-center border-4 border-slate-50">
@@ -167,12 +167,12 @@ const SellerProfile = () => {
           {/* Info Block */}
           <div className="min-w-0 pb-2 md:pb-4 text-center md:text-left">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-3">
-              <span className="px-4 py-1.5 bg-white/10 backdrop-blur-xl text-white text-[10px] font-black uppercase tracking-[2px] rounded-full border border-white/20">
+              <span className="px-4 py-1.5 bg-white/10 backdrop-blur-xl text-white text-xs font-black uppercase tracking-[2px] rounded-full border border-white/20">
                 {profile?.role}
               </span>
               <button
                 onClick={toggleStatus}
-                className={`group flex items-center gap-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-[2px] rounded-full border transition-all hover:scale-105 active:scale-95 ${
+                className={`group flex items-center gap-2 px-4 py-1.5 text-xs font-black uppercase tracking-[2px] rounded-full border transition-all hover:scale-105 active:scale-95 ${
                   profile?.isActive
                     ? "bg-emerald-500 text-white border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.4)]"
                     : "bg-rose-500 text-white border-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.4)]"
@@ -198,7 +198,7 @@ const SellerProfile = () => {
             {!isEditing ? (
               <Button
                 onClick={() => setIsEditing(true)}
-                className="w-full md:w-auto bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white hover:text-slate-950 transition-all rounded-lg px-6 lg:px-12 py-4 md:py-5 flex items-center justify-center gap-3 md:gap-4 font-black tracking-[2px] md:tracking-[3px] text-xs shadow-[0_20px_40px_rgba(0,0,0,0.1)] hover:scale-[1.03] active:scale-[0.95] whitespace-nowrap">
+                className="w-full md:w-auto bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white hover:text-slate-950 transition-all rounded-lg px-4 lg:px-12 py-2.5 md:py-3 flex items-center justify-center gap-3 md:gap-4 font-black tracking-[2px] md:tracking-[3px] text-xs shadow-[0_20px_40px_rgba(0,0,0,0.1)] hover:scale-[1.03] active:scale-[0.95] whitespace-nowrap">
                 <Edit2 size={18} /> EDIT PROFILE
               </Button>
             ) : (
@@ -212,7 +212,7 @@ const SellerProfile = () => {
                 <Button
                   onClick={handleSubmit}
                   disabled={isSaving}
-                  className="min-w-0 max-w-full bg-white text-slate-950 hover:bg-slate-100 rounded-lg px-5 md:px-8 lg:px-12 py-4 md:py-5 font-black tracking-[2px] md:tracking-[3px] text-xs flex items-center gap-3 md:gap-4 shadow-[0_25px_50px_rgba(0,0,0,0.15)] h-[64px] whitespace-nowrap">
+                  className="min-w-0 max-w-full bg-white text-slate-950 hover:bg-slate-100 rounded-lg px-5 md:px-8 lg:px-12 py-2.5 md:py-3 font-black tracking-[2px] md:tracking-[3px] text-xs flex items-center gap-3 md:gap-4 shadow-[0_25px_50px_rgba(0,0,0,0.15)] h-[64px] whitespace-nowrap">
                   {isSaving ? (
                     "UPDATING..."
                   ) : (
@@ -227,22 +227,22 @@ const SellerProfile = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Main Info Card */}
-        <div className="md:col-span-2 space-y-8">
-          <Card className="p-8 border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-lg">
+        <div className="md:col-span-2 space-y-5">
+          <Card className="p-5 border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-lg">
             <h3 className="text-xl font-black text-slate-900 mb-8 border-b border-slate-50 pb-4">
               Business Profile
             </h3>
 
-            <form className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <form className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-3">
                   <label className="text-xs font-black uppercase tracking-widest text-slate-600 ml-1">
                     Seller Identity
                   </label>
                   <div className="relative group">
-                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-slate-900 transition-colors">
+                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors">
                       <User size={18} />
                     </div>
                     <input
@@ -251,7 +251,7 @@ const SellerProfile = () => {
                       value={formData.name}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className="w-full pl-14 pr-6 py-4 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-100 transition-all disabled:opacity-70"
+                      className="w-full pl-14 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-100 transition-all disabled:opacity-70"
                     />
                   </div>
                 </div>
@@ -261,7 +261,7 @@ const SellerProfile = () => {
                     Store Name
                   </label>
                   <div className="relative group">
-                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-slate-900 transition-colors">
+                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors">
                       <Store size={18} />
                     </div>
                     <input
@@ -270,7 +270,7 @@ const SellerProfile = () => {
                       value={formData.shopName}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className="w-full pl-14 pr-6 py-4 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-100 transition-all disabled:opacity-70"
+                      className="w-full pl-14 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-100 transition-all disabled:opacity-70"
                     />
                   </div>
                 </div>
@@ -280,7 +280,7 @@ const SellerProfile = () => {
                     Contact Number
                   </label>
                   <div className="relative group">
-                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-slate-900 transition-colors">
+                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors">
                       <Phone size={18} />
                     </div>
                     <input
@@ -289,7 +289,7 @@ const SellerProfile = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className="w-full pl-14 pr-6 py-4 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-100 transition-all disabled:opacity-70"
+                      className="w-full pl-14 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-100 transition-all disabled:opacity-70"
                     />
                   </div>
                 </div>
@@ -299,7 +299,7 @@ const SellerProfile = () => {
                     Email Address
                   </label>
                   <div className="relative group">
-                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300">
+                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">
                       <Mail size={18} />
                     </div>
                     <input
@@ -308,7 +308,7 @@ const SellerProfile = () => {
                       value={formData.email}
                       onChange={handleChange}
                       disabled={!isEditing}
-                      className="w-full pl-14 pr-6 py-4 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-100 transition-all disabled:opacity-70"
+                      className="w-full pl-14 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-100 transition-all disabled:opacity-70"
                     />
                   </div>
                 </div>
@@ -317,7 +317,7 @@ const SellerProfile = () => {
           </Card>
 
           {/* Location & Radius Settings Card */}
-          <Card className="p-8 border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-lg">
+          <Card className="p-5 border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-lg">
             <div className="flex justify-between items-center mb-8 border-b border-slate-50 pb-4">
               <h3 className="text-xl font-black text-slate-900">
                 Location & Service Settings
@@ -325,21 +325,21 @@ const SellerProfile = () => {
               {!isEditing && (
                 <Button
                   onClick={() => setIsEditing(true)}
-                  className="bg-slate-900 text-white hover:bg-black rounded-lg px-6 py-2 text-[10px] font-black tracking-[2px]">
+                  className="bg-slate-900 text-white hover:bg-black rounded-lg px-4 py-2 text-xs font-black tracking-[2px]">
                   MANAGE
                 </Button>
               )}
             </div>
 
-            <div className="space-y-6">
-              <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100/50 space-y-6">
-                <div className="flex items-center justify-between gap-6">
+            <div className="space-y-4">
+              <div className="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100/50 space-y-4">
+                <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <div
                       className={`h-12 w-12 rounded-xl flex items-center justify-center transition-all ${
                         formData.lat
                           ? "bg-brand-100 text-brand-600 shadow-[0_8px_20px_-6px_rgba(16,185,129,0.3)]"
-                          : "bg-white text-slate-400 shadow-sm"
+                          : "bg-white text-slate-500 shadow-sm"
                       }`}>
                       <MapPin size={24} />
                     </div>
@@ -359,16 +359,16 @@ const SellerProfile = () => {
                     <Button
                       type="button"
                       onClick={() => setIsMapOpen(true)}
-                      className="bg-white text-slate-900 border-2 border-slate-200 hover:border-slate-900 rounded-lg px-8 py-3 text-[10px] font-black tracking-[2px] shadow-sm hover:shadow-md transition-all whitespace-nowrap">
+                      className="bg-white text-slate-900 border-2 border-slate-200 hover:border-slate-900 rounded-lg px-8 py-3 text-xs font-black tracking-[2px] shadow-sm hover:shadow-md transition-all whitespace-nowrap">
                       CHANGE PIN
                     </Button>
                   )}
                 </div>
 
                 {formData.lat && (
-                  <div className="pt-6 border-t border-slate-200/60 flex flex-wrap gap-8">
+                  <div className="pt-6 border-t border-slate-200/60 flex flex-wrap gap-5">
                     <div className="space-y-2">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">
+                      <span className="text-xs font-black text-slate-500 uppercase tracking-widest block">
                         Service Radius
                       </span>
                       <div className="flex items-center gap-2">
@@ -381,7 +381,7 @@ const SellerProfile = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">
+                      <span className="text-xs font-black text-slate-500 uppercase tracking-widest block">
                         Latitude
                       </span>
                       <span className="text-sm font-bold text-slate-700 tabular-nums">
@@ -389,7 +389,7 @@ const SellerProfile = () => {
                       </span>
                     </div>
                     <div className="space-y-2">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">
+                      <span className="text-xs font-black text-slate-500 uppercase tracking-widest block">
                         Longitude
                       </span>
                       <span className="text-sm font-bold text-slate-700 tabular-nums">
@@ -414,12 +414,12 @@ const SellerProfile = () => {
         </div>
 
         {/* Sidebar Card */}
-        <div className="space-y-8">
-          <Card className="p-8 border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[40px] bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-800 text-white">
-            <h4 className="text-[10px] font-black uppercase tracking-[4px] text-white/40 mb-6">
+        <div className="space-y-5">
+          <Card className="p-5 border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[40px] bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-800 text-white">
+            <h4 className="text-xs font-black uppercase tracking-[4px] text-white/40 mb-6">
               Security & Trust
             </h4>
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center">
                   <Shield size={20} className="text-white" />

@@ -24,6 +24,7 @@ import metricsRoute from "./metricsRoutes.js";
 import authOtpRoute from "../modules/otp/otp.routes.js";
 import legalRoute from "./legalRoutes.js";
 import roleRoute from "./roleRoutes.js";
+import deliverySlotRoute from "./deliverySlotRoutes.js";
 import { maintenanceMiddleware } from "../middleware/maintenanceMiddleware.js";
 
 import express from "express";
@@ -62,6 +63,7 @@ const setupRoutes = (app) => {
     router.use("/push", pushRoute);
     router.use("/tickets", ticketRoute);
     router.use("/reviews", reviewRoute);
+    router.use("/delivery-slots", deliverySlotRoute);
     router.use("/admin/faqs", faqRoute);
     router.use("/public/faqs", faqRoute); // For public access without admin prefix
 

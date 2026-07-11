@@ -293,7 +293,7 @@ const OrdersList = () => {
                                                     setIsDateMenuOpen(false);
                                                 }}
                                                 className={cn(
-                                                    "w-full text-left px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all",
+                                                    "w-full text-left px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all",
                                                     dateRange === range ? "bg-brand-50 text-brand-600" : "text-slate-500 hover:bg-slate-50"
                                                 )}
                                             >
@@ -317,13 +317,13 @@ const OrdersList = () => {
                                 <stat.icon className={cn("h-5 w-5", `text-${stat.color}-600`)} />
                             </div>
                             {stat.trend && (
-                                <Badge variant="success" className="bg-brand-50 text-brand-600 border-none font-bold text-[10px]">
+                                <Badge variant="success" className="bg-brand-50 text-brand-600 border-none font-bold text-xs">
                                     {stat.trend}
                                 </Badge>
                             )}
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
+                            <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">{stat.label}</p>
                             <h3 className="text-2xl font-black text-slate-900">{stat.value}</h3>
                         </div>
                     </Card>
@@ -334,7 +334,7 @@ const OrdersList = () => {
             <Card className="border-none shadow-2xl ring-1 ring-slate-100/50 bg-white rounded-xl overflow-hidden">
                 <div className="p-6 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="relative group flex-1 max-w-md">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-fuchsia-500 transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-fuchsia-500 transition-colors" />
                         <input
                             type="text"
                             placeholder="Search by Order ID, Customer, or Shop..."
@@ -348,13 +348,13 @@ const OrdersList = () => {
                             <button
                                 onClick={handleCSVExport}
                                 disabled={isExporting}
-                                className="flex items-center gap-2 px-4 py-2.5 bg-fuchsia-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-fuchsia-700 transition-all shadow-lg shadow-fuchsia-100 disabled:opacity-50"
+                                className="flex items-center gap-2 px-4 py-2.5 bg-fuchsia-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-fuchsia-700 transition-all shadow-lg shadow-fuchsia-100 disabled:opacity-50"
                             >
                                 <Download className={cn("h-3.5 w-3.5", isExporting && "animate-bounce")} />
                                 {isExporting ? 'Exporting...' : 'Export CSV'}
                             </button>
                         )}
-                        <button className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:text-slate-600 transition-all">
+                        <button className="p-3 bg-slate-50 rounded-xl text-slate-500 hover:text-slate-600 transition-all">
                             <Filter className="h-4 w-4" />
                         </button>
                     </div>
@@ -364,12 +364,12 @@ const OrdersList = () => {
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-slate-50/50">
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Order Details</th>
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer</th>
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Seller</th>
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Amount</th>
-                                <th className="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Action</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest">Order Details</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest">Customer</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest">Seller</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest">Status</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Amount</th>
+                                <th className="px-4 py-5 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
@@ -378,7 +378,7 @@ const OrdersList = () => {
                                     <td colSpan="6" className="px-4 py-20 text-center">
                                         <div className="flex justify-center flex-col items-center gap-2">
                                             <div className="h-8 w-8 border-4 border-fuchsia-600 border-t-transparent rounded-full animate-spin"></div>
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading Orders...</p>
+                                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Loading Orders...</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -386,20 +386,20 @@ const OrdersList = () => {
                                 <tr key={order.id} className="group hover:bg-slate-50/30 transition-all cursor-pointer" onClick={() => navigate(`/admin/orders/view/${order.id}`)}>
                                     <td className="px-4 py-5">
                                         <div className="flex items-center gap-4">
-                                            <div className="p-3 bg-slate-50 rounded-2xl group-hover:bg-white group-hover:shadow-sm transition-all text-slate-400 group-hover:text-fuchsia-500 font-bold text-xs">
+                                            <div className="p-3 bg-slate-50 rounded-2xl group-hover:bg-white group-hover:shadow-sm transition-all text-slate-500 group-hover:text-fuchsia-500 font-bold text-xs">
                                                 <Package className="h-5 w-5" />
                                             </div>
                                             <div>
                                                 <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
                                                     #{order.id}
-                                                    <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all text-slate-400" />
+                                                    <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all text-slate-500" />
                                                 </h4>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <Badge variant="outline" className="text-[9px] font-bold border-slate-200 text-slate-400 py-0.5">
+                                                    <Badge variant="outline" className="text-xs font-bold border-slate-200 text-slate-500 py-0.5">
                                                         {order.items} {order.items > 1 ? 'Items' : 'Item'}
                                                     </Badge>
-                                                    <span className="text-[10px] font-bold text-slate-300">•</span>
-                                                    <span className="text-[10px] font-bold text-slate-400">{order.date}</span>
+                                                    <span className="text-xs font-bold text-slate-400">•</span>
+                                                    <span className="text-xs font-bold text-slate-500">{order.date}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -422,7 +422,7 @@ const OrdersList = () => {
                                                 value={order.status}
                                                 onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
                                                 className={cn(
-                                                    "w-full text-[10px] pl-3 pr-8 py-2 rounded-xl font-black uppercase tracking-wider border appearance-none cursor-pointer focus:ring-2 focus:ring-offset-1 transition-all outline-none shadow-sm",
+                                                    "w-full text-xs pl-3 pr-8 py-2 rounded-xl font-black uppercase tracking-wider border appearance-none cursor-pointer focus:ring-2 focus:ring-offset-1 transition-all outline-none shadow-sm",
                                                     getStatusStyles(order.status)
                                                 )}
                                             >
@@ -439,7 +439,7 @@ const OrdersList = () => {
                                     <td className="px-4 py-5 text-right">
                                         <div className="flex flex-col items-end">
                                             <span className="text-sm font-black text-slate-900">₹{order.amount.toLocaleString()}</span>
-                                            <span className="text-[10px] font-bold text-slate-400 mt-0.5">{order.payment}</span>
+                                            <span className="text-xs font-bold text-slate-500 mt-0.5">{order.payment}</span>
                                         </div>
                                     </td>
                                     <td className="px-4 py-5 text-right">
@@ -450,7 +450,7 @@ const OrdersList = () => {
                                                         e.stopPropagation();
                                                         handleStatusUpdate(order._id, 'packed');
                                                     }}
-                                                    className="flex items-center gap-2 px-4 py-2 bg-black  text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-brand-700 transition-all shadow-lg shadow-brand-100"
+                                                    className="flex items-center gap-2 px-4 py-2 bg-black  text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-brand-700 transition-all shadow-lg shadow-brand-100"
                                                 >
                                                     <Package className="h-3.5 w-3.5" />
                                                     MARK PACKED
@@ -462,7 +462,7 @@ const OrdersList = () => {
                                                         e.stopPropagation();
                                                         handleStatusUpdate(order._id, 'out_for_delivery');
                                                     }}
-                                                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-purple-700 transition-all shadow-lg shadow-purple-100"
+                                                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-purple-700 transition-all shadow-lg shadow-purple-100"
                                                 >
                                                     <Truck className="h-3.5 w-3.5" />
                                                     DISPATCH
@@ -473,7 +473,7 @@ const OrdersList = () => {
                                                     e.stopPropagation();
                                                     navigate(`/admin/orders/view/${order.id}`);
                                                 }}
-                                                className="p-2.5 bg-slate-50 text-slate-400 hover:text-fuchsia-600 hover:bg-fuchsia-100 rounded-xl transition-all"
+                                                className="p-2.5 bg-slate-50 text-slate-500 hover:text-fuchsia-600 hover:bg-fuchsia-100 rounded-xl transition-all"
                                                 title="View Details"
                                             >
                                                 <Eye className="h-4 w-4" />
@@ -489,8 +489,8 @@ const OrdersList = () => {
                                                 <Search className="h-10 w-10 text-slate-200" />
                                             </div>
                                             <div>
-                                                <h4 className="text-lg font-black text-slate-300 uppercase tracking-tight">No Orders Found</h4>
-                                                <p className="text-sm font-bold text-slate-300 mt-1">We couldn't find any orders matching your search.</p>
+                                                <h4 className="text-lg font-black text-slate-400 uppercase tracking-tight">No Orders Found</h4>
+                                                <p className="text-sm font-bold text-slate-400 mt-1">We couldn't find any orders matching your search.</p>
                                             </div>
                                         </div>
                                     </td>

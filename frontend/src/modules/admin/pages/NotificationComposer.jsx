@@ -277,7 +277,7 @@ const NotificationComposer = () => {
                                 </div>
                                 <div>
                                     <h3 className="ds-h3">Campaign Composer</h3>
-                                    <p className="ds-caption text-slate-400">Design your notification</p>
+                                    <p className="ds-caption text-slate-500">Design your notification</p>
                                 </div>
                             </div>
 
@@ -292,7 +292,7 @@ const NotificationComposer = () => {
                                             type="button"
                                             onClick={() => openEmojiPicker('title')}
                                             className={cn(
-                                                "inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl transition-all ring-1",
+                                                "inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-xl transition-all ring-1",
                                                 emojiPickerOpen && emojiTarget === 'title'
                                                     ? "bg-primary/10 text-primary ring-primary/20"
                                                     : "bg-slate-50 text-slate-500 ring-slate-200 hover:bg-slate-100 hover:text-slate-700"
@@ -313,7 +313,7 @@ const NotificationComposer = () => {
                                         className="ds-input w-full pr-12"
                                         maxLength={50}
                                     />
-                                    <p className="ds-caption text-slate-400 text-right">{title.length}/50</p>
+                                    <p className="ds-caption text-slate-500 text-right">{title.length}/50</p>
                                 </div>
 
                                 {/* Message */}
@@ -325,7 +325,7 @@ const NotificationComposer = () => {
                                             type="button"
                                             onClick={() => openEmojiPicker('message')}
                                             className={cn(
-                                                "inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl transition-all ring-1",
+                                                "inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-xl transition-all ring-1",
                                                 emojiPickerOpen && emojiTarget === 'message'
                                                     ? "bg-primary/10 text-primary ring-primary/20"
                                                     : "bg-slate-50 text-slate-500 ring-slate-200 hover:bg-slate-100 hover:text-slate-700"
@@ -347,7 +347,7 @@ const NotificationComposer = () => {
                                         className="ds-textarea w-full resize-none pr-12"
                                         maxLength={200}
                                     />
-                                    <p className="ds-caption text-slate-400 text-right">{message.length}/200</p>
+                                    <p className="ds-caption text-slate-500 text-right">{message.length}/200</p>
                                 </div>
 
                                 {/* Deep Link & Image */}
@@ -355,7 +355,7 @@ const NotificationComposer = () => {
                                     <div className="space-y-2">
                                         <label className="ds-label">Deep Link (Optional)</label>
                                         <div className="relative">
-                                            <HiOutlineLink className="absolute left-3 top-1/2 -translate-y-1/2 ds-icon-sm text-slate-400" />
+                                            <HiOutlineLink className="absolute left-3 top-1/2 -translate-y-1/2 ds-icon-sm text-slate-500" />
                                             <input
                                                 value={deepLink}
                                                 onChange={(e) => setDeepLink(e.target.value)}
@@ -379,7 +379,7 @@ const NotificationComposer = () => {
                                             onClick={() => imageInputRef.current?.click?.()}
                                             className="ds-input w-full flex items-center gap-2 justify-start text-left hover:bg-slate-50 transition-colors"
                                         >
-                                            <HiOutlinePhoto className="ds-icon-sm text-slate-400" />
+                                            <HiOutlinePhoto className="ds-icon-sm text-slate-500" />
                                             <span className="text-xs font-bold text-slate-600 truncate">
                                                 {imageFile?.name || 'Choose an image file...'}
                                             </span>
@@ -398,7 +398,7 @@ const NotificationComposer = () => {
                                                         setImageFile(null);
                                                         setImagePreview('');
                                                     }}
-                                                    className="text-[10px] font-black uppercase tracking-widest text-rose-600 hover:text-rose-700"
+                                                    className="text-xs font-black uppercase tracking-widest text-rose-600 hover:text-rose-700"
                                                 >
                                                     Remove
                                                 </button>
@@ -414,7 +414,7 @@ const NotificationComposer = () => {
                                 disabled={!title || !message || isSending}
                                 className="ds-btn ds-btn-lg w-full bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
-                                <HiOutlineBolt className="ds-icon-md text-amber-400" />
+                                <HiOutlineBolt className="ds-icon-md text-amber-700" />
                                 {isSending ? 'SENDING...' : 'BLAST SIGNAL'}
                             </button>
                         </div>
@@ -429,13 +429,13 @@ const NotificationComposer = () => {
                             aria-label="Emoji picker"
                         >
                             <div className="flex items-center justify-between mb-2">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                <p className="text-xs font-black uppercase tracking-widest text-slate-500">
                                     Add Emoji
                                 </p>
                                 <button
                                     type="button"
                                     onClick={closeEmojiPicker}
-                                    className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900"
+                                    className="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-slate-900"
                                 >
                                     Close
                                 </button>
@@ -454,7 +454,7 @@ const NotificationComposer = () => {
                                     </button>
                                 ))}
                             </div>
-                            <p className="mt-2 text-[10px] font-bold text-slate-400">
+                            <p className="mt-2 text-xs font-bold text-slate-500">
                                 Tip: click inside the text field, then pick emojis.
                             </p>
                         </div>
@@ -485,7 +485,7 @@ const NotificationComposer = () => {
                         <Card className="ds-card-standard bg-gradient-to-br from-slate-900 to-slate-800 border-none">
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <span className="ds-caption text-slate-400">Live Preview</span>
+                                    <span className="ds-caption text-slate-500">Live Preview</span>
                                     <Badge variant="success" className="ds-badge ds-badge-success text-[8px]">
                                         LOCKED
                                     </Badge>
@@ -502,9 +502,9 @@ const NotificationComposer = () => {
                                             <div className="h-5 w-5 bg-primary rounded-lg flex items-center justify-center">
                                                 <HiOutlineDevicePhoneMobile className="h-3 w-3 text-white" />
                                             </div>
-                                            <span className="text-[10px] font-bold text-white uppercase tracking-wider">{appName}</span>
+                                            <span className="text-xs font-bold text-white uppercase tracking-wider">{appName}</span>
                                         </div>
-                                        <span className="text-[10px] font-semibold text-white/90">Just Now</span>
+                                        <span className="text-xs font-semibold text-white/90">Just Now</span>
                                     </div>
                                     <div>
                                         <h4 className="text-sm font-bold text-white mb-1.5 truncate">
@@ -564,7 +564,7 @@ const NotificationComposer = () => {
                                             </div>
                                             <p className={cn(
                                                 "ds-caption",
-                                                selectedSegment === seg.id ? "text-white/60" : "text-slate-400"
+                                                selectedSegment === seg.id ? "text-white/60" : "text-slate-500"
                                             )}>
                                                 {seg.description}
                                             </p>

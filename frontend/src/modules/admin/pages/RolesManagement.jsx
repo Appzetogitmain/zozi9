@@ -131,7 +131,7 @@ const RolesManagement = () => {
                                                 {m}
                                             </span>
                                         ))}
-                                        {!role.modules?.length && <span className="text-slate-400">No modules assigned</span>}
+                                        {!role.modules?.length && <span className="text-slate-500">No modules assigned</span>}
                                     </div>
                                 </td>
                                 <td className="p-4">

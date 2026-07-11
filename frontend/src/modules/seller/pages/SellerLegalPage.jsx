@@ -29,10 +29,10 @@ const SellerLegalPage = ({ type }) => {
 
     return (
         <DashboardLayout title={title}>
-            <div className="max-w-4xl mx-auto py-8">
-                <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+            <div className="max-w-4xl mx-auto py-3">
+                <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
                     <div className="flex items-center gap-4 mb-8 pb-6 border-b border-slate-100">
-                        <div className="h-14 w-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                        <div className="h-10 w-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
                             <Icon size={28} />
                         </div>
                         <div>
@@ -49,7 +49,7 @@ const SellerLegalPage = ({ type }) => {
                         ) : content ? (
                             <div dangerouslySetInnerHTML={{ __html: content }} />
                         ) : (
-                            <div className="text-center py-20 text-slate-400">
+                            <div className="text-center py-20 text-slate-500">
                                 <p>{title} is not available at the moment.</p>
                             </div>
                         )}

@@ -16,7 +16,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
+        sans: ['Poppins', 'sans-serif'],
         heading: ['Fredoka', 'sans-serif'],
       },
       colors: {

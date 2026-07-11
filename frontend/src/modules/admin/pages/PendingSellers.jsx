@@ -145,7 +145,7 @@ const PendingSellers = () => {
                 </div>
                 <div className="flex items-center gap-2 bg-amber-50 px-4 py-2 rounded-xl ring-1 ring-amber-100">
                     <HiOutlineClock className="h-4 w-4 text-amber-600" />
-                    <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest">Avg Review Time: {summaryStats.avgReviewTimeHours}h</span>
+                    <span className="text-xs font-bold text-amber-700 uppercase tracking-widest">Avg Review Time: {summaryStats.avgReviewTimeHours}h</span>
                 </div>
             </div>
 
@@ -174,7 +174,7 @@ const PendingSellers = () => {
             <Card className="border-none shadow-xl ring-1 ring-slate-100 overflow-hidden rounded-xl">
                 <div className="p-6 border-b border-slate-50 flex flex-col md:flex-row gap-4 items-center justify-between bg-white">
                     <div className="relative flex-1 w-full max-w-md">
-                        <HiOutlineMagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <HiOutlineMagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                         <input
                             type="text"
                             placeholder="Search by shop name or owner..."
@@ -204,7 +204,7 @@ const PendingSellers = () => {
                                 <tr>
                                     <td colSpan="4" className="px-6 py-20 text-center">
                                         <div className="flex flex-col items-center justify-center gap-3">
-                                            <HiOutlineArrowPath className="h-8 w-8 text-slate-300 animate-spin" />
+                                            <HiOutlineArrowPath className="h-8 w-8 text-slate-400 animate-spin" />
                                             <p className="text-slate-500 font-bold text-sm">Loading seller applications...</p>
                                         </div>
                                     </td>
@@ -217,13 +217,13 @@ const PendingSellers = () => {
                                             onClick={() => navigate(`/admin/sellers/active/${s.id}`)}
                                         >
                                             <div className="h-10 w-10 rounded-xl overflow-hidden bg-slate-100 ring-2 ring-slate-100 group-hover:ring-primary/20 transition-all">
-                                                <div className="h-full w-full flex items-center justify-center bg-slate-100 text-slate-400">
+                                                <div className="h-full w-full flex items-center justify-center bg-slate-100 text-slate-500">
                                                     <HiOutlineBuildingOffice2 className="h-5 w-5" />
                                                 </div>
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-slate-900 group-hover/name:text-primary transition-colors">{s.shopName}</p>
-                                                <p className="text-[10px] font-bold text-slate-400">{s.ownerName}</p>
+                                                <p className="text-xs font-bold text-slate-500">{s.ownerName}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -237,7 +237,7 @@ const PendingSellers = () => {
                                     <td className="px-6 py-5 align-middle">
                                         <div className="flex flex-col justify-center">
                                             <span className="text-xs font-bold text-slate-700">{s.applicationDate}</span>
-                                            <span className="text-[9px] font-medium text-slate-400">Received {s.receivedAt || 'Recently'}</span>
+                                            <span className="text-xs font-medium text-slate-500">Received {s.receivedAt || 'Recently'}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-5 text-right align-middle">
@@ -261,7 +261,7 @@ const PendingSellers = () => {
                                             <div className="w-[1px] h-4 bg-slate-200 mx-1" />
                                             <button
                                                 onClick={() => { setViewingSeller(s); setIsReviewModalOpen(true); }}
-                                                className="h-9 px-4 bg-black  text-white rounded-xl text-[10px] font-bold hover:bg-brand-700 transition-all shadow-md shadow-brand-100 hover:-translate-y-0.5 flex items-center gap-2"
+                                                className="h-9 px-4 bg-black  text-white rounded-xl text-xs font-bold hover:bg-brand-700 transition-all shadow-md shadow-brand-100 hover:-translate-y-0.5 flex items-center gap-2"
                                             >
                                                 <HiOutlineEye className="h-4 w-4" />
                                                 REVIEW
@@ -328,25 +328,25 @@ const PendingSellers = () => {
 
                                             <div className="space-y-4">
                                                 <div className="flex items-center gap-3">
-                                                    <HiOutlineBuildingOffice2 className="h-4 w-4 text-slate-400" />
+                                                    <HiOutlineBuildingOffice2 className="h-4 w-4 text-slate-500" />
                                                     <span className="text-xs font-bold text-slate-700">{viewingSeller.ownerName}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <HiOutlineEnvelope className="h-4 w-4 text-slate-400" />
+                                                    <HiOutlineEnvelope className="h-4 w-4 text-slate-500" />
                                                     <span className="text-xs font-semibold text-slate-500">{viewingSeller.email}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <HiOutlinePhone className="h-4 w-4 text-slate-400" />
+                                                    <HiOutlinePhone className="h-4 w-4 text-slate-500" />
                                                     <span className="text-xs font-bold text-slate-700">{viewingSeller.phone}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <HiOutlineMapPin className="h-4 w-4 text-slate-400" />
+                                                    <HiOutlineMapPin className="h-4 w-4 text-slate-500" />
                                                     <span className="text-xs font-semibold text-slate-500">{viewingSeller.location}</span>
                                                 </div>
                                             </div>
 
                                             <div className="pt-6 border-t border-slate-200">
-                                                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Application Memo</h4>
+                                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Application Memo</h4>
                                                 <p className="text-xs font-medium text-slate-600 italic leading-relaxed">
                                                     "{viewingSeller.description}"
                                                 </p>
@@ -360,7 +360,7 @@ const PendingSellers = () => {
                                             onClick={() => setIsReviewModalOpen(false)}
                                             className="hidden lg:block absolute right-8 top-4 p-2 hover:bg-slate-100 rounded-full transition-colors"
                                         >
-                                            <HiOutlineXMark className="h-6 w-6 text-slate-300" />
+                                            <HiOutlineXMark className="h-6 w-6 text-slate-400" />
                                         </button>
 
                                         <div className="ds-section-spacing">
@@ -369,7 +369,7 @@ const PendingSellers = () => {
                                                     <HiOutlineDocumentText className="h-5 w-5 text-brand-500" />
                                                     <h4 className="text-sm font-bold text-slate-900">Submitted Verification Documents</h4>
                                                 </div>
-                                                <p className="text-xs text-slate-400 font-medium">Check each document before final approval.</p>
+                                                <p className="text-xs text-slate-500 font-medium">Check each document before final approval.</p>
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -388,7 +388,7 @@ const PendingSellers = () => {
                                                                 </div>
                                                                 <div className="min-w-0">
                                                                     <p className="text-xs font-bold text-slate-700">{doc.label}</p>
-                                                                    <p className={`text-[9px] font-bold uppercase tracking-tighter truncate ${doc.isViewable ? 'text-brand-500' : 'text-amber-500'
+                                                                    <p className={`text-xs font-bold uppercase tracking-tighter truncate ${doc.isViewable ? 'text-brand-500' : 'text-amber-700'
                                                                         }`}>
                                                                         {doc.isViewable
                                                                             ? doc.fileType === 'pdf'
@@ -403,7 +403,7 @@ const PendingSellers = () => {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => window.open(doc.url, '_blank', 'noopener,noreferrer')}
-                                                                    className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider hover:bg-slate-800 transition-colors shrink-0"
+                                                                    className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition-colors shrink-0"
                                                                 >
                                                                     <HiOutlineArrowTopRightOnSquare className="h-3.5 w-3.5" />
                                                                     <span>View</span>
@@ -429,7 +429,7 @@ const PendingSellers = () => {
                                                     </div>
                                                     <div>
                                                         <h5 className="text-xs font-bold text-amber-900">Initial Review Passed</h5>
-                                                        <p className="text-[10px] text-amber-700/80 font-medium mt-1 leading-relaxed">
+                                                        <p className="text-xs text-amber-700/80 font-medium mt-1 leading-relaxed">
                                                             Our system automatically checked all basic identity and shop locations. You need to check documents manually now.
                                                         </p>
                                                     </div>
@@ -441,7 +441,7 @@ const PendingSellers = () => {
                                                 <button
                                                     disabled={isProcessing}
                                                     onClick={() => handleReject(viewingSeller.id)}
-                                                    className="flex-1 py-4 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-2xl text-[10px] font-bold tracking-widest transition-all uppercase"
+                                                    className="flex-1 py-4 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-2xl text-xs font-bold tracking-widest transition-all uppercase"
                                                 >
                                                     REJECT APPLICATION
                                                 </button>
@@ -449,7 +449,7 @@ const PendingSellers = () => {
                                                     <button
                                                         disabled={isProcessing}
                                                         onClick={() => handleApprove(viewingSeller.id)}
-                                                        className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-bold tracking-widest shadow-2xl hover:bg-slate-800 transition-all transform active:scale-[0.98] uppercase flex items-center justify-center gap-2"
+                                                        className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl text-xs font-bold tracking-widest shadow-2xl hover:bg-slate-800 transition-all transform active:scale-[0.98] uppercase flex items-center justify-center gap-2"
                                                     >
                                                         {isProcessing ? (
                                                             <>

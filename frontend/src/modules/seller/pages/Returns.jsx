@@ -10,9 +10,14 @@ import {
     HiOutlineEye,
     HiOutlineCalendarDays,
     HiOutlineTruck,
+    HiOutlineDocumentText,
+    HiOutlineCheckCircle,
+    HiOutlineXCircle,
+    HiOutlineCheckBadge
 } from "react-icons/hi2";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { MagicCard } from "@/components/ui/magic-card";
+import SellerStatCard from "../components/SellerStatCard";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Loader2, X } from "lucide-react";
@@ -208,7 +213,7 @@ const Returns = () => {
     };
 
     return (
-        <div className="space-y-4 sm:space-y-6 pb-20 sm:pb-16">
+        <div className="space-y-4 sm:space-y-4 pb-20 sm:pb-16">
             <BlurFade delay={0.1}>
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
                     <div className="min-w-0">
@@ -216,7 +221,7 @@ const Returns = () => {
                             Return Requests
                             <Badge
                                 variant="secondary"
-                                className="text-[10px] px-1.5 py-0 font-bold tracking-widest uppercase"
+                                className="text-xs px-1.5 py-0 font-bold tracking-widest uppercase"
                             >
                                 New
                             </Badge>
@@ -248,47 +253,41 @@ const Returns = () => {
             ) : (
                 <>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                        {["Requested", "Approved", "Rejected", "Completed"].map(
-                            (label, i) => {
-                                const count = returns.filter(
-                                    (r) => mapReturnStatusLabel(r.returnStatus) === label
-                                ).length;
-                                return (
-                                    <BlurFade key={label} delay={0.1 + i * 0.05}>
-                                        <MagicCard
-                                            className="border-none shadow-sm ring-1 ring-slate-100 p-0 overflow-hidden group bg-white"
-                                            gradientColor="#eef2ff"
-                                        >
-                                            <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 relative z-10">
-                                                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center bg-slate-900 text-white shadow-sm shrink-0">
-                                                    <HiOutlineInboxStack className="h-5 w-5 sm:h-6 sm:w-6" />
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <p className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest truncate">
-                                                        {label}
-                                                    </p>
-                                                    <h4 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
-                                                        {count}
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                        </MagicCard>
-                                    </BlurFade>
-                                );
-                            }
-                        )}
+                        {[
+                            { label: "Requested", icon: HiOutlineDocumentText, color: "text-amber-600", bg: "bg-amber-50" },
+                            { label: "Approved", icon: HiOutlineCheckCircle, color: "text-brand-600", bg: "bg-brand-50" },
+                            { label: "Rejected", icon: HiOutlineXCircle, color: "text-rose-600", bg: "bg-rose-50" },
+                            { label: "Completed", icon: HiOutlineCheckBadge, color: "text-emerald-600", bg: "bg-emerald-50" }
+                        ].map((stat, i) => {
+                            const count = returns.filter(
+                                (r) => mapReturnStatusLabel(r.returnStatus) === stat.label
+                            ).length;
+                            return (
+                                <SellerStatCard
+                                    key={stat.label}
+                                    label={stat.label}
+                                    value={count}
+                                    icon={stat.icon}
+                                    colorClass={stat.color}
+                                    bgClass={stat.bg}
+                                    delay={0.1 + i * 0.05}
+                                    isActive={activeTab === stat.label}
+                                    onClick={() => setActiveTab(stat.label)}
+                                />
+                            );
+                        })}
                     </div>
 
                     <BlurFade delay={0.2}>
                         <Card className="border-none shadow-xl ring-1 ring-slate-100 rounded-lg bg-white overflow-hidden">
                             <div className="border-b border-slate-100 bg-slate-50/30 overflow-x-auto scrollbar-hide">
-                                <div className="flex px-3 sm:px-6 items-center min-w-max">
+                                <div className="flex px-3 sm:px-4 items-center min-w-max">
                                     {tabs.map((tab) => (
                                         <button
                                             key={tab}
                                             onClick={() => setActiveTab(tab)}
                                             className={cn(
-                                                "relative py-3 sm:py-4 px-2.5 sm:px-4 text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300",
+                                                "relative py-3 sm:py-2.5 px-2.5 sm:px-4 text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300",
                                                 activeTab === tab
                                                     ? "text-primary scale-105"
                                                     : "text-slate-600 hover:text-slate-700"
@@ -309,7 +308,7 @@ const Returns = () => {
                             <div className="p-3 sm:p-4">
                                 {filteredReturns.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center py-16 px-4">
-                                        <div className="h-14 w-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 mb-3">
+                                        <div className="h-10 w-10 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 mb-3">
                                             <HiOutlineInboxStack className="h-7 w-7" />
                                         </div>
                                         <h3 className="text-sm font-bold text-slate-900">
@@ -357,14 +356,14 @@ const Returns = () => {
                                                     {(ret.returnStatus === "return_in_transit" || ret.returnStatus === "return_drop_pending" || ret.returnStatus === "return_pickup_assigned") && ret.returnDeliveryBoy && (
                                                         <div className="mt-2 flex items-center gap-1.5 px-2 py-1 bg-brand-50 rounded-lg border border-brand-100 w-fit">
                                                             <HiOutlineTruck className="h-3 w-3 text-brand-600" />
-                                                            <span className="text-[10px] font-bold text-brand-700">Rider: {ret.returnDeliveryBoy.name}</span>
+                                                            <span className="text-xs font-bold text-brand-700">Rider: {ret.returnDeliveryBoy.name}</span>
                                                         </div>
                                                     )}
                                                     {/* Proper Data: QC Note for passed/failed */}
                                                     {(ret.returnStatus === "qc_passed" || ret.returnStatus === "qc_failed") && ret.returnQcNote && (
                                                         <div className="mt-2 flex items-start gap-1.5 px-2 py-1 bg-slate-50 rounded-lg border border-slate-100 w-fit max-w-[200px]">
                                                             <HiOutlineInboxStack className="h-3 w-3 text-slate-500 mt-0.5" />
-                                                            <span className="text-[10px] font-medium text-slate-600 italic line-clamp-2">QC: {ret.returnQcNote}</span>
+                                                            <span className="text-xs font-medium text-slate-600 italic line-clamp-2">QC: {ret.returnQcNote}</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -373,7 +372,7 @@ const Returns = () => {
                                                         variant={getStatusVariant(
                                                             ret.returnStatus
                                                         )}
-                                                        className="text-[10px] font-black uppercase px-2 py-0"
+                                                        className="text-xs font-black uppercase px-2 py-0"
                                                     >
                                                         {mapReturnStatusLabel(ret.returnStatus)}
                                                     </Badge>
@@ -402,7 +401,7 @@ const Returns = () => {
 
             <AnimatePresence>
                 {isDetailsOpen && selectedReturn && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 lg:p-8">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-4 lg:p-5">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -417,7 +416,7 @@ const Returns = () => {
                             className="w-full max-w-2xl relative z-10 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col"
                             style={{ maxHeight: 'calc(100vh - 2rem)' }}
                         >
-                            <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 shrink-0">
+                            <div className="flex items-center justify-between px-4 py-3 sm:px-4 sm:py-2.5 border-b border-slate-100 shrink-0">
                                 <div>
                                     <h3 className="text-base font-black text-slate-900">
                                         Return for Order #{selectedReturn.orderId}
@@ -427,7 +426,7 @@ const Returns = () => {
                                             variant={getStatusVariant(
                                                 selectedReturn.returnStatus
                                             )}
-                                            className="text-[10px] font-black uppercase tracking-widest px-1.5 py-0"
+                                            className="text-xs font-black uppercase tracking-widest px-1.5 py-0"
                                         >
                                             {mapReturnStatusLabel(
                                                 selectedReturn.returnStatus
@@ -443,7 +442,7 @@ const Returns = () => {
                                 </button>
                             </div>
 
-                            <div className="px-4 py-4 sm:px-6 sm:py-5 overflow-y-auto overscroll-contain flex-1 space-y-4">
+                            <div className="px-4 py-2.5 sm:px-4 sm:py-3 overflow-y-auto overscroll-contain flex-1 space-y-4">
                                 <div className="space-y-2">
                                     <p className="text-xs font-bold text-slate-600 uppercase tracking-widest">
                                         Customer
@@ -511,20 +510,20 @@ const Returns = () => {
                                                     <HiOutlineTruck className="h-5 w-5" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] font-black text-brand-600 uppercase tracking-widest leading-none mb-1">Rider Assigned</p>
+                                                    <p className="text-xs font-black text-brand-600 uppercase tracking-widest leading-none mb-1">Rider Assigned</p>
                                                     <p className="text-sm font-bold text-slate-900 leading-none">{selectedReturn.returnDeliveryBoy.name}</p>
                                                 </div>
                                             </div>
                                             {selectedReturn.returnDeliveryBoy.phone && (
                                                 <a
                                                     href={`tel:${selectedReturn.returnDeliveryBoy.phone}`}
-                                                    className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-700 bg-white px-3 py-1.5 rounded-lg border border-brand-200 shadow-sm hover:bg-brand-100 transition-colors"
+                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-700 bg-white px-3 py-1.5 rounded-lg border border-brand-200 shadow-sm hover:bg-brand-100 transition-colors"
                                                 >
                                                     📞 {selectedReturn.returnDeliveryBoy.phone}
                                                 </a>
                                             )}
                                             {selectedReturn.returnStatus === "return_drop_pending" && (
-                                                <p className="text-[10px] font-bold text-brand-800 italic mt-1 bg-white/50 p-2 rounded-lg">
+                                                <p className="text-xs font-bold text-brand-800 italic mt-1 bg-white/50 p-2 rounded-lg">
                                                     Rider is at your location. Please check the OTP below to confirm the drop.
                                                 </p>
                                             )}
@@ -541,7 +540,7 @@ const Returns = () => {
                                                 <HiOutlineInboxStack className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <p className={`text-[10px] font-black uppercase tracking-widest leading-none mb-1 ${selectedReturn.returnStatus === "qc_passed" ? "text-emerald-600" : "text-rose-600"
+                                                <p className={`text-xs font-black uppercase tracking-widest leading-none mb-1 ${selectedReturn.returnStatus === "qc_passed" ? "text-emerald-600" : "text-rose-600"
                                                     }`}>Quality Check Results</p>
                                                 <p className="text-sm font-bold text-slate-900 leading-none">
                                                     {selectedReturn.returnStatus === "qc_passed" ? "QC Passed" : "QC Failed"}
@@ -550,14 +549,14 @@ const Returns = () => {
                                         </div>
                                         {selectedReturn.returnQcNote && (
                                             <div className="bg-white/60 p-3 rounded-xl border border-black/5">
-                                                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1">QC Decision Note:</p>
+                                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">QC Decision Note:</p>
                                                 <p className="text-sm text-slate-800 italic leading-relaxed">
                                                     "{selectedReturn.returnQcNote}"
                                                 </p>
                                             </div>
                                         )}
                                         {selectedReturn.returnQcAt && (
-                                            <p className="text-[10px] font-medium text-slate-500">
+                                            <p className="text-xs font-medium text-slate-500">
                                                 Reviewed on: {new Date(selectedReturn.returnQcAt).toLocaleString()}
                                             </p>
                                         )}
@@ -566,7 +565,7 @@ const Returns = () => {
 
                                 {/* Quality Check Comparison (2-Way) */}
                                 <div className="space-y-3 pt-2">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-1">
                                         Product Comparison (QC)
                                     </p>
                                     <div className="grid grid-cols-2 gap-3">
@@ -579,7 +578,7 @@ const Returns = () => {
                                                     className="h-full w-full object-cover"
                                                 />
                                                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-900/60 to-transparent p-2">
-                                                    <p className="text-[9px] font-black text-white uppercase leading-none">Listing</p>
+                                                    <p className="text-xs font-black text-white uppercase leading-none">Listing</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -595,13 +594,13 @@ const Returns = () => {
                                                         className="h-full w-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="flex flex-col items-center gap-1.5 text-slate-400 px-3 text-center">
+                                                    <div className="flex flex-col items-center gap-1.5 text-slate-500 px-3 text-center">
                                                         <HiOutlineInboxStack className="h-5 w-5" />
                                                         <p className="text-[8px] font-bold leading-tight uppercase">Not Picked Yet</p>
                                                     </div>
                                                 )}
                                                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-emerald-900/60 to-transparent p-2">
-                                                    <p className="text-[9px] font-black text-white uppercase leading-none">Return</p>
+                                                    <p className="text-xs font-black text-white uppercase leading-none">Return</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -611,7 +610,7 @@ const Returns = () => {
                                             <div className={`h-2 w-2 rounded-full ${selectedReturn.returnPickupCondition === 'good' ? 'bg-emerald-500' :
                                                     selectedReturn.returnPickupCondition === 'damaged' ? 'bg-rose-500' : 'bg-amber-500'
                                                 }`} />
-                                            <p className="text-[11px] font-bold text-slate-600">
+                                            <p className="text-xs font-bold text-slate-600">
                                                 Rider Condition Report: <span className="uppercase text-slate-900">{selectedReturn.returnPickupCondition}</span>
                                             </p>
                                         </div>
@@ -671,8 +670,8 @@ const Returns = () => {
 
                                 {/* Active OTP Display */}
                                 {activeOtps[selectedReturn.orderId] && (
-                                    <div className="bg-brand-50 border-2 border-dashed border-brand-200 rounded-3xl p-6 text-center space-y-3 animate-in fade-in zoom-in duration-500">
-                                        <p className="text-[10px] font-black text-brand-600 uppercase tracking-[0.2em]">
+                                    <div className="bg-brand-50 border-2 border-dashed border-brand-200 rounded-3xl p-4 text-center space-y-3 animate-in fade-in zoom-in duration-500">
+                                        <p className="text-xs font-black text-brand-600 uppercase tracking-[0.2em]">
                                             Rider Arrived - Share OTP
                                         </p>
                                         <div className="flex items-center justify-center gap-3">
@@ -682,18 +681,18 @@ const Returns = () => {
                                                 </div>
                                             ))}
                                         </div>
-                                        <p className="text-[10px] font-bold text-slate-500 italic">
+                                        <p className="text-xs font-bold text-slate-500 italic">
                                             Sharing this code confirms you have received the product.
                                         </p>
                                     </div>
                                 )}
                             </div>
 
-                            <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center justify-end shrink-0">
+                            <div className="px-4 py-3 sm:px-4 sm:py-2.5 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center justify-end shrink-0">
                                 <div className="flex gap-2 items-center">
                                     <button
                                         onClick={() => setIsDetailsOpen(false)}
-                                        className="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-all"
+                                        className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-all"
                                     >
                                         Close
                                     </button>
@@ -752,7 +751,7 @@ const Returns = () => {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="w-full max-w-md relative z-10 bg-white rounded-3xl shadow-2xl p-6 space-y-4"
+                            className="w-full max-w-md relative z-10 bg-white rounded-3xl shadow-2xl p-4 space-y-4"
                         >
                             <h3 className="text-xl font-black text-slate-900">Reject Return</h3>
                             <p className="text-sm text-slate-600 font-medium">Please provide a reason for rejecting this return request. This will be shared with the customer.</p>

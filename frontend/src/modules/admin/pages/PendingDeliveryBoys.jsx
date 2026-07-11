@@ -121,12 +121,12 @@ return (
             <div>
                 <h1 className="ds-h1 flex items-center gap-3">
                     Rider Applications
-                    <Badge variant="primary" className="text-[10px] px-2 py-0.5 uppercase">Pending Review</Badge>
+                    <Badge variant="primary" className="text-xs px-2 py-0.5 uppercase">Pending Review</Badge>
                 </h1>
                 <p className="ds-description mt-1">Review documents for new delivery partners.</p>
             </div>
             <div className="flex items-center gap-3">
-                <button className="p-3 bg-white ring-1 ring-slate-200 rounded-2xl text-slate-400 hover:text-primary transition-all shadow-sm active:rotate-180 duration-500">
+                <button className="p-3 bg-white ring-1 ring-slate-200 rounded-2xl text-slate-500 hover:text-primary transition-all shadow-sm active:rotate-180 duration-500">
                     <RotateCw className="h-5 w-5" />
                 </button>
                 <div className="h-10 w-[1px] bg-slate-200 mx-2" />
@@ -141,7 +141,7 @@ return (
         <Card className="p-4 border-none shadow-sm ring-1 ring-slate-100 bg-white/50 backdrop-blur-xl">
             <div className="flex flex-col lg:flex-row gap-4">
                 <div className="flex-1 relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-500 group-focus-within:text-primary transition-colors" />
                     <input
                         type="text"
                         placeholder="Search by name or mobile..."
@@ -157,10 +157,10 @@ return (
                                 key={status}
                                 onClick={() => setFilterStatus(status)}
                                 className={cn(
-                                    "px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all",
+                                    "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all",
                                     filterStatus === status
                                         ? "bg-white text-slate-900 shadow-sm"
-                                        : "text-slate-400 hover:text-slate-600"
+                                        : "text-slate-500 hover:text-slate-600"
                                 )}
                             >
                                 {status === 'pending' ? 'PENDING' : status.replace('_', ' ')}
@@ -180,7 +180,7 @@ return (
                 <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm">
                     <div className="flex flex-col items-center gap-3">
                         <div className="h-10 w-10 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Applications...</p>
+                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Loading Applications...</p>
                     </div>
                 </div>
             )}
@@ -198,7 +198,7 @@ return (
                         {!isLoading && filteredRiders.length === 0 ? (
                             <tr>
                                 <td colSpan="4" className="py-20 text-center">
-                                    <FileSearch className="h-10 w-10 text-slate-300 mx-auto mb-4" />
+                                    <FileSearch className="h-10 w-10 text-slate-400 mx-auto mb-4" />
                                     <p className="text-sm font-bold text-slate-500">No pending applications found.</p>
                                 </td>
                             </tr>
@@ -215,8 +215,8 @@ return (
                                             <div>
                                                 <p className="text-sm font-black text-slate-900">{rider.name}</p>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <Phone className="h-3 w-3 text-slate-400" />
-                                                    <span className="text-[10px] font-bold text-slate-500">{rider.phone}</span>
+                                                    <Phone className="h-3 w-3 text-slate-500" />
+                                                    <span className="text-xs font-bold text-slate-500">{rider.phone}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -225,11 +225,11 @@ return (
                                         <div className="space-y-1.5">
                                             <div className="flex items-center gap-2 text-slate-600">
                                                 <Truck className="h-3.5 w-3.5" />
-                                                <span className="text-[10px] font-bold">{rider.vehicle}</span>
+                                                <span className="text-xs font-bold">{rider.vehicle}</span>
                                             </div>
-                                            <div className="flex items-center gap-2 text-slate-400">
+                                            <div className="flex items-center gap-2 text-slate-500">
                                                 <MapPin className="h-3.5 w-3.5" />
-                                                <span className="text-[10px] font-bold">{rider.location}</span>
+                                                <span className="text-xs font-bold">{rider.location}</span>
                                             </div>
                                         </div>
                                     </td>
@@ -245,7 +245,7 @@ return (
                                                     </div>
                                                 ))}
                                                 {rider.documents.length > 2 && (
-                                                    <div className="h-5 px-2 bg-slate-100 rounded-md text-[8px] font-bold text-slate-400 flex items-center">
+                                                    <div className="h-5 px-2 bg-slate-100 rounded-md text-[8px] font-bold text-slate-500 flex items-center">
                                                         +{rider.documents.length - 2} More
                                                     </div>
                                                 )}
@@ -255,7 +255,7 @@ return (
                                     <td className="px-8 py-6 text-right">
                                         <button
                                             onClick={() => setViewingRider(rider)}
-                                            className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-bold shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
+                                            className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
                                         >
                                             VIEW APPLICATION
                                         </button>
@@ -299,25 +299,25 @@ return (
 
                             <div className="space-y-6">
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Preferred Area</p>
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Preferred Area</p>
                                     <div className="flex items-center gap-2 text-slate-700">
-                                        <MapPin className="h-4 w-4 text-slate-400" />
+                                        <MapPin className="h-4 w-4 text-slate-500" />
                                         <span className="text-xs font-bold">{viewingRider.preferredArea}</span>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Experience</p>
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Experience</p>
                                     <div className="flex items-center gap-2 text-slate-700">
-                                        <Calendar className="h-4 w-4 text-slate-400" />
+                                        <Calendar className="h-4 w-4 text-slate-500" />
                                         <span className="text-xs font-bold">{viewingRider.experience}</span>
                                     </div>
                                 </div>
                                 <div className="pt-6 border-t border-slate-200">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">System Confidence</p>
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-3">System Confidence</p>
                                     <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
                                         <div className="h-full bg-brand-500 w-[85%]" />
                                     </div>
-                                    <p className="text-[9px] font-bold text-brand-600 mt-2">85% Verification Score</p>
+                                    <p className="text-xs font-bold text-brand-600 mt-2">85% Verification Score</p>
                                 </div>
                             </div>
                         </div>
@@ -330,13 +330,13 @@ return (
                                     <p className="ds-description mt-1">Check submitted legal documents for platform entry.</p>
                                 </div>
                                 <button onClick={() => setViewingRider(null)} className="p-3 hover:bg-slate-50 rounded-2xl transition-all">
-                                    <X className="h-6 w-6 text-slate-400" />
+                                    <X className="h-6 w-6 text-slate-500" />
                                 </button>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
                                 <div className="space-y-4">
-                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Contact Records</h4>
+                                    <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Contact Records</h4>
                                     <div className="p-6 bg-slate-50 rounded-xl space-y-4">
                                         <div className="flex items-center gap-4">
                                             <div className="h-10 w-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-primary">
@@ -354,7 +354,7 @@ return (
                                 </div>
 
                                 <div className="space-y-4">
-                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Vehicle Identification</h4>
+                                    <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Vehicle Identification</h4>
                                     <div className="p-6 bg-slate-50 rounded-xl border-2 border-brand-500/10">
                                         <div className="flex items-center gap-4">
                                             <div className="h-12 w-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-brand-600">
@@ -362,7 +362,7 @@ return (
                                             </div>
                                             <div>
                                                 <p className="text-sm font-black text-slate-900">{viewingRider.vehicle}</p>
-                                                <p className="text-[9px] font-bold text-brand-600 uppercase tracking-widest mt-0.5">Eco-Friendly Ready</p>
+                                                <p className="text-xs font-bold text-brand-600 uppercase tracking-widest mt-0.5">Eco-Friendly Ready</p>
                                             </div>
                                         </div>
                                     </div>
@@ -370,13 +370,13 @@ return (
                             </div>
 
                             <div className="space-y-4 mb-14">
-                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Submitted Documents ({viewingRider.documents.length})</h4>
+                                <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Submitted Documents ({viewingRider.documents.length})</h4>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {viewingRider.documents.map((doc, idx) => (
                                         <div key={idx} className="group relative aspect-[4/3] bg-slate-100 rounded-[24px] overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all">
                                             <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                                                <FileSearch className="h-8 w-8 text-slate-400 group-hover:text-primary transition-colors" />
-                                                <p className="text-[9px] font-black text-slate-500 uppercase mt-2 text-center">{doc}</p>
+                                                <FileSearch className="h-8 w-8 text-slate-500 group-hover:text-primary transition-colors" />
+                                                <p className="text-xs font-black text-slate-500 uppercase mt-2 text-center">{doc}</p>
                                             </div>
                                             <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors" />
                                         </div>
@@ -388,7 +388,7 @@ return (
                                 <button
                                     disabled={isProcessing}
                                     onClick={() => handleApprove(viewingRider.id)}
-                                    className="flex-1 py-5 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                                    className="flex-1 py-5 bg-slate-900 text-white rounded-xl font-black text-xs font-bold uppercase tracking-widest shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                                 >
                                     {isProcessing ? (
                                         <>
@@ -404,7 +404,7 @@ return (
                                 </button>
                                 <button
                                     onClick={() => handleReject(viewingRider.id)}
-                                    className="py-5 px-5 bg-rose-50 text-rose-600 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-rose-100 transition-all active:scale-95"
+                                    className="py-5 px-5 bg-rose-50 text-rose-600 rounded-xl font-black text-xs font-bold uppercase tracking-widest hover:bg-rose-100 transition-all active:scale-95"
                                 >
                                     REJECT APPLICATION
                                 </button>

@@ -397,6 +397,9 @@ export async function placeOrderAtomic({
         status: "pending",
         orderStatus: "pending",
         timeSlot: normalizedPayload.timeSlot || "now",
+        deliveryType: normalizedPayload.deliveryType || "express",
+        scheduledDate: normalizedPayload.scheduledDate || null,
+        scheduledSlot: normalizedPayload.scheduledSlot || null,
         workflowVersion: 2,
         workflowStatus: shouldStartSellerWorkflow
           ? WORKFLOW_STATUS.SELLER_PENDING

@@ -317,7 +317,7 @@ const SubCategories = () => {
       <Card className="border-none shadow-sm">
         <div className="p-4 border-b border-gray-100 flex gap-4 items-center flex-wrap">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
             <input
               type="text"
               placeholder="Search subcategories..."
@@ -327,7 +327,7 @@ const SubCategories = () => {
             />
           </div>
           <div className="flex items-center gap-2 min-w-[200px]">
-            <Filter className="text-gray-400 w-5 h-5" />
+            <Filter className="text-gray-500 w-5 h-5" />
             <select
               value={filterLevel2}
               onChange={(e) => setFilterLevel2(e.target.value)}
@@ -371,22 +371,22 @@ const SubCategories = () => {
                     onChange={handleSelectAll}
                   />
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Image
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Name
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Parent Chain
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Slug
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="text-right py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -428,7 +428,7 @@ const SubCategories = () => {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <Image className="w-5 h-5 text-gray-400" />
+                            <Image className="w-5 h-5 text-gray-500" />
                           )}
                         </div>
                       </td>
@@ -508,7 +508,7 @@ const SubCategories = () => {
                 </h2>
                 <button
                   onClick={() => setIsAddModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600">
+                  className="text-gray-500 hover:text-gray-600">
                   <X className="w-6 h-6" />
                 </button>
               </div>
@@ -527,7 +527,7 @@ const SubCategories = () => {
                       />
                     ) : (
                       <div className="text-center">
-                        <Image className="w-8 h-8 text-gray-400 mx-auto" />
+                        <Image className="w-8 h-8 text-gray-500 mx-auto" />
                         <span className="text-xs text-gray-500 mt-1">
                           Upload
                         </span>

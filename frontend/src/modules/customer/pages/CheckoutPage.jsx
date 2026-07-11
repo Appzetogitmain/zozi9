@@ -59,6 +59,7 @@ import { Label } from "@/components/ui/label";
 
 // Sub-components
 import CheckoutAddressSection from "./checkout/components/CheckoutAddressSection";
+import CheckoutDeliveryTypeSelector from "./checkout/components/CheckoutDeliveryTypeSelector";
 
 import CheckoutCartSummary from "./checkout/components/CheckoutCartSummary";
 import CheckoutPricingBreakdown from "./checkout/components/CheckoutPricingBreakdown";
@@ -128,6 +129,9 @@ const CheckoutPage = () => {
 
   // State management
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("now");
+  const [deliveryType, setDeliveryType] = useState("express");
+  const [scheduledDate, setScheduledDate] = useState("");
+  const [scheduledSlot, setScheduledSlot] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState("cash");
   const [selectedTip, setSelectedTip] = useState(0);
   const [showAllCartItems, setShowAllCartItems] = useState(false);
@@ -241,14 +245,14 @@ const CheckoutPage = () => {
   useEffect(() => {
     if (useWallet && user?.walletBalance && pricingPreview?.grandTotal) {
       const maxAvailable = Number(user.walletBalance || 0);
-      const totalToPay = Number(pricingPreview.grandTotal || 0);
+      const totalToPay = Number(pricingPreview?.grandTotal ?? cartTotal);
       setWalletAmountToUse(Math.min(maxAvailable, totalToPay));
     } else {
       setWalletAmountToUse(0);
     }
-  }, [useWallet, user?.walletBalance, pricingPreview?.grandTotal]);
+  }, [useWallet, user?.walletBalance, pricingPreview?.grandTotal, cartTotal]);
 
-  const finalAmountToPay = Math.max(0, (pricingPreview?.grandTotal || 0) - walletAmountToUse);
+  const finalAmountToPay = Math.max(0, (pricingPreview?.grandTotal ?? cartTotal) - walletAmountToUse);
 
   const buildAddressForOrder = () => {
     if (savedRecipient) {
@@ -689,6 +693,9 @@ const CheckoutPage = () => {
       tipAmount: selectedTip,
       paymentMode: selectedPayment === "online" ? "ONLINE" : "COD",
       timeSlot: selectedTimeSlot,
+      deliveryType,
+      scheduledDate: deliveryType === "scheduled" ? scheduledDate : null,
+      scheduledSlot: deliveryType === "scheduled" ? scheduledSlot : null,
     });
 
     const fetchPreview = async () => {
@@ -719,6 +726,9 @@ const CheckoutPage = () => {
     savedRecipient,
     currentAddress,
     currentLocation,
+    deliveryType,
+    scheduledDate,
+    scheduledSlot,
   ]);
 
   // Recommended products — only re-fetches when the set of product IDs changes
@@ -755,6 +765,9 @@ const CheckoutPage = () => {
         taxTotal: taxAmount,
         tipAmount: selectedTip,
         timeSlot: selectedTimeSlot,
+        deliveryType,
+        scheduledDate: deliveryType === "scheduled" ? scheduledDate : null,
+        scheduledSlot: deliveryType === "scheduled" ? scheduledSlot : null,
         walletAmount: walletAmountToUse,
         items: cart.map((item) => ({
           product: item.id || item._id,
@@ -1052,6 +1065,16 @@ const CheckoutPage = () => {
               onApplyManualCode={handleApplyManualCode}
             />
 
+            {/* Delivery Type Selector */}
+            <CheckoutDeliveryTypeSelector
+              deliveryType={deliveryType}
+              setDeliveryType={setDeliveryType}
+              scheduledDate={scheduledDate}
+              setScheduledDate={setScheduledDate}
+              scheduledSlot={scheduledSlot}
+              setScheduledSlot={setScheduledSlot}
+            />
+
             {/* Pricing Breakdown */}
             <CheckoutPricingBreakdown
               pricingPreview={pricingPreview}
@@ -1082,7 +1105,7 @@ const CheckoutPage = () => {
               <SlideToPay
                 amount={finalAmountToPay}
                 onSuccess={handlePlaceOrder}
-                isLoading={isPlacingOrder || isPreviewLoading || !pricingPreview}
+                isLoading={isPlacingOrder || isPreviewLoading}
                 text={finalAmountToPay === 0 ? "Place Free Order" : "Order Now"}
               />
               <p className="text-center text-[10px] text-slate-400 font-bold mt-4 uppercase tracking-[0.1em]">
@@ -1099,7 +1122,7 @@ const CheckoutPage = () => {
           <SlideToPay
             amount={finalAmountToPay}
             onSuccess={handlePlaceOrder}
-            isLoading={isPlacingOrder || isPreviewLoading || !pricingPreview}
+            isLoading={isPlacingOrder || isPreviewLoading}
             text={finalAmountToPay === 0 ? "Place Free Order" : "Slide to Pay"}
           />
         </div>
