@@ -24,6 +24,14 @@ export async function getAdminDashboardStats() {
   ]);
   const totalRevenue = revenueData[0]?.total || 0;
 
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const dailySalesData = await Order.aggregate([
+    { $match: { createdAt: { $gte: startOfToday }, status: "delivered" } },
+    { $group: { _id: null, total: { $sum: "$pricing.total" } } },
+  ]);
+  const dailySales = dailySalesData[0]?.total || 0;
+
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -114,6 +122,9 @@ export async function getAdminDashboardStats() {
       activeSellers,
       totalOrders,
       totalRevenue,
+      dailySales,
+      activeCustomers: totalCustomers,
+      activeDeliveryBoys: totalRiders,
     },
     revenueHistory,
     recentOrders: recentOrders.map((order) => ({

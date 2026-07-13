@@ -84,22 +84,13 @@ const AdminDashboard = () => {
 
     const stats = [
         {
-            label: 'Total Users',
-            value: overview.totalUsers?.toLocaleString() || '0',
-            icon: Users,
-            color: 'text-brand-600',
-            bg: 'bg-brand-50',
-            trend: '+12.5%',
-            description: 'Active this month'
-        },
-        {
-            label: 'Active Sellers',
-            value: overview.activeSellers?.toLocaleString() || '0',
-            icon: Store,
-            color: 'text-purple-600',
-            bg: 'bg-purple-50',
-            trend: '+5.2%',
-            description: 'Verified stores'
+            label: 'Daily Sales',
+            value: `₹${overview.dailySales?.toLocaleString() || '0'}`,
+            icon: BarChart3,
+            color: 'text-green-600',
+            bg: 'bg-green-50',
+            trend: 'Today',
+            description: 'Revenue today'
         },
         {
             label: 'Total Orders',
@@ -107,17 +98,35 @@ const AdminDashboard = () => {
             icon: Truck,
             color: 'text-orange-600',
             bg: 'bg-orange-50',
-            trend: '+18.4%',
-            description: 'Last 30 days'
+            trend: 'Overall',
+            description: 'Total orders'
         },
         {
-            label: 'Revenue',
-            value: `₹${overview.totalRevenue?.toLocaleString() || '0'}`,
-            icon: BarChart3,
+            label: 'Active Customers',
+            value: overview.activeCustomers?.toLocaleString() || '0',
+            icon: Users,
             color: 'text-brand-600',
             bg: 'bg-brand-50',
-            trend: '+8.2%',
-            description: 'Net earnings'
+            trend: 'Registered',
+            description: 'Platform users'
+        },
+        {
+            label: 'Active Sellers',
+            value: overview.activeSellers?.toLocaleString() || '0',
+            icon: Store,
+            color: 'text-purple-600',
+            bg: 'bg-purple-50',
+            trend: 'Verified',
+            description: 'Verified stores'
+        },
+        {
+            label: 'Active Delivery Boys',
+            value: overview.activeDeliveryBoys?.toLocaleString() || '0',
+            icon: Activity,
+            color: 'text-blue-600',
+            bg: 'bg-blue-50',
+            trend: 'Active',
+            description: 'Delivery partners'
         },
     ];
 
@@ -141,7 +150,7 @@ const AdminDashboard = () => {
             />
 
             {/* Main Stats Grid */}
-            <div className="ds-grid-stats">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 {stats.map((stat) => (
                     <StatCard
                         key={stat.label}

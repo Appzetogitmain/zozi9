@@ -17,11 +17,11 @@ const STORAGE_KEY = "location_v2";
 export const LocationProvider = ({ children }) => {
   // Default location (used until we can resolve a better one)
   const [currentLocation, setCurrentLocation] = useState({
-    name: "214, Rajshri Palace Colony, Pipliyahana, Indore, Madhya Pradesh 452018, India",
-    time: "12-15 mins",
-    city: "Indore",
-    state: "Madhya Pradesh",
-    pincode: "452018",
+    name: "Locating...",
+    time: "-- mins",
+    city: "Locating...",
+    state: "",
+    pincode: "",
     latitude: 22.711140989838025,
     longitude: 75.9001552518043,
   });
@@ -276,8 +276,7 @@ export const LocationProvider = ({ children }) => {
     refreshAddresses();
   }, [refreshAddresses]);
 
-  // On mount: only restore from cache. Do NOT auto-fetch – browsers block the
-  // location prompt unless it's triggered by a user gesture (e.g. tap).
+  // On mount: restore from cache if available, but also attempt to fetch live location automatically.
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -300,17 +299,15 @@ export const LocationProvider = ({ children }) => {
             { persist: false, updateSavedHome: false },
           );
         }
-      } else {
-        // If no location is stored, persist the default one immediately
-        updateLocation(currentLocation, {
-          persist: true,
-          updateSavedHome: false,
-        });
       }
     } catch {
       // ignore parse errors
     }
-    // Live fetch happens only when user taps location pill or "Use current location"
+
+    // Auto-fetch live location on mount. The user requested to ask permission and fetch 
+    // live location as soon as the website opens instead of showing a static location.
+    fetchAndCacheLocation();
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
