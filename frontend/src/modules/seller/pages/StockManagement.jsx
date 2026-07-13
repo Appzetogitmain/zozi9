@@ -267,7 +267,53 @@ const StockManagement = () => {
                             </div>
 
                             {/* Stock Table */}
-                            <div className="overflow-x-auto">
+                            {/* Mobile View */}
+                            <div className="md:hidden divide-y divide-slate-50">
+                                {filteredInventory.length === 0 ? (
+                                    <div className="p-8 text-center text-slate-500 font-medium">No products found for this filter.</div>
+                                ) : (
+                                    filteredInventory.slice((page - 1) * pageSize, page * pageSize).map((item) => (
+                                        <div key={item.id} className="p-4 bg-white hover:bg-slate-50 transition-colors">
+                                            <div className="flex gap-4">
+                                                <div className="h-16 w-16 shrink-0 rounded-xl overflow-hidden bg-slate-100 ring-1 ring-slate-200 flex items-center justify-center">
+                                                    {item.mainImage ? (
+                                                        <img src={item.mainImage} alt={item.name} className="h-full w-full object-cover" />
+                                                    ) : (
+                                                        <HiOutlineCube className="h-6 w-6 text-slate-400" />
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-sm font-bold text-slate-900 truncate">{item.name}</h3>
+                                                    <p className="text-xs text-slate-500 mt-0.5">SKU: {item.sku || 'N/A'}</p>
+                                                    
+                                                    <div className="mt-2 flex items-center justify-between">
+                                                        <div className="flex flex-col">
+                                                            <span className={cn("text-sm font-black", item.stock <= item.threshold ? "text-rose-600" : "text-slate-900")}>
+                                                                {item.stock} units
+                                                            </span>
+                                                        </div>
+                                                        <Badge variant={item.status === 'In Stock' ? 'success' : 'destructive'} className="text-[10px] px-2 py-0.5">
+                                                            {item.status}
+                                                        </Badge>
+                                                    </div>
+                                                    
+                                                    <div className="mt-3 flex justify-end">
+                                                        <button
+                                                            onClick={() => openAdjustModal(item)}
+                                                            className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 transition-colors"
+                                                        >
+                                                            Adjust
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+
+                            {/* Desktop View */}
+                            <div className="hidden md:block overflow-x-auto">
                                 <table className="w-full text-left">
                                     <thead>
                                         <tr className="bg-slate-50/50 border-b border-slate-100">

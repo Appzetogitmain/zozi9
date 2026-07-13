@@ -41,6 +41,8 @@ const CouponManagement = () => {
         discountType: 'percentage',
         discountValue: '',
         minOrderValue: '',
+        minItems: '',
+        applicableCategories: [],
         maxDiscount: '',
         usageLimit: '',
         perUserLimit: '1',
@@ -48,6 +50,25 @@ const CouponManagement = () => {
         validTill: '',
         description: '',
     });
+
+    const [availableSubcategories, setAvailableSubcategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await adminApi.getCategories();
+                if (res.data.success) {
+                    const payload = res.data.result;
+                    const results = res.data.results;
+                    const allCats = Array.isArray(results) ? results : Array.isArray(payload) ? payload : Array.isArray(payload?.items) ? payload.items : [];
+                    setAvailableSubcategories(allCats.filter(c => c.type === 'subcategory'));
+                }
+            } catch (err) {
+                console.error("Failed to fetch subcategories", err);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -107,6 +128,8 @@ const CouponManagement = () => {
                 discountType: coupon.discountType || 'percentage',
                 discountValue: coupon.discountValue ?? '',
                 minOrderValue: coupon.minOrderValue ?? '',
+                minItems: coupon.minItems ?? '',
+                applicableCategories: coupon.applicableCategories || [],
                 maxDiscount: coupon.maxDiscount ?? '',
                 usageLimit: coupon.usageLimit ?? '',
                 perUserLimit: coupon.perUserLimit ?? '1',
@@ -123,6 +146,8 @@ const CouponManagement = () => {
                 discountType: 'percentage',
                 discountValue: '',
                 minOrderValue: '',
+                minItems: '',
+                applicableCategories: [],
                 maxDiscount: '',
                 usageLimit: '',
                 perUserLimit: '1',
@@ -139,8 +164,11 @@ const CouponManagement = () => {
         try {
             const payload = {
                 ...formData,
-                discountValue: Number(formData.discountValue),
+                discountType: formData.couponType === 'free_delivery' ? 'free_delivery' : formData.discountType,
+                discountValue: Number(formData.discountValue || 0),
                 minOrderValue: formData.minOrderValue ? Number(formData.minOrderValue) : 0,
+                minItems: formData.minItems ? Number(formData.minItems) : undefined,
+                applicableCategories: formData.applicableCategories.length > 0 ? formData.applicableCategories : undefined,
                 maxDiscount: formData.maxDiscount ? Number(formData.maxDiscount) : undefined,
                 usageLimit: formData.usageLimit ? Number(formData.usageLimit) : undefined,
                 perUserLimit: formData.perUserLimit ? Number(formData.perUserLimit) : 1,
@@ -388,7 +416,7 @@ const CouponManagement = () => {
                                         Cancel
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(deleteTarget.id)}
+                                        onClick={() => handleDelete(deleteTarget._id)}
                                         className="px-4 py-2.5 bg-rose-600 text-white rounded-xl font-medium hover:bg-rose-700 transition-colors"
                                     >
                                         Delete
@@ -418,18 +446,19 @@ const CouponManagement = () => {
                                 className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-black uppercase tracking-widest outline-none ring-1 ring-transparent focus:ring-primary/20"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Discount Kind</label>
-                            <select
-                                value={formData.discountType}
-                                onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-black outline-none"
-                            >
-                                <option value="percentage">Percentage (%)</option>
-                                <option value="fixed">Fixed Amount (₹)</option>
-                                <option value="free_delivery">Free Delivery</option>
-                            </select>
-                        </div>
+                        {formData.couponType !== 'buy_one_get_one' && formData.couponType !== 'free_delivery' && (
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Discount Kind</label>
+                                <select
+                                    value={formData.discountType}
+                                    onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-black outline-none"
+                                >
+                                    <option value="percentage">Percentage (%)</option>
+                                    <option value="fixed">Fixed Amount (₹)</option>
+                                </select>
+                            </div>
+                        )}
                     </div>
 
                     <div className="space-y-2">
@@ -444,49 +473,99 @@ const CouponManagement = () => {
                             <option value="min_order_value">Minimum Order Value Coupon</option>
                             <option value="free_delivery">Free Delivery Coupon</option>
                             <option value="category_based">Category-Based Coupon</option>
-                            <option value="monthly_volume">Monthly Volume Coupon</option>
+                            <option value="buy_one_get_one">Buy X Get Y (BOGO)</option>
                         </select>
-                        <p className="text-xs text-slate-500">
-                            Choose the logic: bulk order, MOV, free delivery, specific categories, or monthly volume buyers.
+                        <p className="text-[10px] font-bold text-slate-400 mt-1 px-1">
+                            Choose the logic: bulk order, MOV, free delivery, specific categories, or BOGO.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Discount Value</label>
-                            <input
-                                required
-                                type="number"
-                                onWheel={(e) => e.target.blur()}
-                                value={formData.discountValue}
-                                onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-black outline-none"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Min Order Requirement</label>
-                            <input
-                                required
-                                type="number"
-                                onWheel={(e) => e.target.blur()}
-                                value={formData.minOrderValue}
-                                onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value })}
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-black outline-none"
-                            />
-                        </div>
+                        {formData.couponType !== 'buy_one_get_one' && formData.couponType !== 'free_delivery' && (
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Discount Value</label>
+                                <input
+                                    required
+                                    type="number"
+                                    onWheel={(e) => e.target.blur()}
+                                    value={formData.discountValue}
+                                    onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-black outline-none"
+                                />
+                            </div>
+                        )}
+                        {(formData.couponType === 'min_order_value' || formData.couponType === 'free_delivery') && (
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Min Order Requirement</label>
+                                <input
+                                    required
+                                    type="number"
+                                    onWheel={(e) => e.target.blur()}
+                                    value={formData.minOrderValue}
+                                    onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-black outline-none"
+                                />
+                            </div>
+                        )}
+                        {formData.couponType === 'bulk_order' && (
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Min Items (Bulk Order)</label>
+                                <input
+                                    required
+                                    type="number"
+                                    min="2"
+                                    onWheel={(e) => e.target.blur()}
+                                    value={formData.minItems}
+                                    onChange={(e) => setFormData({ ...formData, minItems: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-black outline-none"
+                                />
+                            </div>
+                        )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6">
+                    {formData.couponType === 'category_based' && (
                         <div className="space-y-2">
-                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Max Discount (optional)</label>
-                            <input
-                                type="number"
-                                onWheel={(e) => e.target.blur()}
-                                value={formData.maxDiscount}
-                                onChange={(e) => setFormData({ ...formData, maxDiscount: e.target.value })}
-                                className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-black outline-none"
-                            />
+                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Applicable Categories</label>
+                            <div className="w-full h-48 px-4 py-3 bg-slate-50 border-none rounded-2xl overflow-y-auto space-y-2">
+                                {availableSubcategories.map(cat => (
+                                    <label key={cat._id || cat.id} className="flex items-center gap-3 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/20"
+                                            checked={formData.applicableCategories.includes(cat._id || cat.id)}
+                                            onChange={(e) => {
+                                                const id = cat._id || cat.id;
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    applicableCategories: e.target.checked 
+                                                        ? [...prev.applicableCategories, id] 
+                                                        : prev.applicableCategories.filter(cId => cId !== id)
+                                                }));
+                                            }}
+                                        />
+                                        <span className="text-sm font-medium text-slate-700">{cat.name}</span>
+                                    </label>
+                                ))}
+                                {availableSubcategories.length === 0 && (
+                                    <p className="text-sm text-slate-500 italic">No subcategories available</p>
+                                )}
+                            </div>
                         </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-6">
+                        {formData.couponType !== 'buy_one_get_one' && formData.couponType !== 'free_delivery' && (
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Max Discount (optional)</label>
+                                <input
+                                    type="number"
+                                    onWheel={(e) => e.target.blur()}
+                                    value={formData.maxDiscount}
+                                    onChange={(e) => setFormData({ ...formData, maxDiscount: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-black outline-none"
+                                />
+                            </div>
+                        )}
                         <div className="space-y-2">
                             <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Total Uses (optional)</label>
                             <input

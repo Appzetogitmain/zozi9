@@ -1355,30 +1355,30 @@ const Home = () => {
                       onClick={() => navigate("/category/all")}
                       whileTap={{ scale: 0.96 }}
                       className="min-w-full">
-                      <div className="w-full h-[190px] bg-[#ecfeff] p-6 relative overflow-hidden flex items-center border-y border-primary/10 shadow-[0_4px_15px_rgba(0,0,0,0.05)]">
-                        <div className="relative z-10 w-3/5 flex flex-col items-start gap-2">
-                          <div className="flex flex-col gap-0.5">
-                            <h4 className="text-2xl font-black text-[#1A1A1A] tracking-tight leading-none">
+                      <div className="w-full h-[140px] bg-[#ecfeff] p-4 relative overflow-hidden flex items-center border-y border-primary/10 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+                        <div className="relative z-10 w-3/5 flex flex-col items-start gap-1">
+                          <div className="flex flex-col gap-0">
+                            <h4 className="text-xl font-black text-[#1A1A1A] tracking-tight leading-none">
                               Get{" "}
                               <span className="text-primary">Products</span>
                             </h4>
-                            <div className="flex items-center gap-1.5 mt-1">
-                              <span className="text-sm font-black text-gray-700">
+                            <div className="flex items-center gap-1 mt-1">
+                              <span className="text-xs font-black text-gray-700">
                                 at
                               </span>
-                              <div className="bg-primary text-primary-foreground px-2 py-0.5 rounded-lg flex items-center gap-1 shadow-sm">
-                                <VerifiedIcon sx={{ fontSize: 16 }} />
-                                <span className="text-xl font-bold">₹0</span>
+                              <div className="bg-primary text-primary-foreground px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shadow-sm">
+                                <VerifiedIcon sx={{ fontSize: 14 }} />
+                                <span className="text-sm font-bold">₹0</span>
                               </div>
-                              <span className="text-sm font-semibold text-gray-700">
+                              <span className="text-xs font-semibold text-gray-700">
                                 Fee
                               </span>
                             </div>
                           </div>
-                          <p className="text-[11px] font-bold text-gray-500 max-w-[150px] leading-tight">
+                          <p className="text-[10px] font-bold text-gray-500 max-w-[150px] leading-tight">
                             Get groceries delivered in minutes
                           </p>
-                          <button className="bg-[#FF1E56] text-white px-6 py-2.5 rounded-2xl font-black text-xs tracking-wide shadow-lg shadow-rose-200 mt-2">
+                          <button className="bg-[#FF1E56] text-white px-4 py-1.5 rounded-xl font-black text-[10px] tracking-wide shadow-md shadow-rose-200 mt-1">
                             Order now
                           </button>
                         </div>
@@ -1386,17 +1386,17 @@ const Home = () => {
                           <img
                             src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400"
                             alt="Promo"
-                            className="w-full h-full object-contain rotate-3 scale-110 pointer-events-none"
+                            className="w-full h-[90%] object-contain rotate-3 scale-110 pointer-events-none"
                           />
                         </div>
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl -mt-12 -mr-12" />
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full blur-xl -mt-10 -mr-10" />
                       </div>
                     </motion.div>
                     <motion.div
                       onClick={() => navigate("/categories")}
                       whileTap={{ scale: 0.96 }}
                       className="min-w-full">
-                      <div className="w-full h-[190px] bg-white relative overflow-hidden flex border-y border-gray-100 shadow-[0_4px_15px_rgba(0,0,0,0.05)] group">
+                      <div className="w-full h-[140px] bg-white relative overflow-hidden flex border-y border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.05)] group">
                         <img
                           src={CardBanner}
                           alt="Promotion"
@@ -1410,30 +1410,30 @@ const Home = () => {
                       onClick={() => navigate("/category/all")}
                       whileTap={{ scale: 0.96 }}
                       className="min-w-full">
-                      <div className="w-full h-[190px] bg-[#ecfeff] p-6 relative overflow-hidden flex items-center border-y border-primary/10 shadow-[0_4px_15px_rgba(0,0,0,0.05)]">
-                        <div className="relative z-10 w-3/5 flex flex-col items-start gap-2">
-                          <div className="flex flex-col gap-0.5">
-                            <h4 className="text-2xl font-black text-[#1A1A1A] tracking-tight leading-none">
+                      <div className="w-full h-[140px] bg-[#ecfeff] p-4 relative overflow-hidden flex items-center border-y border-primary/10 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+                        <div className="relative z-10 w-3/5 flex flex-col items-start gap-1">
+                          <div className="flex flex-col gap-0">
+                            <h4 className="text-xl font-black text-[#1A1A1A] tracking-tight leading-none">
                               Get{" "}
                               <span className="text-primary">Products</span>
                             </h4>
-                            <div className="flex items-center gap-1.5 mt-1">
-                              <span className="text-sm font-black text-gray-700">
+                            <div className="flex items-center gap-1 mt-1">
+                              <span className="text-xs font-black text-gray-700">
                                 at
                               </span>
-                              <div className="bg-primary text-primary-foreground px-2 py-0.5 rounded-lg flex items-center gap-1 shadow-sm">
-                                <VerifiedIcon sx={{ fontSize: 16 }} />
-                                <span className="text-xl font-bold">₹0</span>
+                              <div className="bg-primary text-primary-foreground px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shadow-sm">
+                                <VerifiedIcon sx={{ fontSize: 14 }} />
+                                <span className="text-sm font-bold">₹0</span>
                               </div>
-                              <span className="text-sm font-semibold text-gray-700">
+                              <span className="text-xs font-semibold text-gray-700">
                                 Fee
                               </span>
                             </div>
                           </div>
-                          <p className="text-[11px] font-bold text-gray-500 max-w-[150px] leading-tight">
+                          <p className="text-[10px] font-bold text-gray-500 max-w-[150px] leading-tight">
                             Get groceries delivered in minutes
                           </p>
-                          <button className="bg-[#FF1E56] text-white px-6 py-2.5 rounded-2xl font-black text-xs tracking-wide shadow-lg shadow-rose-200 mt-2">
+                          <button className="bg-[#FF1E56] text-white px-4 py-1.5 rounded-xl font-black text-[10px] tracking-wide shadow-md shadow-rose-200 mt-1">
                             Order now
                           </button>
                         </div>
@@ -1442,10 +1442,10 @@ const Home = () => {
                             src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400"
                             alt="Promo"
                             loading="lazy"
-                            className="w-full h-full object-contain rotate-3 scale-110 pointer-events-none"
+                            className="w-full h-[90%] object-contain rotate-3 scale-110 pointer-events-none"
                           />
                         </div>
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl -mt-12 -mr-12" />
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full blur-xl -mt-10 -mr-10" />
                       </div>
                     </motion.div>
                   </motion.div>
@@ -1459,7 +1459,7 @@ const Home = () => {
             <div className="relative overflow-hidden border-y border-[#389ecb] bg-primary shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
               <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-primary via-primary/90 to-transparent pointer-events-none" />
               <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-primary via-primary/90 to-transparent pointer-events-none" />
-              <div className="classic-marquee-track flex w-max items-center gap-4 px-3 py-1.5 text-sm font-semibold text-white -translate-y-[5px] md:px-6 md:py-2 md:text-base">
+              <div className="classic-marquee-track flex w-max items-center gap-3 px-2 py-1 text-[11px] font-semibold text-white -translate-y-[2px] md:px-4 md:py-1.5 md:text-sm">
                 {[...MARQUEE_MESSAGES, ...MARQUEE_MESSAGES].map(
                   (message, idx) => (
                     <React.Fragment key={`${message}-${idx}`}>
@@ -1476,7 +1476,7 @@ const Home = () => {
 
           {/* Quick Navigation Category Slider (admin-configured or global fallback) */}
           {effectiveQuickCategories.length > 0 && (
-            <div className="w-full mb-5 -mt-[24px] md:mt-3 overflow-hidden relative group z-20">
+            <div className="w-full mb-3 -mt-[28px] md:mt-2 overflow-hidden relative group z-20">
               <div
                 className="relative overflow-hidden bg-white shadow-[0_14px_28px_rgba(15,23,42,0.09)]"
                 style={{
@@ -1486,38 +1486,37 @@ const Home = () => {
                 }}>
                 <div className="absolute inset-0 bg-white/10 pointer-events-none" />
 
-                <div className="relative z-10 px-4 pt-2.5 pb-0.5 md:px-8 md:pt-4">
-                  <h2 className="text-center text-[17px] md:text-[20px] font-bold tracking-tight text-[#132018] leading-none">
+                <div className="relative z-10 px-3 pt-2 pb-0 md:px-6 md:pt-3">
+                  <h2 className="text-center text-[15px] md:text-[18px] font-bold tracking-tight text-[#132018] leading-none">
                     Quick categories
                   </h2>
                 </div>
 
-                {/* Left Scroll Button */}
-                <div className="absolute left-4 lg:left-10 top-[58%] -translate-y-1/2 z-20 hidden md:flex">
+                  <div className="absolute left-3 lg:left-8 top-[58%] -translate-y-1/2 z-20 hidden md:flex">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => scrollQuickCats("left")}
-                    className="h-10 w-10 bg-white/90 backdrop-blur-md shadow-xl rounded-full flex items-center justify-center border border-gray-100 cursor-pointer hover:bg-white text-primary transition-all">
-                    <ChevronLeft size={22} strokeWidth={3} />
+                    className="h-8 w-8 bg-white/90 backdrop-blur-md shadow-lg rounded-full flex items-center justify-center border border-gray-100 cursor-pointer hover:bg-white text-primary transition-all">
+                    <ChevronLeft size={18} strokeWidth={3} />
                   </motion.button>
                 </div>
 
                 <div
                   ref={quickCatsRef}
-                  className="relative z-10 flex items-start gap-2 md:gap-3 lg:gap-4 overflow-x-auto no-scrollbar px-4 pb-2 pt-1 md:px-8 md:pb-4 snap-x scroll-smooth">
+                  className="relative z-10 flex items-start gap-1.5 md:gap-2 lg:gap-3 overflow-x-auto no-scrollbar px-3 pb-1 pt-1 md:px-6 md:pb-3 snap-x scroll-smooth">
                   {effectiveQuickCategories.map((cat, idx) => {
                     const palette =
                       quickCategoryPalettes[idx % quickCategoryPalettes.length];
                     return (
                       <motion.div
                         key={cat.id}
-                        whileHover={{ y: -4 }}
+                        whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.96 }}
                         onClick={() => navigate(`/category/${cat.id}`)}
-                        className="flex flex-col items-center gap-0.5 min-w-[74px] md:min-w-[104px] lg:min-w-[120px] cursor-pointer group/item snap-start">
+                        className="flex flex-col items-center gap-0.5 min-w-[64px] md:min-w-[84px] lg:min-w-[100px] cursor-pointer group/item snap-start">
                         <div
-                          className="relative w-[74px] h-[84px] md:w-[104px] md:h-[116px] lg:w-[120px] lg:h-[132px] rounded-[18px] md:rounded-[22px] shadow-[0_8px_18px_rgba(15,23,42,0.10)] border flex items-start justify-center p-1.5 md:p-2 transition-all duration-300 group-hover/item:-translate-y-1 group-hover/item:shadow-[0_16px_30px_rgba(15,23,42,0.14)] overflow-hidden"
+                          className="relative w-[64px] h-[72px] md:w-[84px] md:h-[96px] lg:w-[100px] lg:h-[110px] rounded-[14px] md:rounded-[18px] shadow-[0_4px_10px_rgba(15,23,42,0.10)] border flex items-start justify-center p-1 md:p-1.5 transition-all duration-300 group-hover/item:-translate-y-0.5 group-hover/item:shadow-[0_8px_16px_rgba(15,23,42,0.14)] overflow-hidden"
                           style={{
                             backgroundImage: `linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.6) 24%, rgba(255,255,255,0.15) 100%), linear-gradient(135deg, ${palette.bgFrom}, ${palette.bgVia}, ${palette.bgTo})`,
                             borderColor: palette.frameColor,
@@ -1530,10 +1529,10 @@ const Home = () => {
                             src={applyCloudinaryTransform(cat.image)}
                             alt={cat.name}
                             loading="lazy"
-                            className="absolute left-1/2 top-2.5 md:top-3 z-10 h-[56px] w-[56px] md:h-[64px] md:w-[64px] -translate-x-1/2 object-contain drop-shadow-[0_5px_12px_rgba(0,0,0,0.10)] mix-blend-multiply group-hover/item:scale-110 transition-transform duration-500"
+                            className="absolute left-1/2 top-1.5 md:top-2 z-10 h-[42px] w-[42px] md:h-[50px] md:w-[50px] -translate-x-1/2 object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.10)] mix-blend-multiply group-hover/item:scale-110 transition-transform duration-500"
                           />
-                          <div className="absolute inset-x-1.5 md:inset-x-2 bottom-1.5 z-20 text-center">
-                            <span className="block text-[9px] md:text-[10px] lg:text-[11px] font-semibold text-[#1f2b20] leading-tight whitespace-nowrap overflow-hidden text-ellipsis drop-shadow-[0_1px_0_rgba(255,255,255,0.65)] group-hover/item:text-primary transition-colors">
+                          <div className="absolute inset-x-1 bottom-1 z-20 text-center">
+                            <span className="block text-[8px] md:text-[9px] lg:text-[10px] font-semibold text-[#1f2b20] leading-tight whitespace-nowrap overflow-hidden text-ellipsis drop-shadow-[0_1px_0_rgba(255,255,255,0.65)] group-hover/item:text-primary transition-colors">
                               {cat.name}
                             </span>
                           </div>
@@ -1543,14 +1542,13 @@ const Home = () => {
                   })}
                 </div>
 
-                {/* Right Scroll Button */}
-                <div className="absolute right-4 lg:right-10 top-[58%] -translate-y-1/2 z-20 hidden md:flex">
+                <div className="absolute right-3 lg:right-8 top-[58%] -translate-y-1/2 z-20 hidden md:flex">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => scrollQuickCats("right")}
-                    className="h-10 w-10 bg-white/90 backdrop-blur-md shadow-xl rounded-full flex items-center justify-center border border-gray-100 cursor-pointer hover:bg-white text-primary transition-all">
-                    <ChevronRight size={22} strokeWidth={3} />
+                    className="h-8 w-8 bg-white/90 backdrop-blur-md shadow-lg rounded-full flex items-center justify-center border border-gray-100 cursor-pointer hover:bg-white text-primary transition-all">
+                    <ChevronRight size={18} strokeWidth={3} />
                   </motion.button>
                 </div>
               </div>
@@ -1558,8 +1556,8 @@ const Home = () => {
           )}
 
           {/* Lowest Price ever Section  (kept as static for now) */}
-          <div className="-mt-[40px] mb-4 md:-mt-[40px] md:mb-8">
-            <div className="relative overflow-hidden bg-linear-to-br from-primary/10 via-primary/5 to-transparent pt-7 pb-2 md:pt-16 md:pb-4 border-y border-primary/10 shadow-sm md:shadow-[inset_0_-10px_40px_rgba(0,0,0,0.02)]">
+          <div className="-mt-[44px] mb-3 md:-mt-[44px] md:mb-6">
+            <div className="relative overflow-hidden bg-linear-to-br from-primary/10 via-primary/5 to-transparent pt-6 pb-2 md:pt-12 md:pb-3 border-y border-primary/10 shadow-sm md:shadow-[inset_0_-10px_40px_rgba(0,0,0,0.02)]">
               {/* Background Decoration */}
               <div className="absolute -top-10 -right-10 h-40 w-40 md:h-80 md:w-80 bg-primary/10 rounded-full blur-3xl opacity-60" />
               <div className="absolute -bottom-10 -left-10 h-40 w-40 md:h-80 md:w-80 bg-yellow-400/10 rounded-full blur-3xl opacity-60" />

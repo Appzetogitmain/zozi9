@@ -98,38 +98,16 @@ export const validateCoupon = async (req, res) => {
 
         // Per-user limit & monthly volume – basic implementation
         let userUsageCount = 0;
-        let monthlyVolume = 0;
         if (customerId) {
-            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-            const userOrders = await Order.find({
+            // Check exact usage limit by querying orders with this coupon
+            userUsageCount = await Order.countDocuments({
                 customer: customerId,
-                createdAt: { $gte: monthStart, $lte: now },
-            }).lean();
-
-            monthlyVolume = userOrders.reduce(
-                (sum, o) => sum + (o.pricing?.total || 0),
-                0
-            );
-
-            // We are not storing coupon reference on order yet, so this is a soft check.
-            // Once couponId gets stored on orders, we can count exact usages.
-            userUsageCount = 0;
+                appliedCoupon: coupon._id
+            });
         }
 
         if (coupon.perUserLimit && userUsageCount >= coupon.perUserLimit) {
             return handleResponse(res, 400, "You have already used this coupon");
-        }
-
-        if (
-            coupon.couponType === "monthly_volume" &&
-            coupon.monthlyVolumeThreshold &&
-            monthlyVolume < coupon.monthlyVolumeThreshold
-        ) {
-            return handleResponse(
-                res,
-                400,
-                "This coupon is for high‑volume buyers only"
-            );
         }
 
         // Base conditions
@@ -141,12 +119,15 @@ export const validateCoupon = async (req, res) => {
             );
         }
 
-        if (coupon.minItems && Array.isArray(items) && items.length < coupon.minItems) {
-            return handleResponse(
-                res,
-                400,
-                `Add at least ${coupon.minItems} items to use this coupon`
-            );
+        if (coupon.minItems && Array.isArray(items)) {
+            const totalQuantity = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            if (totalQuantity < coupon.minItems) {
+                return handleResponse(
+                    res,
+                    400,
+                    `Add at least ${coupon.minItems} items to use this coupon`
+                );
+            }
         }
 
         // Category based condition
@@ -161,6 +142,8 @@ export const validateCoupon = async (req, res) => {
                     coupon.applicableCategories.some(
                         (cId) =>
                             String(i.categoryId) === String(cId) ||
+                            String(i.subcategoryId) === String(cId) ||
+                            String(i.headerId) === String(cId) ||
                             String(i.category?._id) === String(cId)
                     )
                 );
@@ -177,7 +160,28 @@ export const validateCoupon = async (req, res) => {
         let discountAmount = 0;
         let freeDelivery = false;
 
-        if (coupon.discountType === "free_delivery") {
+        if (coupon.couponType === "buy_one_get_one") {
+            if (Array.isArray(items) && items.length > 0) {
+                const totalQuantity = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+                if (totalQuantity >= 2) {
+                    // Find cheapest item
+                    let minPrice = Infinity;
+                    items.forEach((item) => {
+                        const price = Number(item.price) || 0;
+                        if (price > 0 && price < minPrice) {
+                            minPrice = price;
+                        }
+                    });
+                    if (minPrice !== Infinity) {
+                        discountAmount = minPrice;
+                    }
+                } else {
+                    return handleResponse(res, 400, "Add at least 2 items to avail Buy One Get One offer");
+                }
+            } else {
+                return handleResponse(res, 400, "Add items to your cart to use this coupon");
+            }
+        } else if (coupon.couponType === "free_delivery" || coupon.discountType === "free_delivery") {
             freeDelivery = true;
         } else if (coupon.discountType === "percentage") {
             discountAmount = Math.round((cartTotal * coupon.discountValue) / 100);

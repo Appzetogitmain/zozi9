@@ -92,6 +92,10 @@ const orderSchema = new mongoose.Schema(
         default: 0,
       },
     },
+    appliedCoupon: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Coupon",
+    },
     paymentMode: {
       type: String,
       enum: ALL_PAYMENT_MODES,

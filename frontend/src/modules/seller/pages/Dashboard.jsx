@@ -420,7 +420,48 @@ const Dashboard = () => {
           </button>
         }
       >
-        <div className="overflow-x-auto">
+        {/* Mobile View */}
+        <div className="md:hidden divide-y divide-slate-50">
+          {safeOrders.slice(0, 5).map((order) => (
+            <div key={order.orderId} className="p-4 bg-white hover:bg-slate-50 transition-colors">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-600">
+                    {order.customer?.name?.split(" ").map(n => n[0]).join("") || "C"}
+                  </div>
+                  <div>
+                    <span className="text-sm font-bold text-slate-900 block">{order.customer?.name || "Customer"}</span>
+                    <span className="text-xs font-semibold text-slate-500">#{order.orderId}</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm font-black text-slate-900 block">₹{order.pricing?.total || 0}</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{new Date(order.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+              <div className="flex justify-between items-end mt-3">
+                <Badge variant={getStatusColor(order.status)} className="capitalize text-[10px] px-2 py-0.5">
+                  {order.status}
+                </Badge>
+                <button
+                  onClick={() => {
+                    setSelectedOrder(normalizeOrderForModal(order));
+                    setIsOrderModalOpen(true);
+                  }}
+                  className="p-1.5 rounded-lg bg-slate-100 text-slate-600 hover:text-primary transition-colors flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest"
+                >
+                  <Eye className="h-3 w-3" /> View
+                </button>
+              </div>
+            </div>
+          ))}
+          {safeOrders.length === 0 && (
+             <div className="p-6 text-center text-slate-500 text-sm font-medium">No recent orders.</div>
+          )}
+        </div>
+
+        {/* Desktop View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100">

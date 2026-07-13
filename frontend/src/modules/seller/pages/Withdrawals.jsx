@@ -205,7 +205,51 @@ const Withdrawals = () => {
                             />
                         </div>
                     </div>
-                    <div className="overflow-x-auto">
+                    {/* Mobile View */}
+                    <div className="md:hidden divide-y divide-slate-50">
+                        {filteredHistory.length === 0 ? (
+                            <div className="p-8 text-center text-slate-600 text-sm font-medium">
+                                {withdrawalHistory.length === 0 ? "No withdrawal requests yet." : "No matches for your search."}
+                            </div>
+                        ) : paginatedHistory.map((item, idx) => (
+                            <div key={item.id || item.ref || item.reference || `wd-${idx}`} className="p-4 bg-white hover:bg-slate-50 transition-colors">
+                                <div className="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p className="text-sm font-black text-slate-900">{item.id}</p>
+                                        <p className="text-xs font-bold text-slate-600 mt-0.5">{item.date} • {item.time}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-black text-slate-900">₹{Math.abs(item.amount).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-end mt-3">
+                                    <div className="flex flex-col gap-1">
+                                        <Badge
+                                            variant={item.status === 'Settled' ? 'success' : (item.status === 'Pending' || item.status === 'Processing') ? 'warning' : 'danger'}
+                                            className="text-[8px] font-black px-2.5 py-0.5 uppercase tracking-widest rounded-lg w-fit"
+                                        >
+                                            {item.status === 'Settled' ? <CheckCircle2 className="h-3 w-3 mr-1" /> : (item.status === 'Pending' || item.status === 'Processing') ? <Clock className="h-3 w-3 mr-1" /> : <XCircle className="h-3 w-3 mr-1" />}
+                                            {item.status}
+                                        </Badge>
+                                        {item.reason && <p className="text-[10px] text-rose-700 font-bold uppercase italic">{item.reason}</p>}
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <p className="text-[10px] font-bold text-slate-600">{item.customer}</p>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDownloadReceipt(item)}
+                                            className="text-[10px] font-black text-brand-500 hover:text-brand-600 mt-1 uppercase tracking-widest flex items-center gap-1"
+                                        >
+                                            Receipt <Download className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Desktop View */}
+                    <div className="hidden md:block overflow-x-auto">
                         <table className="w-full text-left min-w-[640px]">
                             <thead>
                                 <tr className="bg-slate-50/50">

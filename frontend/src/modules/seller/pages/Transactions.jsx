@@ -262,8 +262,85 @@ const Transactions = () => {
             </div>
           </div>
 
-          {/* Table */}
-          <div className="overflow-x-auto">
+          {/* Mobile View */}
+          <div className="md:hidden divide-y divide-slate-50">
+            {filteredTransactions.length === 0 ? (
+              <div className="p-8 text-center text-slate-600 text-sm font-medium">
+                {ledger.length === 0 ? "No transactions yet." : "No matches for your search or filter."}
+              </div>
+            ) : paginatedTransactions.map((txn, idx) => (
+              <div
+                key={txn.id || txn.ref || txn.reference || `txn-${idx}`}
+                onClick={() => {
+                  setSelectedTxn(txn);
+                  setIsDetailModalOpen(true);
+                }}
+                className="p-4 bg-white hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={cn(
+                        "h-10 w-10 shrink-0 rounded-lg flex items-center justify-center font-black",
+                        Number(txn.amount ?? 0) > 0
+                          ? "bg-brand-50 text-brand-600"
+                          : "bg-rose-50 text-rose-600",
+                      )}>
+                      {Number(txn.amount ?? 0) > 0 ? (
+                        <HiOutlineArrowDownLeft className="h-5 w-5" />
+                      ) : (
+                        <HiOutlineArrowUpRight className="h-5 w-5" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-black text-slate-900 line-clamp-1">{txn.id ?? txn.ref ?? "—"}</p>
+                      <p className="text-xs font-bold text-slate-600 uppercase tracking-widest">{txn.type ?? "—"}</p>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p
+                      className={cn(
+                        "text-sm font-black tracking-tight",
+                        Number(txn.amount ?? 0) > 0
+                          ? "text-brand-600"
+                          : "text-rose-600",
+                      )}>
+                      {Number(txn.amount ?? 0) > 0 ? "+" : ""}₹
+                      {Math.abs(Number(txn.amount ?? 0)).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between mt-2">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs font-bold text-slate-900">{txn.customer ?? "—"}</p>
+                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">
+                      {txn.date ?? (txn.createdAt ? new Date(txn.createdAt).toLocaleDateString() : "—")} • {txn.time ?? (txn.createdAt ? new Date(txn.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—")}
+                    </span>
+                  </div>
+                  <Badge
+                    variant={
+                      txn.status === "Settled"
+                        ? "success"
+                        : txn.status === "Pending" || txn.status === "Processing"
+                          ? "warning"
+                          : "default"
+                    }
+                    className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg w-fit h-fit">
+                    {txn.status === "Settled" ? (
+                      <HiOutlineCheckCircle className="mr-1 h-3 w-3" />
+                    ) : (
+                      <HiOutlineClock className="mr-1 h-3 w-3" />
+                    )}
+                    {txn.status}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left min-w-[720px]">
               <thead>
                 <tr className="bg-slate-50/50 border-b border-slate-100">

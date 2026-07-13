@@ -504,7 +504,7 @@ const ProductManagement = () => {
           </button>
           <button
             onClick={() => navigate("/seller/products/add")}
-            className="flex justify-center items-center gap-2 bg-black text-primary-foreground px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors font-bold text-sm">
+            className="flex justify-center items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors font-bold text-sm">
             <HiOutlinePlus className="h-5 w-5" />
             Add New Product
           </button>
@@ -640,7 +640,58 @@ const ProductManagement = () => {
       {/* Product Table */}
 
       <Card className="border-none shadow-xl ring-1 ring-slate-100 overflow-hidden rounded-xl">
-        <div className="overflow-x-auto">
+        {/* Mobile View */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {filteredProducts.length === 0 ? (
+            <div className="p-8 text-center text-slate-500 font-medium">No products found.</div>
+          ) : (
+            filteredProducts.map((p) => (
+              <div key={p._id || p.id} className="p-4 bg-white hover:bg-slate-50 transition-colors">
+                <div className="flex gap-4">
+                  <div className="h-20 w-20 shrink-0 rounded-xl overflow-hidden bg-slate-100 ring-1 ring-slate-200">
+                    <img
+                      src={
+                        p.mainImage ||
+                        p.image ||
+                        "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&q=80&w=400&h=400"
+                      }
+                      alt={p.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 leading-tight line-clamp-2">
+                        {p.name}
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-1 font-medium">{displaySku(p)}</p>
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <ApprovalBadge approvalStatus={p.approvalStatus} />
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => openEditModal(p)}
+                          className="p-1.5 bg-slate-100 hover:bg-brand-50 text-slate-600 hover:text-brand-600 rounded-lg transition-colors"
+                        >
+                          <HiOutlinePencilSquare className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(p)}
+                          className="p-1.5 bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 rounded-lg transition-colors"
+                        >
+                          <HiOutlineTrash className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/50 border-b border-slate-100">

@@ -38,8 +38,8 @@ const couponSchema = new mongoose.Schema(
                 "min_order_value", // Minimum Order Value Coupon
                 "free_delivery", // Free Delivery Coupon
                 "category_based", // Category-Based Coupon
-                "monthly_volume", // Monthly Volume Coupon
                 "generic", // Plain discount without extra conditions
+                "buy_one_get_one", // Buy One Get One Cart-level BOGO
             ],
             default: "generic",
         },
@@ -58,10 +58,6 @@ const couponSchema = new mongoose.Schema(
                 ref: "Category",
             },
         ],
-        // Monthly volume (for future analytics‑based rules)
-        monthlyVolumeThreshold: {
-            type: Number,
-        },
         usageLimit: {
             type: Number,
         },

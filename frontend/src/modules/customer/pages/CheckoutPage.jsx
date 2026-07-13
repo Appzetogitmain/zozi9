@@ -570,7 +570,7 @@ const CheckoutPage = () => {
         code: coupon.code,
         cartTotal,
         items: cart,
-        customerId: user?._id,
+        customerId: user?._id || user?.id,
       };
       const res = await customerApi.validateCoupon(payload);
       if (res.data.success) {
@@ -678,25 +678,30 @@ const CheckoutPage = () => {
       return;
     }
 
-    const buildPreviewPayload = () => ({
-      items: cart.map((item) => ({
-        product: item.id || item._id,
-        name: item.name,
-        variantSku: String(item.variantSku || "").trim(),
-        quantity: item.quantity,
-        price: item.price,
-        image: item.image,
-      })),
-      address: buildAddressForOrder(),
-      discountTotal: discountAmount,
-      taxTotal: 0,
-      tipAmount: selectedTip,
-      paymentMode: selectedPayment === "online" ? "ONLINE" : "COD",
-      timeSlot: selectedTimeSlot,
-      deliveryType,
-      scheduledDate: deliveryType === "scheduled" ? scheduledDate : null,
-      scheduledSlot: deliveryType === "scheduled" ? scheduledSlot : null,
-    });
+    const buildPreviewPayload = () => {
+      const payload = {
+        items: cart.map((item) => ({
+          product: item.id || item._id,
+          name: item.name,
+          variantSku: String(item.variantSku || "").trim(),
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image,
+        })),
+        address: buildAddressForOrder(),
+        discountTotal: discountAmount,
+        taxTotal: 0,
+        tipAmount: selectedTip,
+        paymentMode: selectedPayment === "online" ? "ONLINE" : "COD",
+        timeSlot: selectedTimeSlot,
+        deliveryType,
+      };
+      if (deliveryType === "scheduled") {
+        if (scheduledDate) payload.scheduledDate = scheduledDate;
+        if (scheduledSlot) payload.scheduledSlot = scheduledSlot;
+      }
+      return payload;
+    };
 
     const fetchPreview = async () => {
       try {
@@ -766,8 +771,6 @@ const CheckoutPage = () => {
         tipAmount: selectedTip,
         timeSlot: selectedTimeSlot,
         deliveryType,
-        scheduledDate: deliveryType === "scheduled" ? scheduledDate : null,
-        scheduledSlot: deliveryType === "scheduled" ? scheduledSlot : null,
         walletAmount: walletAmountToUse,
         items: cart.map((item) => ({
           product: item.id || item._id,
@@ -778,6 +781,11 @@ const CheckoutPage = () => {
           image: item.image,
         })),
       };
+      
+      if (deliveryType === "scheduled") {
+        if (scheduledDate) orderData.scheduledDate = scheduledDate;
+        if (scheduledSlot) orderData.scheduledSlot = scheduledSlot;
+      }
 
       const response = await customerApi.createOrder(orderData);
 

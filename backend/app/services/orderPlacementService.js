@@ -376,6 +376,7 @@ export async function placeOrderAtomic({
       const order = new Order({
         orderId,
         customer: customerId,
+        appliedCoupon: normalizedPayload.couponId || undefined,
         seller: entry.sellerId,
         items: mapOrderItemsForPersistence(entry.items),
         address: normalizedAddress,
