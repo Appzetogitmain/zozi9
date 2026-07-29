@@ -52,6 +52,7 @@ import {
     processAdminFinancePayoutsController,
     updateDeliverySettingsController,
 } from "../controller/adminFinanceController.js";
+import { getLoginHistory } from "../controller/adminLoginHistoryController.js";
 
 import { verifyToken, allowRoles } from "../middleware/authMiddleware.js";
 import {
@@ -220,6 +221,14 @@ router.get("/seller-withdrawals", verifyToken, allowRoles("admin"), getSellerWit
 router.get("/delivery-withdrawals", verifyToken, allowRoles("admin"), getDeliveryWithdrawals);
 router.get("/seller-transactions", verifyToken, allowRoles("admin"), getSellerTransactions);
 router.put("/withdrawals/:id", verifyToken, allowRoles("admin"), updateWithdrawalStatus);
+
+// Login History
+router.get(
+    "/login-history",
+    verifyToken,
+    allowRoles("admin"),
+    getLoginHistory
+);
 
 // Protected admin route example
 router.get(

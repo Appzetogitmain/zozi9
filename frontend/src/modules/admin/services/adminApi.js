@@ -117,6 +117,9 @@ export const adminApi = {
     settleRiderCash: (data) => axiosInstance.post('/admin/settle-cash', data),
     getCashSettlementHistory: (params) => axiosInstance.get('/admin/cash-history', { params }),
 
+    // Login History
+    getLoginHistory: (params) => axiosInstance.get('/admin/login-history', { params }),
+
     // FAQ Management
     getFAQs: (params) => axiosInstance.get('/admin/faqs', { params }),
     createFAQ: (data) => axiosInstance.post('/admin/faqs', data),

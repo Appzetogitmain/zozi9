@@ -1,4 +1,5 @@
 import Delivery from "../models/delivery.js";
+import LoginHistory from "../models/loginHistory.js";
 import jwt from "jsonwebtoken";
 import handleResponse from "../utils/helper.js";
 import { sendSmsIndiaHubOtp } from "../services/smsIndiaHubService.js";
@@ -192,6 +193,13 @@ export const verifyDeliveryOTP = async (req, res) => {
         delivery.lastLogin = new Date();
 
         await delivery.save();
+
+        await LoginHistory.create({
+            userId: delivery._id,
+            role: "Delivery",
+            ipAddress: req.ip || req.connection.remoteAddress,
+            deviceInfo: req.headers["user-agent"],
+        });
 
         const token = generateToken(delivery);
 

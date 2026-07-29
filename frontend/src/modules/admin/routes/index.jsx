@@ -69,6 +69,7 @@ const CustomerManagement = React.lazy(
 const CustomerDetail = React.lazy(() => import("../pages/CustomerDetail"));
 const AdminUsersManagement = React.lazy(() => import("../pages/AdminUsersManagement"));
 const RolesManagement = React.lazy(() => import("../pages/RolesManagement"));
+const LoginHistory = React.lazy(() => import("../pages/LoginHistory"));
 const Profile = React.lazy(() => import("@/pages/Profile"));
 const FAQManagement = React.lazy(() => import("../pages/FAQManagement"));
 const OrdersList = React.lazy(() => import("../pages/OrdersList"));
@@ -233,6 +234,7 @@ const navItems = [
     children: [
       { label: "Admin Users", path: "/admin/admin-users" },
       { label: "Role Management", path: "/admin/roles" },
+      { label: "Login History", path: "/admin/login-history" },
     ],
     isSuperAdminOnly: true,
   },
@@ -273,6 +275,7 @@ const AdminRoutes = () => {
         <Route path="/" element={<Dashboard />} />
         <Route path="/admin-users" element={<AdminUsersManagement />} />
         <Route path="/roles" element={<RolesManagement />} />
+        <Route path="/login-history" element={<LoginHistory />} />
         <Route path="/profile" element={<AdminProfile />} />
         {/* Lazy routes for new sections */}
         <Route

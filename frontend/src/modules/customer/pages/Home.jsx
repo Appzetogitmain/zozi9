@@ -67,6 +67,7 @@ import {
   getBackgroundGradientByValue,
 } from "@/shared/constants/offerSectionOptions";
 import { applyCloudinaryTransform } from "@/core/utils/imageUtils";
+import Lottie from "lottie-react";
 
 const DEFAULT_CATEGORY_THEME = {
   gradient: "linear-gradient(to bottom, var(--primary), var(--brand-400))",
@@ -427,6 +428,14 @@ const Home = () => {
   const navigate = useNavigate();
   const quickCatsRef = useRef(null);
   const cachedHomePageData = getCachedHomePageData(currentLocation);
+
+  const [noServiceData, setNoServiceData] = useState(null);
+
+  useEffect(() => {
+    import("../../../assets/lottie/Empty box.json")
+      .then((m) => setNoServiceData(m.default))
+      .catch((err) => console.error("Failed to load empty box animation", err));
+  }, []);
 
   // useInViewAnimation for floating particle containers
   const { ref: particleContainerRef, isVisible: particlesVisible } =
