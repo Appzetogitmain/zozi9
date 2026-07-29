@@ -1,4 +1,5 @@
 import Seller from "../models/seller.js";
+import LoginHistory from "../models/loginHistory.js";
 import jwt from "jsonwebtoken";
 import handleResponse from "../utils/helper.js";
 import {
@@ -334,6 +335,13 @@ export const loginSeller = async (req, res) => {
 
         seller.lastLogin = new Date();
         await seller.save();
+
+        await LoginHistory.create({
+            userId: seller._id,
+            role: "Seller",
+            ipAddress: req.ip || req.connection.remoteAddress,
+            deviceInfo: req.headers["user-agent"],
+        });
 
         const token = generateToken(seller);
 
