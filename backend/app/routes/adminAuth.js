@@ -54,6 +54,7 @@ import {
     updateDeliverySettingsController,
 } from "../controller/adminFinanceController.js";
 import { getLoginHistory } from "../controller/adminLoginHistoryController.js";
+import { getLoginHistory } from "../controller/adminLoginHistoryController.js";
 
 import { verifyToken, allowRoles } from "../middleware/authMiddleware.js";
 import {

@@ -245,6 +245,7 @@ const navItems = [
       { label: "Admin Users", path: "/admin/admin-users" },
       { label: "Role Management", path: "/admin/roles" },
       { label: "Login History", path: "/admin/login-history" },
+      { label: "Login History", path: "/admin/login-history" },
     ],
     isSuperAdminOnly: true,
   },
