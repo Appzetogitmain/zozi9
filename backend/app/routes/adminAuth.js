@@ -9,6 +9,7 @@ import {
     getAdmins,
     toggleAdminStatus,
 } from "../controller/adminAuthController.js";
+import { getProductSales } from "../controller/adminReportController.js";
 import {
     getAdminProfile,
     updateAdminProfile,
@@ -228,6 +229,14 @@ router.get(
     verifyToken,
     allowRoles("admin"),
     getLoginHistory
+);
+
+// Reports
+router.get(
+    "/reports/product-sales",
+    verifyToken,
+    allowRoles("admin"),
+    getProductSales
 );
 
 // Protected admin route example

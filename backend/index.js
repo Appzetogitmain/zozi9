@@ -98,7 +98,7 @@ function createApp() {
   app.set("trust proxy", parseTrustProxy(process.env.TRUST_PROXY));
 
   const corsOptions = {
-    origin: true,
+    origin: ['https://zozi9.com', 'https://www.zozi9.com'],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: [
@@ -193,7 +193,7 @@ async function startHttpServer() {
   const allowedOrigins = parseAllowedOrigins();
   const io = new Server(server, {
     cors: {
-      origin: true,
+      origin: ['https://zozi9.com', 'https://www.zozi9.com'],
       methods: ["GET", "POST"],
       credentials: true,
     },

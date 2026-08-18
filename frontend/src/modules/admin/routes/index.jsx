@@ -24,6 +24,7 @@ import {
   Shield,
   ShieldAlert,
   Server,
+  TrendingUp,
 } from "lucide-react";
 
 const Dashboard = React.lazy(() => import("../pages/Dashboard"));
@@ -70,6 +71,7 @@ const CustomerDetail = React.lazy(() => import("../pages/CustomerDetail"));
 const AdminUsersManagement = React.lazy(() => import("../pages/AdminUsersManagement"));
 const RolesManagement = React.lazy(() => import("../pages/RolesManagement"));
 const LoginHistory = React.lazy(() => import("../pages/LoginHistory"));
+const ProductSalesReport = React.lazy(() => import("../pages/ProductSalesReport"));
 const Profile = React.lazy(() => import("@/pages/Profile"));
 const FAQManagement = React.lazy(() => import("../pages/FAQManagement"));
 const OrdersList = React.lazy(() => import("../pages/OrdersList"));
@@ -228,6 +230,14 @@ const navItems = [
   },
   { label: "My Profile", path: "/admin/profile", icon: User, color: "indigo", isPublic: true },
   {
+    label: "Analytics & Reports",
+    icon: TrendingUp,
+    color: "purple",
+    children: [
+      { label: "Product Sales", path: "/admin/product-sales" },
+    ],
+  },
+  {
     label: "Admin Management",
     icon: Shield,
     color: "slate",
@@ -276,6 +286,7 @@ const AdminRoutes = () => {
         <Route path="/admin-users" element={<AdminUsersManagement />} />
         <Route path="/roles" element={<RolesManagement />} />
         <Route path="/login-history" element={<LoginHistory />} />
+        <Route path="/product-sales" element={<ProductSalesReport />} />
         <Route path="/profile" element={<AdminProfile />} />
         {/* Lazy routes for new sections */}
         <Route

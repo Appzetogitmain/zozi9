@@ -105,6 +105,7 @@ const OrdersList = () => {
                     customer: o.customer?.name || 'Unknown',
                     seller: o.seller?.shopName || 'Unknown',
                     items: o.items?.length || 0,
+                    image: o.items?.[0]?.image || '',
                     amount: o.pricing?.total || 0,
                     status: getLegacyStatusFromOrder(o),
                     workflowStatus: o.workflowStatus,
@@ -386,8 +387,12 @@ const OrdersList = () => {
                                 <tr key={order.id} className="group hover:bg-slate-50/30 transition-all cursor-pointer" onClick={() => navigate(`/admin/orders/view/${order.id}`)}>
                                     <td className="px-4 py-5">
                                         <div className="flex items-center gap-4">
-                                            <div className="p-3 bg-slate-50 rounded-2xl group-hover:bg-white group-hover:shadow-sm transition-all text-slate-500 group-hover:text-fuchsia-500 font-bold text-xs">
-                                                <Package className="h-5 w-5" />
+                                            <div className="flex-shrink-0 w-12 h-12 bg-slate-50 rounded-2xl group-hover:bg-white group-hover:shadow-sm transition-all flex items-center justify-center text-slate-500 overflow-hidden group-hover:text-fuchsia-500 font-bold text-xs">
+                                                {order.image ? (
+                                                    <img src={order.image} alt="Order item" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <Package className="h-5 w-5" />
+                                                )}
                                             </div>
                                             <div>
                                                 <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">

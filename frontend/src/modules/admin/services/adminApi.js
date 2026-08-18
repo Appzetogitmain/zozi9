@@ -120,6 +120,9 @@ export const adminApi = {
     // Login History
     getLoginHistory: (params) => axiosInstance.get('/admin/login-history', { params }),
 
+    // Reports
+    getProductSalesReport: (params) => axiosInstance.get('/admin/reports/product-sales', { params }),
+
     // FAQ Management
     getFAQs: (params) => axiosInstance.get('/admin/faqs', { params }),
     createFAQ: (data) => axiosInstance.post('/admin/faqs', data),
