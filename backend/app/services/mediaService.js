@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { v2 as cloudinary } from "cloudinary";
 import MediaMetadata from "../models/mediaMetadata.js";
 import logger from "./logger.js";
+import { saveFileLocally, deleteLocalFile } from "./localStorageService.js";
 
 function getMaxUploadBytes() {
   const raw = parseInt(process.env.MEDIA_MAX_FILE_SIZE || "10485760", 10);
@@ -77,12 +78,16 @@ function isSignedUploadsEnabled() {
 }
 
 function storageProvider() {
-  return String(process.env.STORAGE_PROVIDER || "cloudinary").trim().toLowerCase();
+  return String(process.env.STORAGE_PROVIDER || "local").trim().toLowerCase();
 }
 
 function validateStorageConfig() {
-  if (storageProvider() !== "cloudinary") {
-    const err = new Error("Unsupported storage provider configuration");
+  const provider = storageProvider();
+  if (provider === "local") {
+    return;
+  }
+  if (provider !== "cloudinary") {
+    const err = new Error(`Unsupported storage provider configuration: ${provider}`);
     err.statusCode = 500;
     throw err;
   }
@@ -486,10 +491,19 @@ async function deleteMedia(publicId, userId, userModel) {
     err.statusCode = 403;
     throw err;
   }
+  if (media.provider === "local" || (media.secureUrl && media.secureUrl.includes("/uploads/"))) {
+    await deleteLocalFile(media.secureUrl || media.objectKey);
+  }
   await media.softDelete();
 }
 
 async function uploadToCloudinary(fileBuffer, folder = "categories", options = {}) {
+  const provider = storageProvider();
+  if (provider === "local") {
+    const result = await saveFileLocally(fileBuffer, folder, options);
+    return result.url;
+  }
+
   validateStorageConfig();
   configureCloudinary();
   const mimeType = String(options.mimeType || "").trim().toLowerCase();
@@ -518,6 +532,8 @@ async function uploadToCloudinary(fileBuffer, folder = "categories", options = {
     uploadStream.end(fileBuffer);
   });
 }
+
+const uploadToStorage = uploadToCloudinary;
 
 async function generateSignedUploadURL(options) {
   const {
@@ -552,7 +568,9 @@ export {
   getMediaURL,
   deleteMedia,
   uploadToCloudinary,
+  uploadToStorage,
   isSignedUploadsEnabled,
+  storageProvider,
 };
 
 export default {
@@ -562,5 +580,7 @@ export default {
   getMediaURL,
   deleteMedia,
   uploadToCloudinary,
+  uploadToStorage,
   isSignedUploadsEnabled,
+  storageProvider,
 };

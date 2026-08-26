@@ -122,9 +122,24 @@ function createApp() {
       return compression.filter(req, res);
     },
   }));
-  app.use(helmet());
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: "cross-origin" },
+    }),
+  );
   app.use(cors(corsOptions));
   app.use(globalApiRateLimiter);
+
+  // Serve static media uploads
+  const uploadsDirectory = path.resolve(process.env.LOCAL_MEDIA_PATH || "./uploads");
+  app.use(
+    "/uploads",
+    express.static(uploadsDirectory, {
+      maxAge: "30d",
+      immutable: true,
+      index: false,
+    }),
+  );
 
   // PhonePe webhook needs raw body for signature verification
   app.use(

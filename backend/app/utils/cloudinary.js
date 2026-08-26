@@ -27,7 +27,15 @@ const getImageUploadOptions = () => {
     };
 };
 
+import { saveFileLocally } from '../services/localStorageService.js';
+
 export const uploadToCloudinary = async (fileBuffer, folder = 'categories', options = {}) => {
+    const provider = String(process.env.STORAGE_PROVIDER || 'local').trim().toLowerCase();
+    if (provider === 'local') {
+        const result = await saveFileLocally(fileBuffer, folder, options);
+        return result.url;
+    }
+
     const mimeType = String(options.mimeType || '').trim().toLowerCase();
     const resourceType = String(options.resourceType || '').trim().toLowerCase();
     const shouldOptimizeImage =

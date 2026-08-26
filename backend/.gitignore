@@ -4,4 +4,7 @@ node_modules/
 logs/
 *.log
 
+uploads/
+!uploads/.gitkeep
+
 coverage/
