@@ -207,6 +207,9 @@ async function resolveNearbySellerIds(deliveryPartner, userId) {
 }
 
 function filterV2OrdersByRadius(v2Orders, deliveryCoords) {
+  if (process.env.NODE_ENV !== "production" || process.env.DISABLE_PROXIMITY_CHECK === "true") {
+    return v2Orders;
+  }
   const [dlng, dlat] = deliveryCoords;
   return v2Orders.filter((order) => {
     const coords = order.seller?.location?.coordinates;
@@ -264,11 +267,13 @@ export async function fetchAvailableOrdersForDelivery({
   }
 
   const deliveryPartner = await Delivery.findById(userId);
-  if (
-    !deliveryPartner ||
-    !deliveryPartner.location ||
-    !Array.isArray(deliveryPartner.location.coordinates)
-  ) {
+  const hasCoordinates =
+    deliveryPartner &&
+    deliveryPartner.location &&
+    Array.isArray(deliveryPartner.location.coordinates) &&
+    deliveryPartner.location.coordinates.length >= 2;
+
+  if (!hasCoordinates && process.env.NODE_ENV === "production") {
     return {
       requiresLocation: showDeliveries && assignedReturnPickups.length === 0,
       orders: assignedReturnPickups,
@@ -276,15 +281,24 @@ export async function fetchAvailableOrdersForDelivery({
     };
   }
 
-  const { sellerIds } = await resolveNearbySellerIds(deliveryPartner, userId);
+  const deliveryCoords = hasCoordinates
+    ? deliveryPartner.location.coordinates
+    : [75.8577, 22.7196]; // fallback coords for dev
+
+  const { sellerIds } = await resolveNearbySellerIds(
+    hasCoordinates ? deliveryPartner : { location: { type: "Point", coordinates: deliveryCoords } },
+    userId,
+  );
 
   let v2Orders = [];
   if (showDeliveries) {
     const v2OrdersRaw = await Order.find({
-      workflowVersion: { $gte: 2 },
-      workflowStatus: WORKFLOW_STATUS.DELIVERY_SEARCH,
+      $or: [
+        { workflowStatus: { $in: [WORKFLOW_STATUS.DELIVERY_SEARCH, "DELIVERY_SEARCH", "SELLER_ACCEPT", "PACKED"] } },
+        { status: { $in: ["confirmed", "packed", "ready_for_pickup", "SELLER_ACCEPT", "DELIVERY_SEARCH"] } },
+      ],
       deliveryBoy: null,
-      seller: { $in: sellerIds },
+      ...(sellerIds && sellerIds.length > 0 ? { seller: { $in: sellerIds } } : {}),
       skippedBy: { $nin: [userId] },
     })
       .sort({ createdAt: -1, _id: -1 })
@@ -295,7 +309,7 @@ export async function fetchAvailableOrdersForDelivery({
 
     v2Orders = filterV2OrdersByRadius(
       v2OrdersRaw,
-      deliveryPartner.location.coordinates,
+      deliveryCoords,
     );
   }
 
@@ -306,9 +320,9 @@ export async function fetchAvailableOrdersForDelivery({
         { workflowVersion: { $exists: false } },
         { workflowVersion: { $lt: 2 } },
       ],
-      status: { $in: ["confirmed", "packed"] },
+      status: { $in: ["confirmed", "packed", "ready_for_pickup"] },
       deliveryBoy: null,
-      seller: { $in: sellerIds },
+      ...(sellerIds && sellerIds.length > 0 ? { seller: { $in: sellerIds } } : {}),
       skippedBy: { $nin: [userId] },
     })
       .sort({ createdAt: -1, _id: -1 })

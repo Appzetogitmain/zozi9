@@ -189,22 +189,32 @@ const CheckoutAddressSection = React.memo(function CheckoutAddressSection({
           </div>
           <div className="flex-1">
             <div className="flex justify-between items-start">
-              <h4 className="font-bold text-slate-800 text-sm">{displayName}</h4>
+              <div>
+                <h4 className="font-bold text-slate-800 text-sm">
+                  {displayName || "Delivery Address"}
+                </h4>
+                {displayPhone && (
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    {displayPhone}
+                  </p>
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={(e) => { e.stopPropagation(); onEditAddress(); }}
                   className="text-slate-500 text-xs font-bold hover:underline">
                   Edit
                 </button>
                 <button
+                  type="button"
                   onClick={(e) => { e.stopPropagation(); onSelectAddress(); }}
                   className="text-primary text-xs font-bold hover:underline">
                   Change
                 </button>
               </div>
             </div>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">{displayPhone}</p>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">{displayAddress}</p>
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">{displayAddress}</p>
           </div>
         </div>
       </div>

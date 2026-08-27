@@ -224,20 +224,23 @@ export const getCustomerProfile = async (req, res) => {
 ================================ */
 export const updateCustomerProfile = async (req, res) => {
     try {
-        const { name, email, addresses } = req.body;
+        const { name, email, phone, addresses } = req.body;
 
         const customer = await Customer.findById(req.user.id);
         if (!customer) {
             return handleResponse(res, 404, "Customer not found");
         }
 
-        if (name) customer.name = name;
-        if (email) customer.email = email;
+        if (name !== undefined) customer.name = name ? String(name).trim() : "";
+        if (email !== undefined) customer.email = email ? String(email).trim() : undefined;
+        if (phone !== undefined && String(phone).trim()) {
+            customer.phone = String(phone).trim();
+        }
         if (addresses) customer.addresses = addresses;
 
         await customer.save();
 
-        return handleResponse(res, 200, "Profile updated successfully", customer);
+        return handleResponse(res, 200, "Profile updated successfully", sanitizeCustomer(customer));
     } catch (error) {
         return handleResponse(res, 500, error.message);
     }

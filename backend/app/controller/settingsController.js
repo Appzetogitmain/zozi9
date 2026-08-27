@@ -145,11 +145,7 @@ export const getPublicSettings = async (req, res) => {
     let settings = await getOrSet(
       cacheKey,
       async () => {
-        const existing = await Setting.findOne(filter)
-          .select(
-            "appName supportEmail supportPhone currencySymbol currencyCode timezone logoUrl faviconUrl primaryColor secondaryColor returnDeliveryCommission deliveryPricingMode pricingMode customerBaseDeliveryFee riderBasePayout baseDeliveryCharge baseDistanceCapacityKm incrementalKmSurcharge deliveryPartnerRatePerKm fleetCommissionRatePerKm fixedDeliveryFee handlingFeeStrategy codEnabled onlineEnabled lowStockAlertsEnabled productApproval createdAt",
-          )
-          .lean();
+        const existing = await Setting.findOne(filter).lean();
         return existing || null;
       },
       getTTL("settings"),

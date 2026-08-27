@@ -203,6 +203,10 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateUser = (updatedData) => {
+        setUser((prev) => (prev ? { ...prev, ...updatedData } : updatedData));
+    };
+
     const value = useMemo(() => ({
         user,
         token,
@@ -212,6 +216,7 @@ export const AuthProvider = ({ children }) => {
         authData,
         login,
         logout,
+        updateUser,
         refreshUser
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }), [user, token, currentRole, isAuthenticated, isLoading, authData]);

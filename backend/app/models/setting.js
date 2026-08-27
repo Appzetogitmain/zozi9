@@ -101,8 +101,28 @@ const settingSchema = new mongoose.Schema(
         },
         riderBasePayout: {
             type: Number,
-            default: 30,
+            default: 20,
             min: 0,
+        },
+        riderBaseFare: {
+            type: Number,
+            default: 20,
+            min: 0,
+        },
+        riderIncludedKm: {
+            type: Number,
+            default: 2,
+            min: 0,
+        },
+        riderExtraKmRate: {
+            type: Number,
+            default: 8,
+            min: 0,
+        },
+        riderSurgeMultiplier: {
+            type: Number,
+            default: 1.0,
+            min: 1.0,
         },
         baseDeliveryCharge: {
             type: Number,
@@ -121,12 +141,12 @@ const settingSchema = new mongoose.Schema(
         },
         deliveryPartnerRatePerKm: {
             type: Number,
-            default: 5,
+            default: 8,
             min: 0,
         },
         fleetCommissionRatePerKm: {
             type: Number,
-            default: 5,
+            default: 8,
             min: 0,
         },
         fixedDeliveryFee: {

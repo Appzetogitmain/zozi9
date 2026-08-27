@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 import { deliveryApi } from "../services/deliveryApi";
 
 /**
- * DeliverySlideButton - A slide-to-confirm button for delivery actions
- * 
- * This component handles the slide gesture to trigger OTP generation.
- * It calls the generate-otp endpoint which uses the delivery person's stored location
- * from the database for proximity validation.
+ * DeliveryActionButton (formerly DeliverySlideButton)
+ * Standard, high-accessibility tap/click button for rider OTP and confirmation actions.
  * 
  * @param {Object} props
  * @param {string} props.orderId - The order ID for OTP generation
  * @param {Function} props.onSuccess - Callback when OTP is successfully generated
  * @param {Function} props.onError - Callback when an error occurs
- * @param {string} props.label - Label text for the slide button (default: "SLIDE TO GENERATE OTP")
- * @param {string} props.bgColor - Background color class (default: "bg-black ")
- * @param {string} props.bgColorLight - Light background color class (default: "bg-brand-50")
+ * @param {string} props.label - Label text (e.g. "GENERATE OTP", "SEND OTP TO CUSTOMER")
+ * @param {string} props.bgColor - Background color class
  */
 const DeliverySlideButton = ({
   orderId,
@@ -25,31 +21,19 @@ const DeliverySlideButton = ({
   onError,
   isReturn = false,
   isReturnDrop = false,
-  label = "SLIDE TO GENERATE OTP",
-  bgColor = "bg-black ",
-  bgColorLight = "bg-brand-50",
+  label = "GENERATE OTP",
+  bgColor = "bg-primary",
 }) => {
-  const [isSlideComplete, setIsSlideComplete] = useState(false);
-  const [dragX, setDragX] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Reset slide state when orderId changes
-  useEffect(() => {
-    setIsSlideComplete(false);
-    setDragX(0);
-    setIsLoading(false);
-  }, [orderId]);
-
-  const resetSlide = () => {
-    setIsSlideComplete(false);
-    setDragX(0);
-    setIsLoading(false);
-  };
+  // Clean label if old "SLIDE TO" prefix is passed
+  const displayLabel = label.replace(/^SLIDE TO\s+/i, "");
 
   /**
-   * Handle slide completion - generate OTP using stored location
+   * Handle button click - generate OTP using stored location
    */
-  const handleSlideComplete = async () => {
+  const handleClick = async () => {
+    if (isLoading) return;
     setIsLoading(true);
 
     try {
@@ -61,7 +45,7 @@ const DeliverySlideButton = ({
           : await deliveryApi.generateDeliveryOtp(orderId);
 
       // Handle success
-      toast.success(response.data?.message || "OTP generated and sent to customer");
+      toast.success(response.data?.message || "OTP generated and sent successfully");
 
       if (onSuccess) {
         onSuccess(response.data);
@@ -94,69 +78,33 @@ const DeliverySlideButton = ({
       if (onError) {
         onError(error);
       }
-
-      resetSlide();
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="relative h-16 bg-gray-100 rounded-full overflow-hidden select-none">
-      {/* Label text */}
-      <motion.div
-        className={`absolute inset-0 flex items-center justify-center text-gray-400 font-bold text-sm pointer-events-none transition-opacity duration-300 ${dragX > 50 || isLoading ? "opacity-0" : "opacity-100"
-          }`}
-        animate={{ x: [0, 5, 0] }}
-        transition={{ repeat: Infinity, duration: 1.5 }}>
-        {label} <ChevronRight className="ml-1 inline" />
-      </motion.div>
-
-      {/* Loading indicator */}
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="animate-spin text-primary" size={24} />
-          <span className="ml-2 text-sm font-medium text-gray-600">
-            {isReturn ? "Requesting OTP..." : "Generating OTP..."}
-          </span>
-        </div>
+    <motion.button
+      type="button"
+      onClick={handleClick}
+      disabled={isLoading}
+      whileHover={{ scale: isLoading ? 1 : 1.01 }}
+      whileTap={{ scale: isLoading ? 1 : 0.97 }}
+      className={`w-full h-14 ${bgColor} text-white rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-black/10 font-black text-sm uppercase tracking-wider transition-all disabled:opacity-75 disabled:cursor-not-allowed`}
+    >
+      {isLoading ? (
+        <>
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>{isReturn ? "Requesting OTP..." : "Generating OTP..."}</span>
+        </>
+      ) : (
+        <>
+          <Send className="w-4 h-4" />
+          <span>{displayLabel}</span>
+          <ChevronRight className="w-5 h-5 ml-1" />
+        </>
       )}
-
-      {/* Progress background */}
-      <motion.div
-        className={`absolute inset-y-0 left-0 ${bgColorLight} opacity-50`}
-        style={{ width: Math.min(dragX + 60, 340) }}
-      />
-
-      {/* Draggable button */}
-      <motion.div
-        className={`absolute top-1 bottom-1 left-1 w-14 rounded-full flex items-center justify-center shadow-md cursor-grab active:cursor-grabbing z-20 ${bgColor}`}
-        drag="x"
-        dragConstraints={{ left: 0, right: 280 }}
-        dragElastic={0.05}
-        dragMomentum={false}
-        onDrag={(_, info) => {
-          if (!isLoading) {
-            setDragX(Math.max(0, info.offset.x));
-          }
-        }}
-        onDragEnd={(_, info) => {
-          if (isLoading) return;
-
-          if (info.offset.x > 150) {
-            setIsSlideComplete(true);
-            handleSlideComplete();
-          } else {
-            setDragX(0);
-          }
-        }}
-        animate={{ x: isSlideComplete ? 280 : 0 }}
-        whileHover={{ scale: isLoading ? 1 : 1.05 }}
-        whileTap={{ scale: isLoading ? 1 : 0.95 }}
-        style={{ pointerEvents: isLoading ? "none" : "auto" }}>
-        <ChevronRight className="text-white" size={24} />
-      </motion.div>
-    </div>
+    </motion.button>
   );
 };
 

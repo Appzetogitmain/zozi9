@@ -227,12 +227,34 @@ const CheckoutPage = () => {
   const RECIPIENT_STORAGE_KEY = "appzeto_checkout_recipient_v1";
 
   // Derived display values for primary delivery card
-  const displayName = savedRecipient?.name || currentAddress.name;
+  const displayName =
+    savedRecipient?.name ||
+    currentAddress.name ||
+    user?.name ||
+    "Customer";
+
   const displayPhone =
-    savedRecipient?.phone || currentAddress.phone || "";
+    savedRecipient?.phone ||
+    currentAddress.phone ||
+    user?.phone ||
+    user?.phoneNumber ||
+    user?.mobile ||
+    "";
+
   const displayAddress = savedRecipient
     ? `${savedRecipient.completeAddress}${savedRecipient.landmark ? `, ${savedRecipient.landmark}` : ""}${savedRecipient.pincode ? ` - ${savedRecipient.pincode}` : ""}`
-    : `${currentAddress.address}${currentAddress.landmark ? `, ${currentAddress.landmark}` : ""}, ${currentAddress.city}`;
+    : `${currentAddress.address || ""}${currentAddress.landmark ? `, ${currentAddress.landmark}` : ""}${currentAddress.city ? `, ${currentAddress.city}` : ""}`;
+
+  // Keep currentAddress synchronized with logged in customer profile
+  useEffect(() => {
+    if (user?.name || user?.phone || user?.phoneNumber || user?.mobile) {
+      setCurrentAddress((prev) => ({
+        ...prev,
+        name: prev.name || user?.name || "",
+        phone: prev.phone || user?.phone || user?.phoneNumber || user?.mobile || "",
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!paymentMethods.length) return;
@@ -280,6 +302,8 @@ const CheckoutPage = () => {
 
     return {
       ...currentAddress,
+      name: currentAddress.name || user?.name || "Customer",
+      phone: currentAddress.phone || user?.phone || user?.phoneNumber || user?.mobile || "",
       location: hasAddrLoc ? { lat: addrLoc.lat, lng: addrLoc.lng } : undefined,
     };
   };

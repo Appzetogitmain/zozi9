@@ -6,8 +6,8 @@ export const DEFAULT_SETTINGS = {
   currencySymbol: "\u20B9",
   currencyCode: "INR",
   timezone: "Asia/Kolkata",
-  logoUrl: "",
-  faviconUrl: "",
+  logoUrl: "/logo.png",
+  faviconUrl: "/favicon.png",
   primaryColor: "var(--primary)",
   secondaryColor: "#64748b",
   companyName: "",
@@ -46,7 +46,7 @@ export const DEFAULT_SETTINGS = {
 };
 
 /**
- * Applies theme CSS variables to document root from settings.
+ * Applies theme CSS variables and updates favicon on document.
  */
 export function applyThemeVariables(settings) {
   if (!settings) return;
@@ -58,6 +58,13 @@ export function applyThemeVariables(settings) {
   root.style.setProperty("--secondary", secondary);
   root.style.setProperty("--primary-color", primary);
   root.style.setProperty("--secondary-color", secondary);
+
+  // Update dynamic favicon
+  const faviconUrl = settings.faviconUrl || "/favicon.png";
+  const faviconEl = document.querySelector('link[rel="icon"]') || document.getElementById("app-favicon");
+  if (faviconEl && faviconUrl) {
+    faviconEl.setAttribute("href", faviconUrl);
+  }
 
   // Calculate high-contrast foreground color
   if (primary && !primary.startsWith("var")) {

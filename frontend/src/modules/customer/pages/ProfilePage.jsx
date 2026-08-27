@@ -132,9 +132,15 @@ const ProfilePage = () => {
                         </div>
                         <div>
                             <h2 className="text-base leading-tight font-semibold text-slate-900">{user?.name || 'Customer'}</h2>
-                            <p className="text-slate-500 text-xs font-medium flex items-center gap-1 mt-0.5">
-                                <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] uppercase">India</span> +91 {formatIndiaPhone(user?.phone)}
-                            </p>
+                            {formatIndiaPhone(user?.phone || user?.phoneNumber || user?.mobile || user?.phone_number) ? (
+                                <p className="text-slate-500 text-xs font-medium flex items-center gap-1 mt-0.5">
+                                    <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] uppercase">India</span> +91 {formatIndiaPhone(user?.phone || user?.phoneNumber || user?.mobile || user?.phone_number)}
+                                </p>
+                            ) : (
+                                <p className="text-slate-400 text-xs font-medium mt-0.5">
+                                    {user?.email || 'Add phone number'}
+                                </p>
+                            )}
                         </div>
                     </div>
                     <Link to="/profile/edit" className="p-2.5 rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors">

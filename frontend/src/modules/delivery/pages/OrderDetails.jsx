@@ -11,8 +11,8 @@ import {
   CheckCircle,
   Store,
   User,
-  AlertTriangle,
   ShieldCheck,
+  Truck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/shared/components/ui/Button";
@@ -828,6 +828,42 @@ const OrderDetails = () => {
           </div>
         </Card>
 
+        {/* Route-Based Delivery Earning Card */}
+        {((order.paymentBreakdown?.riderPayoutTotal || 0) > 0 || (order.returnDeliveryCommission || 0) > 0) && (
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <Card className="bg-gradient-to-r from-emerald-50 to-teal-50/40 rounded-3xl p-4 border border-emerald-100/80 shadow-sm flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-11 w-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-md shadow-emerald-600/20">
+                  <Truck size={20} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black text-emerald-800 uppercase tracking-widest block">
+                    {isReturn ? "Return Pickup Commission" : "Your Delivery Earning"}
+                  </span>
+                  <div className="flex items-baseline gap-2 mt-0.5">
+                    <span className="text-xl font-black text-slate-900">
+                      ₹{isReturn ? (order.returnDeliveryCommission || 0) : order.paymentBreakdown?.riderPayoutTotal}
+                    </span>
+                    {!isReturn && order.paymentBreakdown?.distanceKmActual > 0 && (
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded-md">
+                        {order.paymentBreakdown.distanceKmActual.toFixed(1)} km route
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-bold text-slate-400 block uppercase">
+                  {order.status === "delivered" || order.returnStatus === "returned" ? "Credited to Wallet" : "On Completion"}
+                </span>
+                <span className="text-xs font-bold text-emerald-600">
+                  {order.status === "delivered" || order.returnStatus === "returned" ? "✓ Settled" : "Active"}
+                </span>
+              </div>
+            </Card>
+          </motion.div>
+        )}
+
         <AnimatePresence mode="wait">
           {/* Customer pickup card: show at return steps 1-2, standard delivery steps 1-2 */}
           {(isReturn ? (step === 1 || step === 2) : step <= 2) && (
@@ -1020,17 +1056,6 @@ const OrderDetails = () => {
           </AnimatePresence>
         </Card>
 
-        <motion.div
-          className="bg-yellow-50 rounded-2xl p-4 border border-yellow-200 flex items-start shadow-sm"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <AlertTriangle className="text-yellow-600 mr-3 mt-0.5 flex-shrink-0" size={18} />
-          <p className="text-sm text-yellow-800 leading-relaxed">
-            <strong>Note:</strong> Handle eggs with care. Call customer if location is hard to find.
-          </p>
-        </motion.div>
 
         {/* Return Step 2: Upload proof then request customer pickup OTP */}
         {isReturn && step === 2 && !showOtpInput && isAssignedRider && (
@@ -1156,52 +1181,24 @@ const OrderDetails = () => {
       {((isReturn && (step === 1 || step === 3) && isAssignedRider) || (!isReturn && step <= 2)) && (
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur-md shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
           <div className="max-w-2xl mx-auto p-4">
-            <div className="relative h-16 bg-slate-100 rounded-full overflow-hidden select-none">
-              <motion.div
-                className={`absolute inset-0 flex items-center justify-center text-slate-400 font-bold text-lg pointer-events-none transition-opacity duration-300 ${dragX > 50 ? "opacity-0" : "opacity-100"
-                  }`}
-                animate={{ x: [0, 5, 0] }}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-              >
-                Slide to {
-                  isReturn
-                    ? step === 1 ? "ARRIVED AT CUSTOMER"
-                      : step === 3 ? "ARRIVED AT SELLER"
-                        : steps[step - 1]?.action
-                    : steps[step - 1]?.action
-                } <ChevronRight className="ml-1" />
-              </motion.div>
-
-              <motion.div
-                className={`absolute inset-y-0 left-0 ${steps[step - 1].bg} opacity-50`}
-                style={{ width: dragX + 60 }}
-              />
-
-              <motion.div
-                className={`absolute top-1 bottom-1 left-1 w-14 rounded-full flex items-center justify-center shadow-md cursor-grab active:cursor-grabbing z-20 ${steps[step - 1].color || "bg-primary"
-                  }`}
-                drag="x"
-                dragConstraints={{ left: 0, right: 280 }}
-                dragElastic={0.05}
-                dragMomentum={false}
-                onDrag={(event, info) => {
-                  setDragX(info.point.x);
-                }}
-                onDragEnd={(event, info) => {
-                  if (info.offset.x > 150) {
-                    setIsSlideComplete(true);
-                    handleNextStep();
-                  } else {
-                    setDragX(0);
-                  }
-                }}
-                animate={{ x: isSlideComplete ? 280 : 0 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ChevronRight className="text-white" size={24} />
-              </motion.div>
-            </div>
+            <motion.button
+              type="button"
+              onClick={handleNextStep}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+              className={`w-full h-14 ${steps[step - 1]?.color || "bg-primary"} text-white rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-black/10 font-black text-base uppercase tracking-wider transition-all`}
+            >
+              <span>
+                {isReturn
+                  ? step === 1
+                    ? "ARRIVED AT CUSTOMER"
+                    : step === 3
+                      ? "ARRIVED AT SELLER"
+                      : steps[step - 1]?.action
+                  : steps[step - 1]?.action}
+              </span>
+              <ChevronRight className="w-5 h-5 ml-1" />
+            </motion.button>
           </div>
         </div>
       )}

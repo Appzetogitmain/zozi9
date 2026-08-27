@@ -271,39 +271,47 @@ export function calculateCustomerDeliveryFee(distanceKm, deliverySettings) {
   };
 }
 
-export function calculateRiderPayout(distanceKm, deliverySettings) {
-  const mode =
-    deliverySettings.deliveryPricingMode || DELIVERY_PRICING_MODE.DISTANCE_BASED;
+export function calculateRiderPayout(distanceKm, deliverySettings = {}) {
   const actualDistance = Number(distanceKm || 0);
   const normalizedDistance = Number.isFinite(actualDistance)
     ? Math.max(actualDistance, 0)
     : 0;
 
-  const riderBase = roundCurrency(deliverySettings.riderBasePayout ?? deliverySettings.customerBaseDeliveryFee ?? 0);
-  const baseDistance = Math.max(Number(deliverySettings.baseDistanceCapacityKm || 0), 0);
-  const perExtraKm = roundCurrency(deliverySettings.deliveryPartnerRatePerKm ?? 0);
+  const riderBaseFare = roundCurrency(
+    deliverySettings.riderBaseFare ?? deliverySettings.riderBasePayout ?? 20,
+  );
+  const includedKm = Math.max(
+    Number(deliverySettings.riderIncludedKm ?? deliverySettings.baseDistanceCapacityKm ?? 2.0),
+    0,
+  );
+  const extraKmRate = roundCurrency(
+    deliverySettings.riderExtraKmRate ?? deliverySettings.deliveryPartnerRatePerKm ?? 8,
+  );
+  const surgeMultiplier = Math.max(
+    Number(deliverySettings.riderSurgeMultiplier ?? 1.0),
+    1.0,
+  );
 
-  if (mode === DELIVERY_PRICING_MODE.FIXED_PRICE || normalizedDistance <= baseDistance) {
-    return {
-      riderPayoutBase: riderBase,
-      riderPayoutDistance: 0,
-      riderPayoutBonus: 0,
-      riderPayoutTotal: riderBase,
-      roundedExtraKm: 0,
-    };
+  let extraDistanceKm = 0;
+  let distanceFare = 0;
+
+  if (normalizedDistance > includedKm) {
+    extraDistanceKm = Math.max(0, normalizedDistance - includedKm);
+    distanceFare = roundCurrency(extraDistanceKm * extraKmRate);
   }
 
-  const extraKm = normalizedDistance - baseDistance;
-  const roundedExtraKm = ceilKm(extraKm);
-  const riderDistance = roundCurrency(roundedExtraKm * perExtraKm);
-  const riderTotal = addMoney(riderBase, riderDistance);
+  const subtotal = addMoney(riderBaseFare, distanceFare);
+  const riderPayoutTotal = roundCurrency(subtotal * surgeMultiplier);
 
   return {
-    riderPayoutBase: riderBase,
-    riderPayoutDistance: riderDistance,
+    riderPayoutBase: riderBaseFare,
+    riderPayoutDistance: distanceFare,
     riderPayoutBonus: 0,
-    riderPayoutTotal: riderTotal,
-    roundedExtraKm,
+    riderPayoutTotal,
+    includedKm,
+    extraDistanceKm: Math.round(extraDistanceKm * 100) / 100,
+    surgeMultiplier,
+    roundedExtraKm: Math.ceil(extraDistanceKm),
   };
 }
 

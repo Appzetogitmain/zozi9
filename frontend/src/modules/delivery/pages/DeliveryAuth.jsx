@@ -25,6 +25,7 @@ import { useAuth } from "@core/context/AuthContext";
 import { useSettings } from "@core/context/SettingsContext";
 import { toast } from "sonner";
 import Tesseract from "tesseract.js";
+import { pickImageWithFlutterOrWeb } from "@core/utils/flutterBridge";
 
 const VEHICLE_TYPES = [
   { value: "bike", label: "Bike" },
@@ -436,19 +437,29 @@ const DeliveryAuth = () => {
                                 id="profile-upload"
                                 className="hidden"
                                 onChange={(e) => {
-                                  const file = e.target.files[0];
+                                  const file = e.target.files?.[0];
                                   if (file) {
                                     setProfileImageFile(file);
                                     setProfileImagePreview(URL.createObjectURL(file));
                                   }
                                 }}
                               />
-                              <label
-                                htmlFor="profile-upload"
-                                className="absolute -bottom-2 -right-2 p-2.5 bg-black  text-primary-foreground rounded-2xl shadow-lg shadow-brand-200 cursor-pointer hover:bg-brand-700 hover:scale-110 active:scale-95 transition-all"
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  pickImageWithFlutterOrWeb({
+                                    fallbackInput: "profile-upload",
+                                    onFileSelected: (file) => {
+                                      setProfileImageFile(file);
+                                      setProfileImagePreview(URL.createObjectURL(file));
+                                    },
+                                  });
+                                }}
+                                className="absolute -bottom-2 -right-2 p-2.5 bg-black text-primary-foreground rounded-2xl shadow-lg shadow-brand-200 cursor-pointer hover:bg-brand-700 hover:scale-110 active:scale-95 transition-all"
                               >
                                 <Camera className="w-4 h-4" />
-                              </label>
+                              </button>
                             </div>
                             <p className="text-[10px] text-gray-400 font-bold mt-3">Upload a clear photo of your face</p>
                           </div>
@@ -745,17 +756,32 @@ const DeliveryAuth = () => {
                                   type="file"
                                   id={doc.id}
                                   className="hidden"
-                                  accept="image/*"
+                                  accept="image/*,.pdf"
                                   onChange={(e) => {
-                                    const file = e.target.files[0];
-                                    if (doc.id === "dl") handleDLUpload(file);
-                                    else if (doc.id === "pan") handlePanUpload(file);
-                                    else if (doc.id === "aadhar") handleAadharUpload(file);
-                                    else doc.setter(file);
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      if (doc.id === "dl") handleDLUpload(file);
+                                      else if (doc.id === "pan") handlePanUpload(file);
+                                      else if (doc.id === "aadhar") handleAadharUpload(file);
+                                      else doc.setter(file);
+                                    }
                                   }}
                                 />
-                                <label
-                                  htmlFor={doc.id}
+                                <div
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    pickImageWithFlutterOrWeb({
+                                      fallbackInput: doc.id,
+                                      onFileSelected: (file) => {
+                                        if (doc.id === "dl") handleDLUpload(file);
+                                        else if (doc.id === "pan") handlePanUpload(file);
+                                        else if (doc.id === "aadhar") handleAadharUpload(file);
+                                        else doc.setter(file);
+                                      },
+                                    });
+                                  }}
                                   className={`flex items-center justify-between p-4 rounded-2xl border-2 border-dashed transition-all cursor-pointer ${doc.state
                                     ? "border-brand-200 bg-brand-50/50"
                                     : "border-gray-100 bg-gray-50 hover:border-brand-200 hover:bg-brand-50/30"
@@ -786,7 +812,7 @@ const DeliveryAuth = () => {
                                       <X className="w-3.5 h-3.5" />
                                     </button>
                                   )}
-                                </label>
+                                </div>
 
                                 {/* OCR Progress & Badge for DL */}
                                 {doc.id === "dl" && (

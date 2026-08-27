@@ -8,10 +8,14 @@ import { roundCurrency } from "../../utils/money.js";
 const DEFAULT_FINANCE_SETTINGS = {
   deliveryPricingMode: DELIVERY_PRICING_MODE.DISTANCE_BASED,
   customerBaseDeliveryFee: 30,
-  riderBasePayout: 30,
+  riderBasePayout: 20,
+  riderBaseFare: 20,
+  riderIncludedKm: 2,
+  riderExtraKmRate: 8,
+  riderSurgeMultiplier: 1.0,
   baseDistanceCapacityKm: 0.5,
   incrementalKmSurcharge: 10,
-  deliveryPartnerRatePerKm: 5,
+  deliveryPartnerRatePerKm: 8,
   fixedDeliveryFee: 30,
   handlingFeeStrategy: HANDLING_FEE_STRATEGY.HIGHEST_CATEGORY_FEE,
   codEnabled: true,
@@ -28,15 +32,24 @@ export function normalizeFinanceSettings(raw = {}) {
     raw.customerBaseDeliveryFee ?? raw.baseDeliveryCharge ?? DEFAULT_FINANCE_SETTINGS.customerBaseDeliveryFee,
   );
 
-  const riderBasePayout = roundCurrency(
-    raw.riderBasePayout ?? raw.baseDeliveryCharge ?? DEFAULT_FINANCE_SETTINGS.riderBasePayout,
+  const riderBaseFare = roundCurrency(
+    raw.riderBaseFare ?? raw.riderBasePayout ?? DEFAULT_FINANCE_SETTINGS.riderBaseFare,
   );
 
-  const deliveryPartnerRatePerKm = roundCurrency(
-    raw.deliveryPartnerRatePerKm ??
-      raw.fleetCommissionRatePerKm ??
-      DEFAULT_FINANCE_SETTINGS.deliveryPartnerRatePerKm,
+  const riderIncludedKm = Number(
+    raw.riderIncludedKm ?? DEFAULT_FINANCE_SETTINGS.riderIncludedKm,
   );
+
+  const riderExtraKmRate = roundCurrency(
+    raw.riderExtraKmRate ?? raw.deliveryPartnerRatePerKm ?? DEFAULT_FINANCE_SETTINGS.riderExtraKmRate,
+  );
+
+  const riderSurgeMultiplier = Number(
+    raw.riderSurgeMultiplier ?? DEFAULT_FINANCE_SETTINGS.riderSurgeMultiplier,
+  );
+
+  const riderBasePayout = riderBaseFare;
+  const deliveryPartnerRatePerKm = riderExtraKmRate;
 
   const baseDistanceCapacityKm = Number(
     raw.baseDistanceCapacityKm ?? DEFAULT_FINANCE_SETTINGS.baseDistanceCapacityKm,
@@ -58,6 +71,10 @@ export function normalizeFinanceSettings(raw = {}) {
     pricingMode: deliveryPricingMode,
     customerBaseDeliveryFee,
     riderBasePayout,
+    riderBaseFare,
+    riderIncludedKm: Number.isFinite(riderIncludedKm) ? Math.max(riderIncludedKm, 0) : DEFAULT_FINANCE_SETTINGS.riderIncludedKm,
+    riderExtraKmRate,
+    riderSurgeMultiplier: Number.isFinite(riderSurgeMultiplier) && riderSurgeMultiplier >= 1.0 ? riderSurgeMultiplier : 1.0,
     baseDeliveryCharge: customerBaseDeliveryFee,
     baseDistanceCapacityKm: Number.isFinite(baseDistanceCapacityKm)
       ? Math.max(baseDistanceCapacityKm, 0)

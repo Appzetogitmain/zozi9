@@ -442,45 +442,6 @@ const LiveTrackingMap = memo(({
         </button>
       </div>
 
-      {/* 4. Rider Info Card (Compact Bottom) */}
-      {riderName && (
-        <div className="absolute bottom-2 left-2 right-2 z-40">
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-lg border border-white/50">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="h-10 w-10 rounded-full bg-gray-100 overflow-hidden border-2 border-white shadow-sm">
-                  <img
-                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&auto=format&fit=crop&q=60"
-                    alt="Rider"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="absolute -bottom-0.5 -right-0.5 bg-primary text-primary-foreground text-[7px] font-bold px-1 py-0.5 rounded-full flex items-center gap-0.5">
-                  4.8 <Star size={5} fill="white" />
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 text-xs truncate">{riderName}</h3>
-                <p className="text-[10px] text-gray-500 flex items-center gap-1">
-                  <Shield size={8} />
-                  Vaccinated
-                </p>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <button className="h-8 w-8 rounded-full bg-brand-50 flex items-center justify-center text-primary hover:bg-brand-100 transition-colors">
-                  <Phone size={14} />
-                </button>
-                <button className="h-8 w-8 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 hover:bg-brand-100 transition-colors">
-                  <MessageSquare size={14} />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
 
       {/* Location status indicator */}
       {!riderLocation && (

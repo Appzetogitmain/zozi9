@@ -8,11 +8,11 @@ import { customerApi } from '../services/customerApi';
 
 const EditProfilePage = () => {
     const navigate = useNavigate();
-    const { user, login } = useAuth();
+    const { user, updateUser, refreshUser } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: user?.name || '',
-        phone: user?.phone || '',
+        phone: user?.phone || user?.phoneNumber || user?.mobile || '',
         email: user?.email || '',
         bio: user?.bio || ''
     });
@@ -26,10 +26,15 @@ const EditProfilePage = () => {
         setIsLoading(true);
         try {
             const response = await customerApi.updateProfile(formData);
-            const updatedUser = response.data.result;
+            const updatedUser = response.data?.result || {};
 
             // Update local auth state
-            login({ ...user, ...updatedUser });
+            if (updateUser) {
+                updateUser(updatedUser);
+            }
+            if (refreshUser) {
+                await refreshUser();
+            }
 
             toast.success('Profile updated successfully!');
             navigate('/profile');

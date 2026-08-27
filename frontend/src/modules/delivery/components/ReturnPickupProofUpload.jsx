@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { Camera, CheckCircle, Loader2, Package, AlertTriangle, X } from "lucide-react";
 import { toast } from "sonner";
 import { deliveryApi } from "../services/deliveryApi";
+import { pickImageWithFlutterOrWeb } from "@core/utils/flutterBridge";
 
 const CONDITIONS = [
   { value: "good", label: "Good Condition", color: "bg-green-100 text-green-800 border-green-300", icon: "✅" },
@@ -150,7 +151,15 @@ const ReturnPickupProofUpload = ({ orderId, onSubmitted }) => {
           ))}
           {images.length < 5 && (
             <button
-              onClick={() => fileInputRef.current?.click()}
+              type="button"
+              onClick={() => {
+                pickImageWithFlutterOrWeb({
+                  fallbackInput: fileInputRef,
+                  onFileSelected: (file) => {
+                    handleImageSelect({ target: { files: [file] } });
+                  },
+                });
+              }}
               disabled={isUploading}
               className="aspect-square rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors"
             >

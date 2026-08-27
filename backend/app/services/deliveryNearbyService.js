@@ -90,9 +90,21 @@ export async function getDeliveryPartnerIdsWithinSellerRadius(sellerId) {
       .limit(HAVERSINE_FALLBACK_LIMIT())
       .lean();
 
-    return filterByHaversine(rough, lat, lng, maxDistanceM);
+    const haversineIds = filterByHaversine(rough, lat, lng, maxDistanceM);
+    if (haversineIds.length > 0) return haversineIds;
+
+    // In development mode, if no riders are within radius, fallback to all online riders
+    if (process.env.NODE_ENV !== "production") {
+      const allOnline = await Delivery.find(base).select("_id").lean();
+      return allOnline.map((d) => d._id.toString());
+    }
+    return [];
   } catch (e) {
     console.warn("[deliveryNearby] Haversine fallback failed:", e.message);
+    if (process.env.NODE_ENV !== "production") {
+      const allOnline = await Delivery.find(base).select("_id").lean();
+      return allOnline.map((d) => d._id.toString());
+    }
     return [];
   }
 }
@@ -136,8 +148,19 @@ export async function getDeliveryPartnerIdsWithinRadius(lat, lng, radiusKm = 5) 
       .limit(HAVERSINE_FALLBACK_LIMIT())
       .lean();
 
-    return filterByHaversine(rough, lat, lng, maxDistanceM);
+    const haversineIds = filterByHaversine(rough, lat, lng, maxDistanceM);
+    if (haversineIds.length > 0) return haversineIds;
+
+    if (process.env.NODE_ENV !== "production") {
+      const allOnline = await Delivery.find(base).select("_id").lean();
+      return allOnline.map((d) => d._id.toString());
+    }
+    return [];
   } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      const allOnline = await Delivery.find(base).select("_id").lean();
+      return allOnline.map((d) => d._id.toString());
+    }
     return [];
   }
 }

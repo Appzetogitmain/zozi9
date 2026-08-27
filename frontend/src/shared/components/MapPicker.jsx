@@ -125,6 +125,27 @@ const MapPicker = ({
     }
   }, [isOpen, initialLocation, initialRadius, preferCurrentLocationOnOpen]);
 
+  // Ensure Google Places Autocomplete dropdown items in .pac-container receive touch and click events without modal focus loss
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePacMousedown = (e) => {
+      if (e.target.closest(".pac-container") || e.target.closest(".pac-item")) {
+        e.stopPropagation();
+      }
+    };
+
+    document.addEventListener("mousedown", handlePacMousedown, true);
+    document.addEventListener("touchstart", handlePacMousedown, true);
+    document.addEventListener("pointerdown", handlePacMousedown, true);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePacMousedown, true);
+      document.removeEventListener("touchstart", handlePacMousedown, true);
+      document.removeEventListener("pointerdown", handlePacMousedown, true);
+    };
+  }, [isOpen]);
+
   const onMapClick = useCallback((e) => {
     clearCircleOverlay();
     const newPos = {

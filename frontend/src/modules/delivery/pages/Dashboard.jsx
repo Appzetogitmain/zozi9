@@ -82,7 +82,11 @@ const Dashboard = () => {
   useEffect(() => {
     fetchStats();
     fetchNotifications();
-    if (isOnline) fetchAvailableOrders();
+    if (isOnline) {
+      fetchAvailableOrders();
+      const interval = setInterval(fetchAvailableOrders, 4000);
+      return () => clearInterval(interval);
+    }
   }, [isOnline, activeTab]);
 
   const handleOnlineToggle = async () => {

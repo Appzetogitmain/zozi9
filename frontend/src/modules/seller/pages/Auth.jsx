@@ -30,6 +30,7 @@ import Lottie from "lottie-react";
 import sellerAnimation from "../../../assets/INSTANT_6.json";
 import { sellerApi } from "../services/sellerApi";
 import MapPicker from "../../../shared/components/MapPicker";
+import { pickImageWithFlutterOrWeb } from "@core/utils/flutterBridge";
 
 const createInitialVerificationState = () => ({
   status: "idle",
@@ -880,10 +881,25 @@ const Auth = () => {
                               id={doc.id}
                               className="hidden"
                               accept="image/*,.pdf"
-                              onChange={(e) => handleDocumentChange(e, doc.id)}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  setDocuments((prev) => ({ ...prev, [doc.id]: file }));
+                                }
+                              }}
                             />
-                            <label
-                              htmlFor={doc.id}
+                            <div
+                              role="button"
+                              tabIndex={0}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                pickImageWithFlutterOrWeb({
+                                  fallbackInput: doc.id,
+                                  onFileSelected: (file) => {
+                                    setDocuments((prev) => ({ ...prev, [doc.id]: file }));
+                                  },
+                                });
+                              }}
                               className={`flex items-center justify-between p-3.5 rounded-lg border-2 border-dashed transition-all cursor-pointer ${documents[doc.id]
                                 ? "border-brand-200 bg-brand-50/50"
                                 : "border-slate-200 bg-slate-50 hover:border-slate-300"
@@ -909,7 +925,7 @@ const Auth = () => {
                                   </p>
                                 </div>
                               </div>
-                            </label>
+                            </div>
                           </div>
                         ))}
                       </div>

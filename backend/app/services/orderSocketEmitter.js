@@ -106,6 +106,7 @@ export async function emitDeliveryBroadcastForSeller(sellerId, payload) {
     for (const id of ids) {
       s.to(`delivery:${id}`).emit("delivery:broadcast", body);
     }
+    s.to("delivery:online").emit("delivery:broadcast", body);
   }
 
   // Trigger Push Notifications for nearby riders

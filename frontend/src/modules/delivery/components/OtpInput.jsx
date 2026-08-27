@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { deliveryApi } from "../services/deliveryApi";
 
@@ -7,10 +7,8 @@ import { deliveryApi } from "../services/deliveryApi";
  * OtpInput Component
  * 
  * A 4-digit OTP input component for delivery personnel to validate delivery completion.
- * Features auto-focus, numeric keyboard on mobile, validation error handling, and
- * attempts remaining counter.
- * 
- * Requirements: 5.1, 5.2, 6.5
+ * Features auto-focus, numeric keyboard on mobile, validation error handling, resend OTP with cooldown,
+ * and attempts remaining counter.
  * 
  * @param {Object} props
  * @param {string} props.orderId - The order ID for OTP validation
@@ -22,10 +20,19 @@ const OtpInput = ({ orderId, isReturn = false, isReturnDrop = false, onSuccess, 
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(30);
   const [error, setError] = useState(null);
   const [lastErrorCode, setLastErrorCode] = useState(null);
   const [attemptsRemaining, setAttemptsRemaining] = useState(3);
   const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown((prev) => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
 
   // Auto-focus first input on mount
   useEffect(() => {
@@ -42,6 +49,7 @@ const OtpInput = ({ orderId, isReturn = false, isReturnDrop = false, onSuccess, 
     setAttemptsRemaining(3);
     setIsLoading(false);
     setIsGenerating(false);
+    setResendCooldown(30);
     if (inputRefs[0].current) {
       inputRefs[0].current.focus();
     }
@@ -107,22 +115,33 @@ const OtpInput = ({ orderId, isReturn = false, isReturnDrop = false, onSuccess, 
   };
 
   const handleGenerateOtp = async () => {
-    if (!orderId) return;
+    if (!orderId || isGenerating || resendCooldown > 0) return;
 
     setIsGenerating(true);
     try {
-      const response = isReturn
-        ? await deliveryApi.requestReturnOtp(orderId, {})
-        : await deliveryApi.generateDeliveryOtp(orderId);
-      toast.success(response.data?.message || "OTP generated and sent to customer");
+      const response = isReturnDrop
+        ? await deliveryApi.requestReturnDropOtp(orderId, {})
+        : isReturn
+          ? await deliveryApi.requestReturnOtp(orderId, {})
+          : await deliveryApi.generateDeliveryOtp(orderId);
+      toast.success(
+        response.data?.message ||
+        (isReturnDrop
+          ? "OTP sent to seller!"
+          : isReturn
+            ? "Return pickup OTP sent to customer!"
+            : "Delivery OTP sent to customer!")
+      );
       setError(null);
       setLastErrorCode(null);
       clearInputs();
+      setResendCooldown(30);
     } catch (err) {
       const errorMessage =
         err.response?.data?.error?.message ||
+        err.response?.data?.message ||
         err.message ||
-        "Failed to generate OTP";
+        "Failed to send OTP";
       toast.error(errorMessage);
       setError(errorMessage);
     } finally {
@@ -280,22 +299,36 @@ const OtpInput = ({ orderId, isReturn = false, isReturnDrop = false, onSuccess, 
         </div>
       )}
 
-      {["OTP_NOT_FOUND", "OTP_EXPIRED", "OTP_CONSUMED"].includes(lastErrorCode) && (
+      {/* Resend OTP Section */}
+      <div className="flex flex-col items-center justify-center pt-1 pb-2">
+        <p className="text-xs font-medium text-slate-500 mb-2">
+          {isReturnDrop ? "Didn't receive code from seller?" : "Customer didn't receive the OTP?"}
+        </p>
         <button
+          type="button"
           onClick={handleGenerateOtp}
-          disabled={isLoading || isGenerating}
-          className="w-full h-10 rounded-xl font-semibold text-primary-foreground bg-black  hover:bg-brand-700 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          disabled={isLoading || isGenerating || resendCooldown > 0}
+          className={`flex items-center gap-2 text-xs font-black uppercase tracking-wider py-2.5 px-5 rounded-2xl transition-all ${
+            resendCooldown > 0 || isGenerating || isLoading
+              ? "text-slate-400 bg-slate-100 cursor-not-allowed"
+              : "text-brand-700 bg-brand-50 hover:bg-brand-100 active:scale-95 border border-brand-200 shadow-sm"
+          }`}
         >
           {isGenerating ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Generating OTP...</span>
+              <Loader2 className="w-4 h-4 animate-spin text-brand-600" />
+              <span>Sending New OTP...</span>
             </>
+          ) : resendCooldown > 0 ? (
+            <span>Resend OTP in {resendCooldown}s</span>
           ) : (
-            <span>Generate New OTP</span>
+            <>
+              <RefreshCw className="w-4 h-4 text-brand-600" />
+              <span>Resend OTP</span>
+            </>
           )}
         </button>
-      )}
+      </div>
 
       {/* Submit Button */}
       {/* Enable submit button only when 4 digits entered */}
@@ -326,7 +359,7 @@ const OtpInput = ({ orderId, isReturn = false, isReturnDrop = false, onSuccess, 
         disabled={isLoading || otp.every((d) => !d)}
         className="w-full h-10 rounded-xl font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all duration-200 outline-none focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Clear
+        Clear Digits
       </button>
 
       {/* Cancel Button (Optional) */}
@@ -343,7 +376,7 @@ const OtpInput = ({ orderId, isReturn = false, isReturnDrop = false, onSuccess, 
       {/* Help Text */}
       <div className="bg-brand-50 border border-brand-200 rounded-xl p-3">
         <p className="text-xs text-brand-800 text-center">
-          💡 The customer will see this OTP on their app when you're nearby
+          💡 The customer will see this OTP on their app & SMS when you request it
         </p>
       </div>
     </div>

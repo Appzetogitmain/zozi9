@@ -1696,30 +1696,22 @@ const Home = () => {
                                 src={applyCloudinaryTransform(
                                   sectionProducts[0].image,
                                 )}
-                                alt={section.title}
+                                alt=""
                                 loading="lazy"
                                 className="absolute inset-0 w-full h-full object-cover scale-110"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-tr from-black/60 via-black/20 to-transparent" />
-                              <div className="absolute -bottom-6 -right-6 w-16 h-16 rounded-full bg-amber-400/60 blur-xl mix-blend-screen" />
+                              <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-transparent" />
                             </>
                           ) : (
                             <div className="absolute inset-0 bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500" />
                           )}
 
                           {sectionProducts.length > 0 && (
-                            <div className="absolute top-1 left-1 px-2 py-0.5 rounded-full bg-black/70 text-[9px] font-semibold text-white/90 tracking-wide flex items-center gap-1">
+                            <div className="absolute top-1 left-1 px-2 py-0.5 rounded-full bg-black/70 text-[9px] font-semibold text-white/90 tracking-wide flex items-center gap-1 z-10">
                               <span className="inline-block w-1.5 h-1.5 rounded-full bg-brand-400" />
                               {sectionProducts.length} items
                             </div>
                           )}
-
-                          <div className="relative z-10 flex items-center justify-center h-full">
-                            <Sparkles
-                              className="text-amber-200 drop-shadow-[0_0_12px_rgba(251,191,36,0.9)]"
-                              size={30}
-                            />
-                          </div>
                         </motion.div>
                       </div>
                       <div className="px-4 pt-4 md:px-5 md:pt-5 pb-1">

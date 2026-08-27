@@ -155,7 +155,18 @@ const DeliveryLayout = () => {
     shownOrderIdsRef.current = new Set(shownOrderIdsRef.current).add(payload.orderId);
     const total = typeof p.total === "number" ? p.total : Number(p.total) || 0;
     const dropLabel = typeof p.drop === "string" ? p.drop : String(p.drop);
-    const earnings = typeof p.earnings === "number" ? p.earnings : Math.round(total * 0.1);
+    const isReturnPickup = payload.type === "RETURN_PICKUP" || payload.isReturnPickup === true;
+    const rawEarnings =
+      typeof p.earnings === "number" && p.earnings > 0
+        ? p.earnings
+        : typeof p.riderEarnings === "number" && p.riderEarnings > 0
+        ? p.riderEarnings
+        : typeof payload.earnings === "number" && payload.earnings > 0
+        ? payload.earnings
+        : typeof payload.riderEarnings === "number" && payload.riderEarnings > 0
+        ? payload.riderEarnings
+        : payload.paymentBreakdown?.riderPayoutTotal || (isReturnPickup ? payload.returnDeliveryCommission : 20);
+    const earnings = Number(rawEarnings) || 20;
     setActiveOrder({
       id: payload.orderId,
       mongoId: undefined,
@@ -166,7 +177,7 @@ const DeliveryLayout = () => {
       value: total,
       earnings: earnings,
       expiresAt: payload.deliverySearchExpiresAt || null,
-      isReturnPickup: payload.type === "RETURN_PICKUP" || payload.isReturnPickup === true,
+      isReturnPickup,
       items: payload.items || [],
       timeSlot: p.timeSlot,
       deliveryType: p.deliveryType,
@@ -177,22 +188,23 @@ const DeliveryLayout = () => {
 
   const applyAvailableOrdersList = useCallback((availableOrders) => {
     setAvailableOrdersCount(availableOrders.length);
-    if (activeOrderRef.current) return;
+    if (activeOrderRef.current || suppressIncomingModal) return;
     const newOrder = availableOrders.find((o) => {
       if (shownOrderIdsRef.current.has(o.orderId)) return false;
-      if (
-        o.deliverySearchExpiresAt &&
-        secondsLeftUntilDeliveryExpiry(o.deliverySearchExpiresAt) <= 0
-      ) {
-        return false;
-      }
       return true;
     });
     if (!newOrder) return;
     shownOrderIdsRef.current = new Set(shownOrderIdsRef.current).add(newOrder.orderId);
     const total = newOrder.pricing?.total || 0;
     const isReturnPickup = newOrder.isReturnPickup || false;
-    const earnings = newOrder.riderEarnings || Math.round(total * 0.1);
+    const rawEarnings =
+      isReturnPickup
+        ? newOrder.returnDeliveryCommission || 20
+        : newOrder.paymentBreakdown?.riderPayoutTotal ||
+          newOrder.riderEarnings ||
+          newOrder.earnings ||
+          20;
+    const earnings = Number(rawEarnings) || 20;
     setActiveOrder({
       id: newOrder.orderId,
       mongoId: newOrder._id,
@@ -206,14 +218,14 @@ const DeliveryLayout = () => {
       estTime: "10-15 min",
       value: total,
       earnings: earnings,
-      expiresAt: newOrder.deliverySearchExpiresAt || null,
+      expiresAt: newOrder.deliverySearchExpiresAt || new Date(Date.now() + 60000).toISOString(),
       isReturnPickup,
       items: newOrder.items || [],
       timeSlot: newOrder.timeSlot,
       deliveryType: newOrder.deliveryType,
       scheduledSlot: newOrder.scheduledSlot,
     });
-  }, []);
+  }, [suppressIncomingModal]);
 
   useEffect(() => {
     if (activeOrder) {
@@ -358,18 +370,17 @@ const DeliveryLayout = () => {
     };
 
     if (!user?.isOnline) {
-      didInitialAvailableFetchRef.current = false;
       if (availableOrdersRequestRef.current.controller) {
         availableOrdersRequestRef.current.controller.abort();
       }
       return undefined;
     }
 
-    if (didInitialAvailableFetchRef.current) return undefined;
-    didInitialAvailableFetchRef.current = true;
+    fetchOrders();
+    const interval = setInterval(fetchOrders, 3500);
 
-    fetchOrders(); // single fetch when going online
     return () => {
+      clearInterval(interval);
       if (availableOrdersRequestRef.current.controller) {
         availableOrdersRequestRef.current.controller.abort();
       }

@@ -853,39 +853,53 @@ const OrderDetailPage = () => {
           checkoutGroupId={order?.checkoutGroupId || orderId}
         />
 
-        {/* Delivery Partner Card - Redesigned */}
+        {/* Delivery Partner Card */}
         {order.deliveryBoy && status !== "delivered" && status !== "cancelled" && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-brand-500 to-brand-600 rounded-3xl p-5 shadow-lg text-white"
+            className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100"
           >
             <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="h-14 w-14 rounded-full bg-white/20 backdrop-blur-sm overflow-hidden border-2 border-white/40 shadow-lg">
+              <div className="relative flex-shrink-0">
+                <div className="h-14 w-14 rounded-2xl bg-brand-50 overflow-hidden border border-slate-200 shadow-sm flex items-center justify-center">
                   <img
-                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&auto=format&fit=crop&q=60"
+                    src={order.deliveryBoy?.profileImage || order.deliveryBoy?.image || order.deliveryBoy?.avatar || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&auto=format&fit=crop&q=60"}
                     alt="Rider"
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <div className="absolute -bottom-1 -right-1 bg-white text-brand-600 text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-md">
+                <div className="absolute -bottom-1 -right-1 bg-amber-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
                   4.8 ★
                 </div>
               </div>
-              <div className="flex-1">
-                <p className="text-xs font-semibold text-white/80 uppercase tracking-wider">Your Courier</p>
-                <h3 className="font-bold text-white text-lg">{order.deliveryBoy?.name || "Delivery Partner"}</h3>
-                <p className="text-xs text-white/90 mt-0.5">On the way to you</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-black text-brand-600 uppercase tracking-widest">Your Courier</p>
+                <h3 className="font-extrabold text-slate-900 text-base truncate mt-0.5">{order.deliveryBoy?.name || "Delivery Partner"}</h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  On the way to you
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <button className="h-11 w-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors border border-white/30">
-                  <MessageSquare size={20} className="text-white" />
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => navigate("/chat")}
+                  className="h-11 w-11 rounded-2xl bg-brand-50 text-brand-600 hover:bg-brand-100 flex items-center justify-center transition-all active:scale-95 border border-brand-100 shadow-sm"
+                  title="Chat with Rider"
+                >
+                  <MessageSquare size={18} />
                 </button>
-                <button className="h-11 w-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors border border-white/30">
-                  <Phone size={20} className="text-white" />
-                </button>
+                {order.deliveryBoy?.phone && (
+                  <a
+                    href={`tel:${order.deliveryBoy.phone}`}
+                    className="h-11 w-11 rounded-2xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 flex items-center justify-center transition-all active:scale-95 border border-emerald-100 shadow-sm"
+                    title="Call Rider"
+                  >
+                    <Phone size={18} />
+                  </a>
+                )}
               </div>
             </div>
           </motion.div>

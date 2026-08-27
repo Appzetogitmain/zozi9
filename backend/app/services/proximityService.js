@@ -58,8 +58,9 @@ export function checkProximity(deliveryLocation, customerLocation) {
     customerLng
   );
   
-  // Check if distance is within proximity range (0m - 120m inclusive)
-  const inRange = distance >= 0 && distance <= 120;
+  const maxRadiusM = parseInt(process.env.DELIVERY_OTP_RADIUS_METERS || "150", 10);
+  const isBypassed = process.env.NODE_ENV !== "production" || process.env.DISABLE_PROXIMITY_CHECK === "true";
+  const inRange = isBypassed ? true : (distance >= 0 && distance <= maxRadiusM);
   
   return {
     inRange,

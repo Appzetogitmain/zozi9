@@ -123,7 +123,8 @@ const AdminSettings = () => {
             showToast('Settings updated successfully', 'success');
         } catch (error) {
             console.error("Failed to update settings", error);
-            showToast('Failed to update settings', 'error');
+            const apiMsg = error?.response?.data?.message;
+            showToast(apiMsg || 'Failed to update settings', 'error');
         } finally {
             setIsSaving(false);
         }
