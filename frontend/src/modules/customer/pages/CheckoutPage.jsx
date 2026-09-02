@@ -69,6 +69,16 @@ import CheckoutRecommendedProducts from "./checkout/components/CheckoutRecommend
 import CheckoutWishlistSection from "./checkout/components/CheckoutWishlistSection";
 import CheckoutOrderSuccess from "./checkout/components/CheckoutOrderSuccess";
 
+const loadRazorpay = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 const CheckoutPage = () => {
   const {
     cart,
@@ -784,6 +794,13 @@ const CheckoutPage = () => {
   }, [cartProductIdKey]);
 
   const handlePlaceOrder = async () => {
+    if (deliveryType !== "store_pickup") {
+      if (!currentAddress || !currentAddress.address) {
+        showToast("Please provide a valid delivery address before placing your order.", "error");
+        return;
+      }
+    }
+
     setIsPlacingOrder(true);
     try {
       const taxAmount = pricingPreview?.taxTotal || 0;
@@ -834,13 +851,64 @@ const CheckoutPage = () => {
 
         if (selectedPayment === "online") {
           try {
+            const res = await loadRazorpay();
+            if (!res) {
+                throw new Error("Razorpay SDK failed to load");
+            }
             const paymentRes = await customerApi.createPaymentOrder({
               orderRef: paymentRef,
               orderId: mainOrderId,
             });
-            if (paymentRes.data.success && paymentRes.data.result?.redirectUrl) {
-              clearCart();
-              window.location.href = paymentRes.data.result.redirectUrl;
+            if (paymentRes.data.success && paymentRes.data.result?.gatewayOrderId) {
+              const { gatewayOrderId, amount, keyId } = paymentRes.data.result;
+              const options = {
+                key: keyId,
+                amount: amount,
+                currency: "INR",
+                name: appName,
+                description: "Order Payment",
+                order_id: gatewayOrderId,
+                handler: async function (response) {
+                  try {
+                    const verifyRes = await customerApi.verifyClientPayment({
+                      razorpay_order_id: response.razorpay_order_id,
+                      razorpay_payment_id: response.razorpay_payment_id,
+                      razorpay_signature: response.razorpay_signature
+                    });
+                    if (verifyRes.data.success) {
+                      clearCart();
+                      showToast("Payment successful!", "success");
+                      setOrderId(mainOrderId);
+                      setShowSuccess(true);
+                      setTimeout(() => {
+                        setIsPlacingOrder(false);
+                        navigate(`/orders/${mainOrderId}`);
+                      }, 3000);
+                    } else {
+                      throw new Error(verifyRes.data.message || "Payment verification failed");
+                    }
+                  } catch (error) {
+                    setIsPlacingOrder(false);
+                    showToast(error.response?.data?.message || error.message || "Payment verification failed", "error");
+                    navigate(`/orders/${mainOrderId}`);
+                  }
+                },
+                prefill: {
+                  name: user?.name,
+                  email: user?.email,
+                  contact: user?.phone
+                },
+                theme: {
+                  color: "#e21b70"
+                }
+              };
+              const rzp1 = new window.Razorpay(options);
+              rzp1.on('payment.failed', function (response){
+                setIsPlacingOrder(false);
+                showToast("Payment failed. Please try again.", "error");
+                navigate(`/orders/${mainOrderId}`);
+              });
+              rzp1.open();
               return;
             } else {
               throw new Error(

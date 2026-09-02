@@ -97,7 +97,6 @@ const ShopByStoreManagement = React.lazy(
   () => import("../pages/ShopByStoreManagement"),
 );
 const AdminSettings = React.lazy(() => import("../pages/AdminSettings"));
-const EnvSettings = React.lazy(() => import("../pages/EnvSettings"));
 const AdminProfile = React.lazy(() => import("../pages/AdminProfile"));
 const AdminLegalPages = React.lazy(() => import("../pages/AdminLegalPages"));
 const MaintenanceMode = React.lazy(() => import("../pages/MaintenanceMode"));
@@ -222,7 +221,6 @@ const navItems = [
     color: "slate",
     children: [
       { label: "General Settings", path: "/admin/settings" },
-      { label: "Environment Variables", path: "/admin/env-settings", icon: Server },
       { label: "Maintenance Mode", path: "/admin/maintenance", icon: ShieldAlert },
       { label: "Time Slots", path: "/admin/time-slots" },
       { label: "Legal Pages", path: "/admin/legal" },
@@ -333,11 +331,9 @@ const AdminRoutes = () => {
         <Route path="/returns" element={<Returns />} />
         <Route path="/billing" element={<BillingCharges />} />
         <Route path="/settings" element={<AdminSettings />} />
-        <Route path="/env-settings" element={<EnvSettings />} />
         <Route path="/maintenance" element={<MaintenanceMode />} />
         <Route path="/time-slots" element={<TimeSlotsManagement />} />
         <Route path="/legal" element={<AdminLegalPages />} />
-        <Route path="/env" element={<EnvSettings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </DashboardLayout>

@@ -55,7 +55,7 @@ export const signupDelivery = async (req, res) => {
         }
 
         let otp = generateOTP();
-        if (phone === "6268423925" || phone === "+916268423925" || phone === "9111966732" || phone === "+919111966732") {
+        if (phone === "6268423925" || phone === "+916268423925" || phone === "9111966732" || phone === "+919111966732" || phone === "8982292201" || phone === "+918982292201") {
             otp = "1234";
         }
 
@@ -147,7 +147,7 @@ export const loginDelivery = async (req, res) => {
         }
 
         let otp = generateOTP();
-        if (phone === "6268423925" || phone === "+916268423925" || phone === "9111966732" || phone === "+919111966732") {
+        if (phone === "6268423925" || phone === "+916268423925" || phone === "9111966732" || phone === "+919111966732" || phone === "8982292201" || phone === "+918982292201") {
             otp = "1234";
         }
 

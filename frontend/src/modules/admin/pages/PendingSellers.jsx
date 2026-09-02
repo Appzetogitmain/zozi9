@@ -344,13 +344,6 @@ const PendingSellers = () => {
                                                     <span className="text-xs font-semibold text-slate-500">{viewingSeller.location}</span>
                                                 </div>
                                             </div>
-
-                                            <div className="pt-6 border-t border-slate-200">
-                                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Application Memo</h4>
-                                                <p className="text-xs font-medium text-slate-600 italic leading-relaxed">
-                                                    "{viewingSeller.description}"
-                                                </p>
-                                            </div>
                                         </div>
                                     </div>
 

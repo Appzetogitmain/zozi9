@@ -49,10 +49,16 @@ const REQUIRED_DOCUMENT_CONFIG = [
 ];
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(() => {
+    const saved = localStorage.getItem("sellerAuth_isLogin");
+    return saved !== null ? saved === "true" : true;
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [signupStep, setSignupStep] = useState(1);
+  const [signupStep, setSignupStep] = useState(() => {
+    const saved = localStorage.getItem("sellerAuth_signupStep");
+    return saved !== null ? parseInt(saved) : 1;
+  });
   const [isMapOpen, setIsMapOpen] = useState(false);
   const { login } = useAuth();
   const { settings } = useSettings();
@@ -63,24 +69,37 @@ const Auth = () => {
     email: createInitialVerificationState(),
     phone: createInitialVerificationState(),
   });
+  const [errors, setErrors] = useState({});
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    name: "",
-    shopName: "",
-    phone: "",
-    locality: "",
-    pincode: "",
-    city: "",
-    state: "",
-    category: "",
-    description: "",
-    lat: null,
-    lng: null,
-    radius: 5,
-    address: "",
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem("sellerAuthFormData");
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return {
+      email: "",
+      password: "",
+      name: "",
+      shopName: "",
+      phone: "",
+      locality: "",
+      pincode: "",
+      city: "",
+      state: "",
+      category: "",
+      description: "",
+      lat: null,
+      lng: null,
+      radius: 5,
+      address: "",
+    };
   });
+
+  React.useEffect(() => {
+    localStorage.setItem("sellerAuthFormData", JSON.stringify(formData));
+    localStorage.setItem("sellerAuth_isLogin", isLogin);
+    localStorage.setItem("sellerAuth_signupStep", signupStep);
+  }, [formData, isLogin, signupStep]);
 
   const handleLocationSelect = (location) => {
     setFormData((prev) => ({
@@ -131,37 +150,34 @@ const Auth = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let cleanedValue = value;
+    let errorMsg = null;
+
     if (name === "name") {
-      // Owner name: only alphabets and spaces
-      const cleaned = value.replace(/[^a-zA-Z\s]/g, "");
-      setFormData({ ...formData, [name]: cleaned });
+      cleanedValue = value.replace(/[^a-zA-Z\s]/g, "");
+      if (!/^[A-Za-z\s]{3,50}$/.test(cleanedValue)) errorMsg = "Owner name must be 3-50 characters (letters only)";
+    } else if (name === "shopName") {
+      if (value.length < 3 || value.length > 100) errorMsg = "Shop Name must be between 3 and 100 characters";
     } else if (name === "email") {
-      // Business email: trim leading spaces, disallow spaces inside
-      const cleaned = value.replace(/\s+/g, "").toLowerCase();
-      if (cleaned !== formData.email) {
-        resetVerificationState("email");
-      }
-      setFormData({ ...formData, [name]: cleaned });
+      cleanedValue = value.replace(/\s+/g, "").toLowerCase();
+      if (cleanedValue !== formData.email) resetVerificationState("email");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanedValue)) errorMsg = "Valid email address is required";
     } else if (name === "phone") {
-      // Contact number: only digits, max 10 characters
-      const digitsOnly = value.replace(/[^0-9]/g, "").slice(0, 10);
-      if (digitsOnly !== formData.phone) {
-        resetVerificationState("phone");
-      }
-      setFormData({ ...formData, [name]: digitsOnly });
+      cleanedValue = value.replace(/[^0-9]/g, "").slice(0, 10);
+      if (cleanedValue !== formData.phone) resetVerificationState("phone");
+      if (cleanedValue.length !== 10) errorMsg = "Valid 10-digit phone number is required";
     } else if (name === "city" || name === "state") {
-      // City & State: only alphabets and spaces
-      const cleaned = value.replace(/[^a-zA-Z\s]/g, "");
-      setFormData({ ...formData, [name]: cleaned });
+      cleanedValue = value.replace(/[^a-zA-Z\s]/g, "");
+      if (cleanedValue.length < 2) errorMsg = "Must be at least 2 characters";
     } else if (name === "pincode") {
-      const digitsOnly = value.replace(/[^0-9]/g, "").slice(0, 6);
-      setFormData({ ...formData, [name]: digitsOnly });
+      cleanedValue = value.replace(/[^0-9]/g, "").slice(0, 6);
+      if (cleanedValue.length !== 6) errorMsg = "Pincode must be 6 digits";
     } else if (name === "password") {
-      // Password: allow any characters, min length 6
-      setFormData({ ...formData, [name]: value });
-    } else {
-      setFormData({ ...formData, [name]: value });
+      if (value.length < 6) errorMsg = "Password must be at least 6 characters";
     }
+
+    setFormData({ ...formData, [name]: cleanedValue });
+    setErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleDocumentChange = (e, docName) => {
@@ -553,11 +569,12 @@ const Auth = () => {
                             name="name"
                             required
                             placeholder="Owner Name"
-                            className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-200 transition-all placeholder:text-slate-400"
+                            className={`w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 rounded-lg text-sm font-bold outline-none transition-all placeholder:text-slate-400 ${errors.name ? 'border-red-300 focus:border-red-400 focus:bg-white text-red-700' : 'border-transparent focus:border-slate-200 focus:bg-white text-slate-700'}`}
                             value={formData.name}
                             onChange={handleChange}
                           />
                         </div>
+                        {errors.name && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.name}</p>}
                         <div className="relative group">
                           <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-600 transition-colors">
                             <Store size={18} />
@@ -567,11 +584,12 @@ const Auth = () => {
                             name="shopName"
                             required
                             placeholder="Shop / Business Name"
-                            className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-200 transition-all placeholder:text-slate-400"
+                            className={`w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 rounded-lg text-sm font-bold outline-none transition-all placeholder:text-slate-400 ${errors.shopName ? 'border-red-300 focus:border-red-400 focus:bg-white text-red-700' : 'border-transparent focus:border-slate-200 focus:bg-white text-slate-700'}`}
                             value={formData.shopName}
                             onChange={handleChange}
                           />
                         </div>
+                        {errors.shopName && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.shopName}</p>}
                       </div>
                     )}
 
@@ -586,7 +604,7 @@ const Auth = () => {
                         inputMode="email"
                         autoComplete="email"
                         placeholder="Business Email"
-                        className="w-full pl-12 pr-28 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-200 transition-all placeholder:text-slate-400"
+                        className={`w-full pl-12 pr-28 py-2.5 bg-slate-50 border-2 rounded-lg text-sm font-bold outline-none transition-all placeholder:text-slate-400 ${errors.email ? 'border-red-300 focus:border-red-400 focus:bg-white text-red-700' : 'border-transparent focus:border-slate-200 focus:bg-white text-slate-700'}`}
                         value={formData.email}
                         onChange={handleChange}
                       />
@@ -615,29 +633,35 @@ const Auth = () => {
                         </button>
                       )}
                     </div>
+                    {errors.email && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.email}</p>}
                     {!isLogin && verifications.email.isOtpVisible && verifications.email.status !== "verified" && (
-                      <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          maxLength={4}
-                          placeholder="Enter email OTP"
-                          value={verifications.email.otp}
-                          onChange={(e) =>
-                            updateVerificationState("email", {
-                              otp: e.target.value.replace(/\D/g, "").slice(0, 4),
-                            })
-                          }
-                          className="flex-1 bg-transparent text-sm font-bold text-slate-700 outline-none placeholder:text-slate-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleVerifyOtp("email")}
-                          disabled={verifications.email.isVerifying || verifications.email.otp.length !== 4}
-                          className="rounded-md bg-white px-3 py-1.5 text-xs font-black uppercase tracking-wider text-slate-700 shadow-sm ring-1 ring-slate-200 hover:bg-slate-100 disabled:opacity-50"
-                        >
-                          {verifications.email.isVerifying ? "Checking..." : "Confirm OTP"}
-                        </button>
+                      <div className="flex flex-col gap-1.5 mt-[-4px]">
+                        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={4}
+                            placeholder="Enter email OTP"
+                            value={verifications.email.otp}
+                            onChange={(e) =>
+                              updateVerificationState("email", {
+                                otp: e.target.value.replace(/\D/g, "").slice(0, 4),
+                              })
+                            }
+                            className="flex-1 bg-transparent text-sm font-bold text-slate-700 outline-none placeholder:text-slate-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleVerifyOtp("email")}
+                            disabled={verifications.email.isVerifying || verifications.email.otp.length !== 4}
+                            className="rounded-md bg-white px-3 py-1.5 text-xs font-black uppercase tracking-wider text-slate-700 shadow-sm ring-1 ring-slate-200 hover:bg-slate-100 disabled:opacity-50"
+                          >
+                            {verifications.email.isVerifying ? "Checking..." : "Confirm OTP"}
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-slate-500 font-medium px-1">
+                          * If you don't see the OTP in your inbox, please check your spam folder.
+                        </p>
                       </div>
                     )}
                     {!isLogin && verifications.email.status === "verified" && (
@@ -658,7 +682,7 @@ const Auth = () => {
                             name="phone"
                             required
                             placeholder="Contact Number"
-                            className="w-full pl-12 pr-28 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-200 transition-all placeholder:text-slate-400"
+                            className={`w-full pl-12 pr-28 py-2.5 bg-slate-50 border-2 rounded-lg text-sm font-bold outline-none transition-all placeholder:text-slate-400 ${errors.phone ? 'border-red-300 focus:border-red-400 focus:bg-white text-red-700' : 'border-transparent focus:border-slate-200 focus:bg-white text-slate-700'}`}
                             value={formData.phone}
                             onChange={handleChange}
                           />
@@ -685,6 +709,7 @@ const Auth = () => {
                             )}
                           </button>
                         </div>
+                        {errors.phone && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.phone}</p>}
                         {verifications.phone.isOtpVisible && verifications.phone.status !== "verified" && (
                           <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
                             <input
@@ -730,7 +755,7 @@ const Auth = () => {
                         minLength={6}
                         autoComplete="current-password"
                         placeholder="Enter your password"
-                        className="w-full pl-12 pr-14 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-200 transition-all placeholder:text-slate-400"
+                        className={`w-full pl-12 pr-14 py-2.5 bg-slate-50 border-2 rounded-lg text-sm font-bold outline-none transition-all placeholder:text-slate-400 ${errors.password ? 'border-red-300 focus:border-red-400 focus:bg-white text-red-700' : 'border-transparent focus:border-slate-200 focus:bg-white text-slate-700'}`}
                         value={formData.password}
                         onChange={handleChange}
                       />
@@ -742,6 +767,7 @@ const Auth = () => {
                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
                     </div>
+                    {errors.password && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.password}</p>}
                   </>
                 )}
 
@@ -800,11 +826,12 @@ const Auth = () => {
                           name="locality"
                           required
                           placeholder="Locality / Area"
-                          className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-200 transition-all placeholder:text-slate-400"
+                          className={`w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 rounded-lg text-sm font-bold outline-none transition-all placeholder:text-slate-400 ${errors.locality ? 'border-red-300 focus:border-red-400 focus:bg-white text-red-700' : 'border-transparent focus:border-slate-200 focus:bg-white text-slate-700'}`}
                           value={formData.locality}
                           onChange={handleChange}
                         />
                       </div>
+                      {errors.locality && <p className="text-[10px] text-red-500 font-bold ml-1 mt-[-10px]">{errors.locality}</p>}
                       <div className="relative group">
                         <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-600 transition-colors">
                           <MapPin size={18} />
@@ -814,11 +841,12 @@ const Auth = () => {
                           name="pincode"
                           required
                           placeholder="Pincode"
-                          className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-200 transition-all placeholder:text-slate-400"
+                          className={`w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 rounded-lg text-sm font-bold outline-none transition-all placeholder:text-slate-400 ${errors.pincode ? 'border-red-300 focus:border-red-400 focus:bg-white text-red-700' : 'border-transparent focus:border-slate-200 focus:bg-white text-slate-700'}`}
                           value={formData.pincode}
                           onChange={handleChange}
                         />
                       </div>
+                      {errors.pincode && <p className="text-[10px] text-red-500 font-bold ml-1 mt-1">{errors.pincode}</p>}
                       <div className="relative group">
                         <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-600 transition-colors">
                           <MapPin size={18} />
@@ -828,11 +856,12 @@ const Auth = () => {
                           name="city"
                           required
                           placeholder="City"
-                          className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-200 transition-all placeholder:text-slate-400"
+                          className={`w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 rounded-lg text-sm font-bold outline-none transition-all placeholder:text-slate-400 ${errors.city ? 'border-red-300 focus:border-red-400 focus:bg-white text-red-700' : 'border-transparent focus:border-slate-200 focus:bg-white text-slate-700'}`}
                           value={formData.city}
                           onChange={handleChange}
                         />
                       </div>
+                      {errors.city && <p className="text-[10px] text-red-500 font-bold ml-1 mt-1">{errors.city}</p>}
                       <div className="relative group">
                         <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-600 transition-colors">
                           <MapPin size={18} />
@@ -842,11 +871,12 @@ const Auth = () => {
                           name="state"
                           required
                           placeholder="State"
-                          className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-200 transition-all placeholder:text-slate-400"
+                          className={`w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 rounded-lg text-sm font-bold outline-none transition-all placeholder:text-slate-400 ${errors.state ? 'border-red-300 focus:border-red-400 focus:bg-white text-red-700' : 'border-transparent focus:border-slate-200 focus:bg-white text-slate-700'}`}
                           value={formData.state}
                           onChange={handleChange}
                         />
                       </div>
+                      {errors.state && <p className="text-[10px] text-red-500 font-bold ml-1 mt-1">{errors.state}</p>}
                     </div>
 
                     <div className="relative group">
@@ -858,11 +888,12 @@ const Auth = () => {
                         rows={3}
                         required
                         placeholder="Full address"
-                        className="w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 border-transparent rounded-lg text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-slate-200 transition-all placeholder:text-slate-400 resize-none"
+                        className={`w-full pl-12 pr-6 py-2.5 bg-slate-50 border-2 rounded-lg text-sm font-bold outline-none transition-all placeholder:text-slate-400 resize-none ${errors.address ? 'border-red-300 focus:border-red-400 focus:bg-white text-red-700' : 'border-transparent focus:border-slate-200 focus:bg-white text-slate-700'}`}
                         value={formData.address}
                         onChange={handleChange}
                       />
                     </div>
+                    {errors.address && <p className="text-[10px] text-red-500 font-bold ml-1 mt-1">{errors.address}</p>}
                   </div>
                 )}
 
@@ -983,10 +1014,7 @@ const Auth = () => {
         </div>
       </motion.div>
 
-      {/* Bottom Tagline */}
-      <div className="absolute bottom-6 flex items-center gap-4 text-slate-400 text-xs font-black uppercase tracking-[6px]">
-        Empowering Business Digitalization
-      </div>
+
 
       {isMapOpen && (
         <MapPicker

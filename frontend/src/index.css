@@ -387,14 +387,27 @@ body {
   cursor: pointer !important;
   pointer-events: auto !important;
   font-size: 13px;
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: flex-start !important;
   gap: 8px;
   transition: background-color 0.15s ease;
+  white-space: normal !important;
+  line-height: 1.4 !important;
+  word-wrap: break-word !important;
+}
+
+.pac-item span,
+.pac-item-query {
+  white-space: normal !important;
+  word-wrap: break-word !important;
+}
+
+.pac-icon {
+  flex-shrink: 0 !important;
+  margin-top: 2px !important;
 }
 
 .pac-item:hover,
 .pac-item-selected {
   background-color: #f1f5f9;
 }
-

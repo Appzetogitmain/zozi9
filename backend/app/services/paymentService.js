@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import mongoose from "mongoose";
-import { StandardCheckoutClient, Env, StandardCheckoutPayRequest } from '@phonepe-pg/pg-sdk-node';
-
+import Razorpay from "razorpay";
 import Order from "../models/order.js";
 import CheckoutGroup from "../models/checkoutGroup.js";
 import Payment from "../models/payment.js";
@@ -20,29 +19,25 @@ import { releaseReservedStockForOrder } from "./stockService.js";
 import { emitNotificationEvent } from "../modules/notifications/notification.emitter.js";
 import { NOTIFICATION_EVENTS } from "../modules/notifications/notification.constants.js";
 
-let phonePeClient = null;
-const MAX_MERCHANT_ORDER_ID_LENGTH = 63;
+let razorpayClient = null;
+const MAX_MERCHANT_ORDER_ID_LENGTH = 40; // Razorpay receipt max length is 40
 
-function getPhonePeClient() {
-  if (phonePeClient) return phonePeClient;
+function getRazorpayClient() {
+  if (razorpayClient) return razorpayClient;
 
-  const clientId = String(process.env.PHONEPE_CLIENT_ID || "").trim();
-  const clientSecret = String(process.env.PHONEPE_CLIENT_SECRET || "").trim();
-  const clientVersion = parseInt(process.env.PHONEPE_CLIENT_VERSION || "1", 10);
-  const isProd = String(process.env.PHONEPE_ENV || "").toUpperCase() === "PRODUCTION";
+  const key_id = String(process.env.RAZORPAY_KEY_ID || "").trim();
+  const key_secret = String(process.env.RAZORPAY_KEY_SECRET || "").trim();
 
-  if (!clientId || !clientSecret) {
-    throw new Error("PhonePe credentials not configured");
+  if (!key_id || !key_secret) {
+    throw new Error("Razorpay credentials not configured");
   }
 
-  phonePeClient = StandardCheckoutClient.getInstance(
-    clientId,
-    clientSecret,
-    clientVersion,
-    isProd ? Env.PRODUCTION : Env.SANDBOX
-  );
+  razorpayClient = new Razorpay({
+    key_id,
+    key_secret,
+  });
 
-  return phonePeClient;
+  return razorpayClient;
 }
 
 function sanitizeGatewayPayload(payload = {}) {
@@ -229,11 +224,11 @@ function getPayableAmountPaise(target) {
   return Math.round(amountRupees * 100);
 }
 
-function mapPhonePeStatusToInternal(state) {
-  const normalized = String(state || "").toUpperCase();
-  if (normalized === "COMPLETED") return PAYMENT_STATUS.CAPTURED;
-  if (normalized === "FAILED") return PAYMENT_STATUS.FAILED;
-  if (normalized === "PENDING" || normalized === "CREATED") return PAYMENT_STATUS.PENDING;
+function mapRazorpayStatusToInternal(status) {
+  const normalized = String(status || "").toLowerCase();
+  if (normalized === "captured" || normalized === "paid") return PAYMENT_STATUS.CAPTURED;
+  if (normalized === "failed") return PAYMENT_STATUS.FAILED;
+  if (normalized === "created" || normalized === "authorized") return PAYMENT_STATUS.PENDING;
   return PAYMENT_STATUS.PENDING;
 }
 
@@ -515,7 +510,9 @@ export async function createPaymentOrderForOrderRef({
     if (existingForKey) {
       return {
         payment: existingForKey,
-        redirectUrl: existingForKey.rawGatewayResponse?.redirectUrl,
+        gatewayOrderId: existingForKey.gatewayOrderId,
+        amount: existingForKey.amount,
+        keyId: process.env.RAZORPAY_KEY_ID,
         duplicate: true,
       };
     }
@@ -528,10 +525,12 @@ export async function createPaymentOrderForOrderRef({
     },
   }).sort({ createdAt: -1 });
 
-  if (existingOpenPayment && existingOpenPayment.rawGatewayResponse?.redirectUrl) {
+  if (existingOpenPayment && existingOpenPayment.gatewayOrderId) {
     return {
       payment: existingOpenPayment,
-      redirectUrl: existingOpenPayment.rawGatewayResponse.redirectUrl,
+      gatewayOrderId: existingOpenPayment.gatewayOrderId,
+      amount: existingOpenPayment.amount,
+      keyId: process.env.RAZORPAY_KEY_ID,
       duplicate: true,
     };
   }
@@ -544,16 +543,20 @@ export async function createPaymentOrderForOrderRef({
     attemptCount,
   );
 
-  const client = getPhonePeClient();
-  const redirectUrl = `${process.env.FRONTEND_URL}/payment-status?merchantOrderId=${merchantOrderId}`;
+  const client = getRazorpayClient();
 
-  const request = StandardCheckoutPayRequest.builder()
-    .merchantOrderId(merchantOrderId)
-    .amount(amountPaise)
-    .redirectUrl(redirectUrl)
-    .build();
+  const options = {
+    amount: amountPaise,
+    currency,
+    receipt: merchantOrderId,
+  };
 
-  const response = await client.pay(request);
+  let response;
+  try {
+    response = await client.orders.create(options);
+  } catch (error) {
+    throw new Error(`Razorpay Order Creation Failed: ${error.message || JSON.stringify(error)}`);
+  }
 
   const paymentData = {
     order: primaryOrder._id,
@@ -561,8 +564,8 @@ export async function createPaymentOrderForOrderRef({
     checkoutGroupId: target.checkoutGroupId || null,
     publicOrderId: target.publicOrderRef,
     customer: primaryOrder.customer,
-    gatewayName: PAYMENT_GATEWAY.PHONEPE,
-    gatewayOrderId: merchantOrderId,
+    gatewayName: PAYMENT_GATEWAY.RAZORPAY,
+    gatewayOrderId: response.id,
     amount: amountPaise,
     currency,
     status: PAYMENT_STATUS.PENDING,
@@ -570,7 +573,7 @@ export async function createPaymentOrderForOrderRef({
     idempotencyKey: idempotencyKey || undefined,
     correlationId,
     rawGatewayResponse: {
-      redirectUrl: response.redirectUrl,
+      razorpayOrderId: response.id,
       merchantOrderId: merchantOrderId,
       amount: amountPaise,
     },
@@ -579,7 +582,7 @@ export async function createPaymentOrderForOrderRef({
         fromStatus: PAYMENT_STATUS.CREATED,
         toStatus: PAYMENT_STATUS.PENDING,
         source: PAYMENT_EVENT_SOURCE.SYSTEM,
-        reason: "PhonePe checkout initiated",
+        reason: "Razorpay checkout initiated",
       },
     ],
   };
@@ -596,19 +599,26 @@ export async function createPaymentOrderForOrderRef({
       paymentId: payment._id.toString(),
       gatewayOrderId: payment.gatewayOrderId,
       amount: payment.amount,
-      redirectUrl: response.redirectUrl,
     }),
   );
 
-  return { payment, redirectUrl: response.redirectUrl, duplicate: false };
+  return { 
+    payment, 
+    gatewayOrderId: response.id, 
+    amount: amountPaise, 
+    keyId: process.env.RAZORPAY_KEY_ID, 
+    duplicate: false 
+  };
 }
 
-export async function verifyPhonePePaymentStatus({
-  merchantOrderId,
+export async function verifyRazorpayPaymentStatus({
+  razorpay_order_id,
+  razorpay_payment_id,
+  razorpay_signature,
   userId,
   correlationId = null,
 }) {
-  const payment = await Payment.findOne({ gatewayOrderId: merchantOrderId });
+  const payment = await Payment.findOne({ gatewayOrderId: razorpay_order_id });
   if (!payment) {
     const err = new Error("Payment attempt not found");
     err.statusCode = 404;
@@ -622,22 +632,32 @@ export async function verifyPhonePePaymentStatus({
       throw err;
   }
 
-  const client = getPhonePeClient();
-  const response = await client.getOrderStatus(merchantOrderId);
-  const nextStatus = mapPhonePeStatusToInternal(response.state);
+  const key_secret = String(process.env.RAZORPAY_KEY_SECRET || "").trim();
+  const generated_signature = crypto
+    .createHmac("sha256", key_secret)
+    .update(razorpay_order_id + "|" + razorpay_payment_id)
+    .digest("hex");
+
+  if (generated_signature !== razorpay_signature) {
+    const err = new Error("Invalid payment signature");
+    err.statusCode = 401;
+    throw err;
+  }
+
+  const nextStatus = PAYMENT_STATUS.CAPTURED;
 
   await transitionPaymentState(payment, {
     nextStatus,
     source: PAYMENT_EVENT_SOURCE.CLIENT_VERIFY,
-    reason: `PhonePe status check: ${response.state}`,
-    gatewayPaymentId: response.transactionId,
-    rawGatewayResponse: response,
+    reason: `Razorpay signature verified`,
+    gatewayPaymentId: razorpay_payment_id,
+    rawGatewayResponse: { razorpay_order_id, razorpay_payment_id, razorpay_signature },
   });
 
   await handleOrderSideEffectsFromPaymentStatus(
     payment,
     nextStatus,
-    response.responseCode || response.state,
+    "success",
   );
 
   payment.correlationId = correlationId || payment.correlationId;
@@ -649,7 +669,7 @@ export async function verifyPhonePePaymentStatus({
       ts: new Date().toISOString(),
       event: "payment_status_verified",
       correlationId,
-      merchantOrderId,
+      razorpay_order_id,
       status: nextStatus,
     }),
   );
@@ -660,52 +680,41 @@ export async function verifyPhonePePaymentStatus({
   };
 }
 
-export async function processPhonePeWebhook({
+export async function processRazorpayWebhook({
   rawBody,
-  authorization,
+  authorization, // razorpay signature from x-razorpay-signature header
   correlationId = null,
 }) {
-  const client = getPhonePeClient();
   let jsonPayload;
   try {
-    jsonPayload = JSON.parse(rawBody.toString('utf8'));
+    jsonPayload = JSON.parse(rawBody.toString("utf8"));
   } catch {
     const err = new Error("Invalid format: Webhook body must be JSON");
     err.statusCode = 400;
     throw err;
   }
 
-  const base64Response = jsonPayload.response;
-  if (!base64Response) {
-    const err = new Error("Invalid payload: Missing 'response' field");
-    err.statusCode = 400;
-    throw err;
-  }
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  const expectedSignature = crypto
+    .createHmac("sha256", secret)
+    .update(rawBody.toString("utf8"))
+    .digest("hex");
 
-  const isValid = await client.validateCallback(base64Response, authorization);
-  if (!isValid) {
+  if (expectedSignature !== authorization) {
       const err = new Error("Invalid webhook signature");
       err.statusCode = 401;
       throw err;
   }
 
-  let payload;
-  try {
-    payload = JSON.parse(Buffer.from(base64Response, 'base64').toString('utf8'));
-  } catch {
-    const err = new Error("Invalid webhook payload: Base64 decode failed");
-    err.statusCode = 400;
-    throw err;
-  }
-
-  const eventId = payload.transactionId || crypto.randomUUID();
+  const payload = jsonPayload;
+  const eventId = payload.id || crypto.randomUUID();
   const payloadHash = crypto.createHash("sha256").update(JSON.stringify(payload)).digest("hex");
-  const eventType = payload.state || "unknown";
+  const eventType = payload.event || "unknown";
 
   try {
     await PaymentWebhookEvent.create({
       eventId,
-      gatewayName: PAYMENT_GATEWAY.PHONEPE,
+      gatewayName: PAYMENT_GATEWAY.RAZORPAY,
       eventType,
       payloadHash,
     });
@@ -716,20 +725,35 @@ export async function processPhonePeWebhook({
     throw error;
   }
 
-  const merchantOrderId = payload.merchantOrderId;
+  const paymentEntity = payload.payload?.payment?.entity;
+  const orderEntity = payload.payload?.order?.entity;
+  const merchantOrderId = paymentEntity?.order_id || orderEntity?.id;
+
+  if (!merchantOrderId) {
+    return { accepted: true, ignored: true, reason: "No order_id in webhook payload" };
+  }
+
   const payment = await Payment.findOne({ gatewayOrderId: merchantOrderId });
   if (!payment) {
     return { accepted: true, ignored: true, reason: "Payment attempt not found" };
   }
 
-  const nextStatus = mapPhonePeStatusToInternal(payload.state);
-  await transitionPaymentState(payment, {
-    nextStatus,
-    source: PAYMENT_EVENT_SOURCE.WEBHOOK,
-    reason: `PhonePe webhook: ${payload.state}`,
-    gatewayPaymentId: payload.transactionId,
-    rawGatewayResponse: payload,
-  });
+  let nextStatus = payment.status;
+  if (eventType === "payment.captured" || eventType === "order.paid") {
+    nextStatus = PAYMENT_STATUS.CAPTURED;
+  } else if (eventType === "payment.failed") {
+    nextStatus = PAYMENT_STATUS.FAILED;
+  }
+
+  if (nextStatus !== payment.status) {
+    await transitionPaymentState(payment, {
+      nextStatus,
+      source: PAYMENT_EVENT_SOURCE.WEBHOOK,
+      reason: `Razorpay webhook: ${eventType}`,
+      gatewayPaymentId: paymentEntity?.id,
+      rawGatewayResponse: payload,
+    });
+  }
 
   payment.correlationId = correlationId || payment.correlationId;
   await payment.save();
@@ -744,7 +768,9 @@ export async function processPhonePeWebhook({
     },
   );
 
-  await handleOrderSideEffectsFromPaymentStatus(payment, nextStatus, payload.responseCode || payload.state);
+  if (nextStatus !== payment.status) {
+    await handleOrderSideEffectsFromPaymentStatus(payment, nextStatus, eventType);
+  }
 
   return {
     accepted: true,
@@ -754,10 +780,12 @@ export async function processPhonePeWebhook({
   };
 }
 
-// Placeholder for Razorpay compatibility if needed by other services
+// Razorpay compatibility verifyClientPaymentCallback
 export async function verifyClientPaymentCallback(data) {
-    return verifyPhonePePaymentStatus({
-        merchantOrderId: data.gatewayOrderId || data.merchantOrderId,
+    return verifyRazorpayPaymentStatus({
+        razorpay_order_id: data.razorpay_order_id,
+        razorpay_payment_id: data.razorpay_payment_id,
+        razorpay_signature: data.razorpay_signature,
         userId: data.userId,
         correlationId: data.correlationId
     });

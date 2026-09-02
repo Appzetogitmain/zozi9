@@ -423,33 +423,33 @@ const SellerLocations = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-84px)] min-h-[820px] flex flex-col gap-5 animate-in fade-in duration-700 overflow-hidden">
-      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+    <div className="flex flex-col gap-5 animate-in fade-in duration-700 h-[calc(100vh-84px)] min-h-[600px]">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 shrink-0">
         <div>
-          <h1 className="ds-h1 flex items-center gap-2">
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             Seller Locations
             <Badge
               variant="primary"
-              className="text-xs px-1.5 py-0 font-bold tracking-wider uppercase">
+              className="text-[10px] px-2 py-0.5 font-bold tracking-wider uppercase rounded-full shadow-sm bg-brand-500 text-white border-none">
               Google Maps
             </Badge>
           </h1>
-          <p className="ds-description mt-0.5">
+          <p className="text-sm font-medium text-slate-500 mt-1">
             Global view of seller locations, radius coverage, and order density.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex bg-slate-100 p-1 rounded-xl">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex bg-slate-100/80 p-1 rounded-xl ring-1 ring-slate-200/50">
             <button
               onClick={() => setMapView("coverage")}
               disabled={!mapUnlocked}
               className={cn(
-                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
+                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-300",
                 !mapUnlocked
-                  ? "text-slate-500 cursor-not-allowed"
+                  ? "text-slate-400 cursor-not-allowed"
                   : mapView === "coverage"
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-white text-brand-600 shadow-sm ring-1 ring-slate-200"
                     : "text-slate-500 hover:text-slate-700",
               )}>
               COVERAGE
@@ -458,11 +458,11 @@ const SellerLocations = () => {
               onClick={() => setMapView("density")}
               disabled={!mapUnlocked}
               className={cn(
-                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
+                "px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-300",
                 !mapUnlocked
-                  ? "text-slate-500 cursor-not-allowed"
+                  ? "text-slate-400 cursor-not-allowed"
                   : mapView === "density"
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-white text-brand-600 shadow-sm ring-1 ring-slate-200"
                     : "text-slate-500 hover:text-slate-700",
               )}>
               DENSITY
@@ -472,7 +472,7 @@ const SellerLocations = () => {
           {mapUnlocked && (
             <button
               onClick={() => setMapUnlocked(false)}
-              className="px-3 py-2.5 bg-white ring-1 ring-slate-200 rounded-xl shadow-sm text-xs font-bold text-slate-600 hover:text-slate-900 transition-all"
+              className="px-4 py-2 bg-white ring-1 ring-slate-200 rounded-xl shadow-sm text-xs font-bold text-slate-600 hover:text-rose-600 hover:ring-rose-200 hover:bg-rose-50 transition-all duration-300"
               title="Lock map to save API cost">
               Lock Map
             </button>
@@ -480,7 +480,7 @@ const SellerLocations = () => {
 
           <button
             onClick={() => setRefreshTick((value) => value + 1)}
-            className="p-2.5 bg-white ring-1 ring-slate-200 rounded-xl shadow-sm text-slate-500 hover:text-primary transition-all"
+            className="p-2 bg-white ring-1 ring-slate-200 rounded-xl shadow-sm text-slate-500 hover:text-brand-600 hover:bg-brand-50 hover:ring-brand-200 transition-all duration-300"
             title="Refresh">
             <HiOutlineArrowPath
               className={cn("h-5 w-5", loading && "animate-spin")}
@@ -489,43 +489,43 @@ const SellerLocations = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 shrink-0">
-        <Card className="border-none ring-1 ring-slate-100 p-4">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 shrink-0">
+        <Card className="border-none shadow-sm ring-1 ring-slate-200/60 p-5 bg-gradient-to-br from-white to-slate-50/50 hover:shadow-md transition-all duration-300">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">
             Sellers
           </p>
-          <p className="text-2xl font-black text-slate-900 mt-1">
+          <p className="text-3xl font-black text-slate-800">
             {stats.totalSellers.toLocaleString("en-IN")}
           </p>
         </Card>
-        <Card className="border-none ring-1 ring-slate-100 p-4">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+        <Card className="border-none shadow-sm ring-1 ring-slate-200/60 p-5 bg-gradient-to-br from-white to-brand-50/30 hover:shadow-md transition-all duration-300">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-600/80 mb-1">
             Mapped
           </p>
-          <p className="text-2xl font-black text-brand-600 mt-1">
+          <p className="text-3xl font-black text-brand-600">
             {stats.mappedSellers.toLocaleString("en-IN")}
           </p>
         </Card>
-        <Card className="border-none ring-1 ring-slate-100 p-4">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+        <Card className="border-none shadow-sm ring-1 ring-slate-200/60 p-5 bg-gradient-to-br from-white to-slate-50/50 hover:shadow-md transition-all duration-300">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">
             Avg Radius
           </p>
-          <p className="text-2xl font-black text-slate-900 mt-1">
-            {stats.averageRadiusKm} km
+          <p className="text-3xl font-black text-slate-800">
+            {stats.averageRadiusKm} <span className="text-lg text-slate-400">km</span>
           </p>
         </Card>
-        <Card className="border-none ring-1 ring-slate-100 p-4">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+        <Card className="border-none shadow-sm ring-1 ring-slate-200/60 p-5 bg-gradient-to-br from-white to-slate-50/50 hover:shadow-md transition-all duration-300">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">
             Active Orders
           </p>
-          <p className="text-2xl font-black text-slate-900 mt-1">
+          <p className="text-3xl font-black text-slate-800">
             {stats.totalActiveOrders.toLocaleString("en-IN")}
           </p>
         </Card>
       </div>
 
-      <div className="flex-1 min-h-0 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-5">
-        <Card className="border-none shadow-xl ring-1 ring-slate-100 rounded-2xl overflow-hidden flex flex-col min-h-0">
+      <div className="flex-1 min-h-[500px] grid grid-cols-1 lg:grid-cols-[400px_minmax(0,1fr)] gap-5 pb-5">
+        <Card className="border-none shadow-lg ring-1 ring-slate-200/60 rounded-2xl overflow-hidden flex flex-col h-[500px] lg:h-auto lg:min-h-[400px]">
           <div className="p-4 border-b border-slate-100 space-y-3">
             <div className="relative">
               <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
@@ -703,31 +703,36 @@ const SellerLocations = () => {
           </div>
         </Card>
 
-        <Card className="border-none shadow-xl ring-1 ring-slate-100 rounded-2xl overflow-hidden relative min-h-0">
+        <Card className="border-none shadow-lg ring-1 ring-slate-200/60 rounded-2xl overflow-hidden relative min-h-[400px]">
           {!mapUnlocked ? (
-            <div className="h-full min-h-[680px] bg-gradient-to-br from-slate-100 via-slate-50 to-white p-6 flex items-center justify-center">
-              <div className="max-w-xl text-center space-y-4">
-                <div className="mx-auto h-12 w-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center">
-                  <HiOutlineMap className="h-6 w-6" />
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-white to-slate-50 flex items-center justify-center p-6">
+              <div className="max-w-md w-full text-center space-y-6 relative z-10 p-8 rounded-3xl bg-white/60 backdrop-blur-xl shadow-2xl ring-1 ring-white/80">
+                <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-400 text-white flex items-center justify-center shadow-lg shadow-brand-500/30 transform hover:scale-105 transition-transform duration-300">
+                  <HiOutlineMap className="h-8 w-8" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900">
-                  Map Is Locked To Save API Cost
-                </h3>
-                <p className="text-sm font-semibold text-slate-600 leading-relaxed">
-                  Google Maps loads only when needed. Click below to open the
-                  live map for this session.
-                </p>
+                <div>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                    Map Is Locked
+                  </h3>
+                  <p className="text-sm font-semibold text-slate-500 mt-2 leading-relaxed">
+                    Google Maps loads only when needed. Click below to open the
+                    live interactive map for this session.
+                  </p>
+                </div>
                 <button
                   onClick={() => setMapUnlocked(true)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-black hover:bg-slate-800 transition-colors">
-                  <HiOutlineMap className="h-4 w-4" />
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-slate-900 text-white text-sm font-black hover:bg-slate-800 hover:shadow-lg transition-all duration-300 transform active:scale-[0.98]">
+                  <HiOutlineMap className="h-5 w-5" />
                   Open Live Map
                 </button>
-                <p className="text-xs font-semibold text-slate-500">
-                  Tip: keep map closed while filtering to minimize Google Maps
-                  charges.
+                <p className="text-xs font-bold text-slate-400">
+                  Tip: Keep map closed while filtering to minimize API costs.
                 </p>
               </div>
+              
+              {/* Decorative background elements */}
+              <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-brand-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-blue-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
             </div>
           ) : (
             <ActiveSellerMap
@@ -741,8 +746,8 @@ const SellerLocations = () => {
           )}
 
           <div className="absolute bottom-5 left-5 z-20">
-            <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl text-xs font-bold text-slate-700 flex items-center gap-2 shadow-lg ring-1 ring-slate-200">
-              <HiOutlineInformationCircle className="h-4 w-4 text-slate-500" />
+            <div className="bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-xl text-[11px] font-bold text-slate-600 flex items-center gap-2 shadow-xl ring-1 ring-slate-200/50">
+              <HiOutlineInformationCircle className="h-4 w-4 text-brand-500" />
               {mapUnlocked
                 ? "Circles represent seller service radius. Density colors indicate live order load."
                 : "Map is locked by default to reduce Google Maps API usage."}

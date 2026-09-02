@@ -1,8 +1,8 @@
 import express from "express";
 import {
   createPaymentOrder,
-  verifyPaymentStatus,
-  handlePhonePeWebhook,
+  verifyClientPayment,
+  handleRazorpayWebhook,
 } from "../controller/paymentController.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
 import { paymentRouteRateLimiter } from "../middleware/securityMiddlewares.js";
@@ -21,24 +21,24 @@ paymentRoute.post(
 );
 
 /**
- * Verify payment status from client side (after redirect back from PhonePe).
+ * Verify payment status from client side (after success from Razorpay widget).
  * Auth: Required
  */
-paymentRoute.get(
-  "/status/:id",
+paymentRoute.post(
+  "/verify",
   verifyToken,
   paymentRouteRateLimiter,
-  verifyPaymentStatus,
+  verifyClientPayment,
 );
 
 /**
- * PhonePe Server-to-Server Webhook.
- * Auth: None (Internal verification via x-verify / authorization header)
+ * Razorpay Server-to-Server Webhook.
+ * Auth: None (Internal verification via x-razorpay-signature header)
  */
 paymentRoute.post(
-  "/webhook/phonepe",
-  express.raw({ type: "application/json" }), // SDK needs raw body for verification
-  handlePhonePeWebhook,
+  "/webhook/razorpay",
+  express.raw({ type: "application/json" }), // Need raw body for HMAC verification
+  handleRazorpayWebhook,
 );
 
 export default paymentRoute;

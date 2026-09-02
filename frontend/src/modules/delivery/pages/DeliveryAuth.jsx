@@ -30,7 +30,6 @@ import { pickImageWithFlutterOrWeb } from "@core/utils/flutterBridge";
 const VEHICLE_TYPES = [
   { value: "bike", label: "Bike" },
   { value: "scooter", label: "Scooter" },
-  { value: "cycle", label: "Cycle" },
 ];
 
 const DeliveryAuth = () => {
@@ -41,26 +40,32 @@ const DeliveryAuth = () => {
   const { login } = useAuth();
 
   // mode: "login" | "signup"
-  const [mode, setMode] = useState("login");
+  const loadDeliveryState = (key, defaultVal) => {
+    const saved = localStorage.getItem("deliveryAuth_" + key);
+    return saved !== null ? saved : defaultVal;
+  };
+
+  const [mode, setMode] = useState(() => loadDeliveryState("mode", "login"));
   const [step, setStep] = useState("form"); // "form" | "otp"
 
   // Login state
   const [loginPhone, setLoginPhone] = useState("");
 
   // Signup state
-  const [signupStep, setSignupStep] = useState(1);
-  const [signupName, setSignupName] = useState("");
-  const [signupPhone, setSignupPhone] = useState("");
-  const [signupEmail, setSignupEmail] = useState("");
-  const [signupAddress, setSignupAddress] = useState("");
-  const [signupVehicle, setSignupVehicle] = useState("bike");
-  const [signupVehicleNumber, setSignupVehicleNumber] = useState("");
-  const [signupDLNumber, setSignupDLNumber] = useState("");
-  const [signupPanNumber, setSignupPanNumber] = useState("");
-  const [signupAadharNumber, setSignupAadharNumber] = useState("");
-  const [signupAccountNumber, setSignupAccountNumber] = useState("");
-  const [signupIfsc, setSignupIfsc] = useState("");
-  const [signupAccountHolder, setSignupAccountHolder] = useState("");
+
+  const [signupStep, setSignupStep] = useState(() => parseInt(loadDeliveryState("step", "1")));
+  const [signupName, setSignupName] = useState(() => loadDeliveryState("name", ""));
+  const [signupPhone, setSignupPhone] = useState(() => loadDeliveryState("phone", ""));
+  const [signupEmail, setSignupEmail] = useState(() => loadDeliveryState("email", ""));
+  const [signupAddress, setSignupAddress] = useState(() => loadDeliveryState("address", ""));
+  const [signupVehicle, setSignupVehicle] = useState(() => loadDeliveryState("vehicle", "bike"));
+  const [signupVehicleNumber, setSignupVehicleNumber] = useState(() => loadDeliveryState("vehicleNumber", ""));
+  const [signupDLNumber, setSignupDLNumber] = useState(() => loadDeliveryState("dlNumber", ""));
+  const [signupPanNumber, setSignupPanNumber] = useState(() => loadDeliveryState("panNumber", ""));
+  const [signupAadharNumber, setSignupAadharNumber] = useState(() => loadDeliveryState("aadharNumber", ""));
+  const [signupAccountNumber, setSignupAccountNumber] = useState(() => loadDeliveryState("accountNumber", ""));
+  const [signupIfsc, setSignupIfsc] = useState(() => loadDeliveryState("ifsc", ""));
+  const [signupAccountHolder, setSignupAccountHolder] = useState(() => loadDeliveryState("accountHolder", ""));
   const [showVehicleDropdown, setShowVehicleDropdown] = useState(false);
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState("");
@@ -77,6 +82,7 @@ const DeliveryAuth = () => {
   const [timer, setTimer] = useState(30);
 
   // OCR States
+  const [errors, setErrors] = useState({});
   const [isScanning, setIsScanning] = useState(false);
   const [ocrProgress, setOcrProgress] = useState(0);
   const [dlVerified, setDlVerified] = useState(null);
@@ -90,6 +96,27 @@ const DeliveryAuth = () => {
     }
     return () => clearInterval(interval);
   }, [step, timer]);
+
+  useEffect(() => {
+    localStorage.setItem("deliveryAuth_mode", mode);
+    localStorage.setItem("deliveryAuth_step", signupStep);
+    localStorage.setItem("deliveryAuth_name", signupName);
+    localStorage.setItem("deliveryAuth_phone", signupPhone);
+    localStorage.setItem("deliveryAuth_email", signupEmail);
+    localStorage.setItem("deliveryAuth_address", signupAddress);
+    localStorage.setItem("deliveryAuth_vehicle", signupVehicle);
+    localStorage.setItem("deliveryAuth_vehicleNumber", signupVehicleNumber);
+    localStorage.setItem("deliveryAuth_dlNumber", signupDLNumber);
+    localStorage.setItem("deliveryAuth_panNumber", signupPanNumber);
+    localStorage.setItem("deliveryAuth_aadharNumber", signupAadharNumber);
+    localStorage.setItem("deliveryAuth_accountNumber", signupAccountNumber);
+    localStorage.setItem("deliveryAuth_ifsc", signupIfsc);
+    localStorage.setItem("deliveryAuth_accountHolder", signupAccountHolder);
+  }, [
+    mode, signupStep, signupName, signupPhone, signupEmail, signupAddress, signupVehicle, 
+    signupVehicleNumber, signupDLNumber, signupPanNumber, signupAadharNumber, 
+    signupAccountNumber, signupIfsc, signupAccountHolder
+  ]);
 
   const performOCR = async (file, type) => {
     setIsScanning(true);
@@ -292,24 +319,6 @@ const DeliveryAuth = () => {
     setMode(newMode);
     setStep("form");
     setOtp(["", "", "", ""]);
-    setLoginPhone("");
-    setSignupStep(1);
-    setSignupName("");
-    setSignupPhone("");
-    setSignupEmail("");
-    setSignupAddress("");
-    setSignupVehicle("bike");
-    setSignupVehicleNumber("");
-    setSignupDLNumber("");
-    setSignupAccountNumber("");
-    setSignupIfsc("");
-    setSignupAccountHolder("");
-    setAadharFile(null);
-    setPanFile(null);
-    setDlFile(null);
-    setAgreed(false);
-    setProfileImageFile(null);
-    setProfileImagePreview("");
   };
 
   const slideVariants = {
@@ -456,7 +465,7 @@ const DeliveryAuth = () => {
                                     },
                                   });
                                 }}
-                                className="absolute -bottom-2 -right-2 p-2.5 bg-black text-primary-foreground rounded-2xl shadow-lg shadow-brand-200 cursor-pointer hover:bg-brand-700 hover:scale-110 active:scale-95 transition-all"
+                                className="absolute -bottom-2 -right-2 p-2.5 bg-black text-white rounded-2xl shadow-lg shadow-brand-200 cursor-pointer hover:bg-brand-700 hover:scale-110 active:scale-95 transition-all"
                               >
                                 <Camera className="w-4 h-4" />
                               </button>
@@ -471,11 +480,12 @@ const DeliveryAuth = () => {
                               <input
                                 type="text"
                                 value={signupName}
-                                onChange={(e) => setSignupName(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all"
+                                onChange={(e) => { setSignupName(e.target.value); setErrors(prev => ({...prev, name: null})); }}
+                                className={`w-full pl-11 pr-4 py-3.5 bg-gray-50 border ${errors.name ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all`}
                                 placeholder="Enter your full name"
                               />
                             </div>
+                            {errors.name && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.name}</p>}
                           </div>
 
                           <div className="space-y-1.5">
@@ -486,12 +496,17 @@ const DeliveryAuth = () => {
                               <input
                                 type="tel"
                                 value={signupPhone}
-                                onChange={(e) => setSignupPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                                onChange={(e) => { 
+                                  const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                                  setSignupPhone(val); 
+                                  setErrors(prev => ({...prev, phone: /^\d{10}$/.test(val) ? null : "Valid 10-digit phone number is required"})); 
+                                }}
                                 maxLength={10}
-                                className="w-full pl-24 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all"
+                                className={`w-full pl-24 pr-4 py-3.5 bg-gray-50 border ${errors.phone ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all`}
                                 placeholder="00000 00000"
                               />
                             </div>
+                            {errors.phone && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.phone}</p>}
                           </div>
 
                           <div className="space-y-1.5">
@@ -501,11 +516,16 @@ const DeliveryAuth = () => {
                               <input
                                 type="email"
                                 value={signupEmail}
-                                onChange={(e) => setSignupEmail(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all"
+                                onChange={(e) => { 
+                                  const val = e.target.value;
+                                  setSignupEmail(val); 
+                                  setErrors(prev => ({...prev, email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? null : "Valid email address is required"})); 
+                                }}
+                                className={`w-full pl-11 pr-4 py-3.5 bg-gray-50 border ${errors.email ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all`}
                                 placeholder="example@gmail.com"
                               />
                             </div>
+                            {errors.email && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.email}</p>}
                           </div>
 
                           <div className="space-y-1.5">
@@ -514,30 +534,28 @@ const DeliveryAuth = () => {
                               <MapPin className="absolute left-4 top-4 text-gray-300 w-4 h-4" />
                               <textarea
                                 value={signupAddress}
-                                onChange={(e) => setSignupAddress(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all resize-none h-24"
+                                onChange={(e) => { setSignupAddress(e.target.value); setErrors(prev => ({...prev, address: null})); }}
+                                className={`w-full pl-11 pr-4 py-3.5 bg-gray-50 border ${errors.address ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all resize-none h-24`}
                                 placeholder="Complete building address..."
                               />
                             </div>
+                            {errors.address && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.address}</p>}
                           </div>
 
                           <button
                             onClick={() => {
-                              if (!signupName || !signupPhone || !signupEmail || !signupAddress || !profileImageFile) {
-                                toast.error("Please fill all personal information fields and upload photo");
-                                return;
-                              }
-                              if (signupPhone.length !== 10 || !/^\d{10}$/.test(signupPhone)) {
-                                toast.error("Please enter a valid 10-digit phone number");
-                                return;
-                              }
-                              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupEmail)) {
-                                toast.error("Please enter a valid email address");
-                                return;
-                              }
+                              const newErrors = {};
+                              if (!signupName.trim()) newErrors.name = "Full Name is required";
+                              if (!signupPhone || signupPhone.length !== 10 || !/^\d{10}$/.test(signupPhone)) newErrors.phone = "Valid 10-digit phone number is required";
+                              if (!signupEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupEmail)) newErrors.email = "Valid email address is required";
+                              if (!signupAddress.trim()) newErrors.address = "Permanent Address is required";
+                              if (!profileImageFile) toast.error("Please upload your profile photo");
+
+                              setErrors(newErrors);
+                              if (Object.keys(newErrors).length > 0 || !profileImageFile) return;
                               setSignupStep(2);
                             }}
-                            className="w-full py-4 bg-black  text-primary-foreground rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 transition-all flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-black  text-white rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 transition-all flex items-center justify-center gap-2"
                           >
                             Next Step <ArrowRight className="w-4 h-4" />
                           </button>
@@ -593,11 +611,16 @@ const DeliveryAuth = () => {
                               <input
                                 type="text"
                                 value={signupVehicleNumber}
-                                onChange={(e) => setSignupVehicleNumber(e.target.value.toUpperCase())}
-                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all"
+                                onChange={(e) => { 
+                                  const val = e.target.value.toUpperCase();
+                                  setSignupVehicleNumber(val); 
+                                  setErrors(prev => ({...prev, vehicleNumber: /^[A-Z0-9 -]{6,12}$/.test(val) ? null : "Valid plate number (e.g. MH 01 AB 1234) is required"})); 
+                                }}
+                                className={`w-full pl-11 pr-4 py-3.5 bg-gray-50 border ${errors.vehicleNumber ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all`}
                                 placeholder="KA 05 MN 8921"
                               />
                             </div>
+                            {errors.vehicleNumber && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.vehicleNumber}</p>}
                           </div>
 
                           <div className="space-y-1.5">
@@ -607,11 +630,16 @@ const DeliveryAuth = () => {
                               <input
                                 type="text"
                                 value={signupDLNumber}
-                                onChange={(e) => setSignupDLNumber(e.target.value.toUpperCase())}
-                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all"
+                                onChange={(e) => { 
+                                  const val = e.target.value.toUpperCase();
+                                  setSignupDLNumber(val); 
+                                  setErrors(prev => ({...prev, dlNumber: val.replace(/[^A-Z0-9]/g, '').length >= 10 ? null : "Valid Driving License number is required"})); 
+                                }}
+                                className={`w-full pl-11 pr-4 py-3.5 bg-gray-50 border ${errors.dlNumber ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all`}
                                 placeholder="DL-1420110012345"
                               />
                             </div>
+                            {errors.dlNumber && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.dlNumber}</p>}
                           </div>
 
                           <div className="flex gap-4 pt-2">
@@ -623,17 +651,18 @@ const DeliveryAuth = () => {
                             </button>
                             <button
                               onClick={() => {
+                                const newErrors = {};
                                 if (!signupVehicleNumber || !/^[A-Z0-9 -]{6,12}$/.test(signupVehicleNumber)) {
-                                  toast.error("Please enter a valid vehicle plate number (e.g. MH 01 AB 1234)");
-                                  return;
+                                  newErrors.vehicleNumber = "Valid plate number (e.g. MH 01 AB 1234) is required";
                                 }
-                                if (!signupDLNumber || !/^[A-Z]{2}[0-9]{13}$/.test(signupDLNumber.replace(/[^A-Z0-9]/g, ''))) {
-                                  toast.error("Please enter a valid Driving License number (e.g. MH0120230001234)");
-                                  return;
+                                if (!signupDLNumber || signupDLNumber.replace(/[^A-Z0-9]/g, '').length < 10) {
+                                  newErrors.dlNumber = "Valid Driving License number is required";
                                 }
+                                setErrors(newErrors);
+                                if (Object.keys(newErrors).length > 0) return;
                                 setSignupStep(3);
                               }}
-                              className="flex-[2] py-4 bg-black  text-primary-foreground rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 transition-all flex items-center justify-center gap-2"
+                              className="flex-[2] py-4 bg-black  text-white rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 transition-all flex items-center justify-center gap-2"
                             >
                               Next Step <ArrowRight className="w-4 h-4" />
                             </button>
@@ -653,50 +682,71 @@ const DeliveryAuth = () => {
                             <input
                               type="text"
                               value={signupAadharNumber}
-                              onChange={(e) => setSignupAadharNumber(e.target.value.replace(/\D/g, "").slice(0, 12))}
-                              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all font-mono"
+                              onChange={(e) => { 
+                                const val = e.target.value.replace(/\D/g, "").slice(0, 12);
+                                setSignupAadharNumber(val); 
+                                setErrors(prev => ({...prev, aadhar: /^\d{12}$/.test(val) ? null : "Aadhar number must be exactly 12 digits"})); 
+                              }}
+                              className={`w-full px-4 py-3.5 bg-gray-50 border ${errors.aadhar ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all font-mono`}
                               placeholder="0000 0000 0000"
                             />
+                            {errors.aadhar && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.aadhar}</p>}
                           </div>
                           <div className="space-y-1.5">
                             <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">PAN Card Number</label>
                             <input
                               type="text"
                               value={signupPanNumber}
-                              onChange={(e) => setSignupPanNumber(e.target.value.toUpperCase().slice(0, 10))}
-                              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all font-mono"
+                              onChange={(e) => { 
+                                const val = e.target.value.toUpperCase().slice(0, 10);
+                                setSignupPanNumber(val); 
+                                setErrors(prev => ({...prev, pan: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(val) ? null : "Invalid PAN format (e.g. ABCDE1234F)"})); 
+                              }}
+                              className={`w-full px-4 py-3.5 bg-gray-50 border ${errors.pan ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all font-mono`}
                               placeholder="ABCDE1234F"
                             />
+                            {errors.pan && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.pan}</p>}
                           </div>
                           <div className="space-y-1.5">
                             <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Account Holder Name</label>
                             <input
                               type="text"
                               value={signupAccountHolder}
-                              onChange={(e) => setSignupAccountHolder(e.target.value.toUpperCase())}
-                              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all"
+                              onChange={(e) => { setSignupAccountHolder(e.target.value.toUpperCase()); setErrors(prev => ({...prev, accountHolder: null})); }}
+                              className={`w-full px-4 py-3.5 bg-gray-50 border ${errors.accountHolder ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all`}
                               placeholder="AS PER BANK RECORDS"
                             />
+                            {errors.accountHolder && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.accountHolder}</p>}
                           </div>
                           <div className="space-y-1.5">
                             <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Account Number</label>
                             <input
                               type="text"
                               value={signupAccountNumber}
-                              onChange={(e) => setSignupAccountNumber(e.target.value.replace(/\D/g, ""))}
-                              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all"
+                              onChange={(e) => { 
+                                const val = e.target.value.replace(/\D/g, "");
+                                setSignupAccountNumber(val); 
+                                setErrors(prev => ({...prev, accountNumber: /^\d{9,18}$/.test(val) ? null : "Account number must be between 9 and 18 digits"})); 
+                              }}
+                              className={`w-full px-4 py-3.5 bg-gray-50 border ${errors.accountNumber ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all`}
                               placeholder="000000000000"
                             />
+                            {errors.accountNumber && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.accountNumber}</p>}
                           </div>
                           <div className="space-y-1.5">
                             <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">IFSC Code</label>
                             <input
                               type="text"
                               value={signupIfsc}
-                              onChange={(e) => setSignupIfsc(e.target.value.toUpperCase())}
-                              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-all"
+                              onChange={(e) => { 
+                                const val = e.target.value.toUpperCase();
+                                setSignupIfsc(val); 
+                                setErrors(prev => ({...prev, ifsc: /^[A-Z]{4}0[A-Z0-9]{6}$/.test(val) ? null : "Invalid IFSC format (e.g. HDFC0001234)"})); 
+                              }}
+                              className={`w-full px-4 py-3.5 bg-gray-50 border ${errors.ifsc ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-gray-100 focus:ring-brand-500/20 focus:border-brand-400'} rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 transition-all`}
                               placeholder="HDFC0001234"
                             />
+                            {errors.ifsc && <p className="text-[10px] text-red-500 font-bold ml-1">{errors.ifsc}</p>}
                           </div>
 
                           <div className="flex gap-4 pt-2">
@@ -708,29 +758,27 @@ const DeliveryAuth = () => {
                             </button>
                             <button
                               onClick={() => {
-                                if (!signupAadharNumber || !signupPanNumber || !signupAccountHolder || !signupAccountNumber || !signupIfsc) {
-                                  toast.error("Please fill all bank and identification fields");
-                                  return;
+                                const newErrors = {};
+                                if (!signupAadharNumber || !/^\d{12}$/.test(signupAadharNumber)) {
+                                  newErrors.aadhar = "Aadhar number must be exactly 12 digits";
                                 }
-                                if (!/^\d{12}$/.test(signupAadharNumber)) {
-                                  toast.error("Aadhar number must be exactly 12 digits");
-                                  return;
+                                if (!signupPanNumber || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(signupPanNumber)) {
+                                  newErrors.pan = "Invalid PAN format (e.g. ABCDE1234F)";
                                 }
-                                if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(signupPanNumber)) {
-                                  toast.error("Invalid PAN format (e.g. ABCDE1234F)");
-                                  return;
+                                if (!signupAccountHolder.trim()) {
+                                  newErrors.accountHolder = "Account Holder Name is required";
                                 }
-                                if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(signupIfsc)) {
-                                  toast.error("Invalid IFSC format (e.g. HDFC0001234)");
-                                  return;
+                                if (!signupAccountNumber || !/^\d{9,18}$/.test(signupAccountNumber)) {
+                                  newErrors.accountNumber = "Account number must be between 9 and 18 digits";
                                 }
-                                if (!/^\d{9,18}$/.test(signupAccountNumber)) {
-                                  toast.error("Account number must be between 9 and 18 digits");
-                                  return;
+                                if (!signupIfsc || !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(signupIfsc)) {
+                                  newErrors.ifsc = "Invalid IFSC format (e.g. HDFC0001234)";
                                 }
+                                setErrors(newErrors);
+                                if (Object.keys(newErrors).length > 0) return;
                                 setSignupStep(4);
                               }}
-                              className="flex-[2] py-4 bg-black  text-primary-foreground rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 transition-all flex items-center justify-center gap-2"
+                              className="flex-[2] py-4 bg-black  text-white rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 transition-all flex items-center justify-center gap-2"
                             >
                               Next Step <ArrowRight className="w-4 h-4" />
                             </button>
@@ -750,7 +798,7 @@ const DeliveryAuth = () => {
                               { label: "Aadhar Card (Front/Back)", state: aadharFile, setter: setAadharFile, id: "aadhar" },
                               { label: "PAN Card", state: panFile, setter: setPanFile, id: "pan" },
                               { label: "Driving License", state: dlFile, setter: setDlFile, id: "dl" },
-                            ].map((doc) => (
+                            ].filter(doc => signupVehicle !== 'cycle' || doc.id !== 'dl').map((doc) => (
                               <div key={doc.id} className="relative">
                                 <input
                                   type="file"
@@ -760,10 +808,7 @@ const DeliveryAuth = () => {
                                   onChange={(e) => {
                                     const file = e.target.files?.[0];
                                     if (file) {
-                                      if (doc.id === "dl") handleDLUpload(file);
-                                      else if (doc.id === "pan") handlePanUpload(file);
-                                      else if (doc.id === "aadhar") handleAadharUpload(file);
-                                      else doc.setter(file);
+                                      doc.setter(file);
                                     }
                                   }}
                                 />
@@ -775,10 +820,7 @@ const DeliveryAuth = () => {
                                     pickImageWithFlutterOrWeb({
                                       fallbackInput: doc.id,
                                       onFileSelected: (file) => {
-                                        if (doc.id === "dl") handleDLUpload(file);
-                                        else if (doc.id === "pan") handlePanUpload(file);
-                                        else if (doc.id === "aadhar") handleAadharUpload(file);
-                                        else doc.setter(file);
+                                        doc.setter(file);
                                       },
                                     });
                                   }}
@@ -813,111 +855,6 @@ const DeliveryAuth = () => {
                                     </button>
                                   )}
                                 </div>
-
-                                {/* OCR Progress & Badge for DL */}
-                                {doc.id === "dl" && (
-                                  <div className="mt-2 px-1">
-                                    {(isScanning && doc.state === null) && (
-                                      <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1">
-                                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-brand-500">
-                                          <span>AI Scanning DL...</span>
-                                          <span>{ocrProgress}%</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-brand-50 rounded-full overflow-hidden">
-                                          <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${ocrProgress}%` }}
-                                            className="h-full bg-brand-500"
-                                          />
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {!isScanning && dlVerified === true && (
-                                      <div className="flex items-center gap-1.5 text-brand-600 animate-in zoom-in-95 duration-300">
-                                        <CheckCircle className="w-3.5 h-3.5" />
-                                        <span className="text-[10px] font-black uppercase tracking-wider">AI Verified: Valid DL Found</span>
-                                      </div>
-                                    )}
-
-                                    {!isScanning && dlVerified === false && (
-                                      <div className="flex items-center gap-1.5 text-rose-500 animate-in shake duration-500">
-                                        <XCircle className="w-3.5 h-3.5" />
-                                        <span className="text-[10px] font-black uppercase tracking-wider text-rose-500">AI Warning: DL Match Failed</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-
-                                {/* OCR Progress & Badge for PAN */}
-                                {doc.id === "pan" && (
-                                  <div className="mt-2 px-1">
-                                    {(isScanning && doc.state === null) && (
-                                      <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1">
-                                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-brand-500">
-                                          <span>AI Scanning PAN...</span>
-                                          <span>{ocrProgress}%</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-brand-50 rounded-full overflow-hidden">
-                                          <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${ocrProgress}%` }}
-                                            className="h-full bg-brand-500"
-                                          />
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {!isScanning && panVerified === true && (
-                                      <div className="flex items-center gap-1.5 text-brand-600 animate-in zoom-in-95 duration-300">
-                                        <CheckCircle className="w-3.5 h-3.5" />
-                                        <span className="text-[10px] font-black uppercase tracking-wider">AI Verified: Valid PAN Found</span>
-                                      </div>
-                                    )}
-
-                                    {!isScanning && panVerified === false && (
-                                      <div className="flex items-center gap-1.5 text-rose-500 animate-in shake duration-500">
-                                        <XCircle className="w-3.5 h-3.5" />
-                                        <span className="text-[10px] font-black uppercase tracking-wider text-rose-500">AI Warning: PAN Match Failed</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-
-                                {/* OCR Progress & Badge for Aadhar */}
-                                {doc.id === "aadhar" && (
-                                  <div className="mt-2 px-1">
-                                    {(isScanning && doc.state === null) && (
-                                      <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1">
-                                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-brand-500">
-                                          <span>AI Scanning Aadhar...</span>
-                                          <span>{ocrProgress}%</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-brand-50 rounded-full overflow-hidden">
-                                          <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${ocrProgress}%` }}
-                                            className="h-full bg-brand-500"
-                                          />
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {!isScanning && aadharVerified === true && (
-                                      <div className="flex items-center gap-1.5 text-brand-600 animate-in zoom-in-95 duration-300">
-                                        <CheckCircle className="w-3.5 h-3.5" />
-                                        <span className="text-[10px] font-black uppercase tracking-wider">AI Verified: Valid Aadhar Found</span>
-                                      </div>
-                                    )}
-
-                                    {!isScanning && aadharVerified === false && (
-                                      <div className="flex items-center gap-1.5 text-rose-500 animate-in shake duration-500">
-                                        <XCircle className="w-3.5 h-3.5" />
-                                        <span className="text-[10px] font-black uppercase tracking-wider text-rose-500">AI Warning: Aadhar Match Failed</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
                               </div>
                             ))}
                             <p className="text-[10px] text-gray-400 italic px-1 flex items-center gap-1.5">
@@ -935,8 +872,8 @@ const DeliveryAuth = () => {
                             </button>
                             <button
                               onClick={handleSendOtp}
-                              disabled={loading || dlVerified !== true || panVerified !== true || aadharVerified !== true}
-                              className="flex-[2] py-4 bg-black  text-primary-foreground rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                              disabled={loading}
+                              className="flex-[2] py-4 bg-black  text-white rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                               {loading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -989,7 +926,7 @@ const DeliveryAuth = () => {
                       <button
                         onClick={handleSendOtp}
                         disabled={loading}
-                        className="w-full py-4 bg-black  text-primary-foreground rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-60"
+                        className="w-full py-4 bg-black  text-white rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-60"
                       >
                         {loading ? (
                           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -1069,7 +1006,7 @@ const DeliveryAuth = () => {
                   <button
                     onClick={handleVerifyOtp}
                     disabled={!agreed || otp.some((d) => !d) || loading}
-                    className="w-full py-4 bg-black  text-primary-foreground rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full py-4 bg-black  text-white rounded-2xl text-sm font-black tracking-widest uppercase shadow-lg shadow-brand-200 hover:bg-brand-700 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
