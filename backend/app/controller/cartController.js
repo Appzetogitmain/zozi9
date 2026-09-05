@@ -72,20 +72,39 @@ export const addToCart = async (req, res) => {
     const customerId = req.user.id;
     const { productId, quantity = 1, variantSku = "" } = req.body;
     const normalizedVariantSku = String(variantSku || "").trim();
-    const customerVisibleProduct = await getCustomerVisibleProductById(productId);
+    const customerVisibleProduct = await Product.findOne({
+      _id: productId,
+      ...CUSTOMER_VISIBLE_PRODUCT_MATCH,
+    }).select("_id sellerId").lean();
+
     if (!customerVisibleProduct) {
       return handleResponse(res, 404, "Product is not available for purchase");
     }
 
-    let cart = await Cart.findOne({ customerId });
+    let cart = await Cart.findOne({ customerId }).populate({
+      path: "items.productId",
+      select: "sellerId",
+    });
 
     if (!cart) {
       cart = new Cart({ customerId, items: [] });
+    } else if (cart.items.length > 0) {
+      const existingSellerId = cart.items[0].productId?.sellerId;
+      if (
+        existingSellerId &&
+        existingSellerId.toString() !== customerVisibleProduct.sellerId?.toString()
+      ) {
+        return handleResponse(
+          res,
+          400,
+          "You can only order from one seller at a time. Please complete or clear your current cart before adding products from a different seller.",
+        );
+      }
     }
 
     const itemIndex = cart.items.findIndex(
       (item) =>
-        item.productId.toString() === productId &&
+        item.productId._id.toString() === productId &&
         String(item.variantSku || "").trim() === normalizedVariantSku,
     );
 
@@ -94,6 +113,12 @@ export const addToCart = async (req, res) => {
     } else {
       cart.items.push({ productId, variantSku: normalizedVariantSku, quantity });
     }
+
+    // Depopulate before save
+    cart.items = cart.items.map(item => ({
+        ...item.toObject ? item.toObject() : item,
+        productId: item.productId._id || item.productId
+    }));
 
     await cart.save();
     const updatedCart = await fetchPopulatedCart(cart._id);

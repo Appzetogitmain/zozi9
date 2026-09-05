@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useRef } from "react";
+import { toast } from "sonner";
 import { customerApi } from "../services/customerApi";
 import { useAuth } from "../../../core/context/AuthContext";
 
@@ -165,6 +166,7 @@ export const CartProvider = ({ children }) => {
       } catch (error) {
         pendingRequestsRef.current -= 1;
         console.error("Error adding to cart on backend", error);
+        toast.error(error.response?.data?.message || "Failed to add to cart");
         // Re-fetch entire cart to ensure consistency on error
         if (pendingRequestsRef.current === 0) {
           await fetchCart();
