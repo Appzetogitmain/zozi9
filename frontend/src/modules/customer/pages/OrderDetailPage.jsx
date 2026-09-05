@@ -62,6 +62,20 @@ const DEFAULT_CITY_SPEED_KMPH = 24;
 const ROUTE_REFRESH_THRESHOLD_M = 150;
 const ROUTE_REFRESH_INTERVAL_MS = 10 * 60 * 1000;
 
+const loadRazorpay = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 const toRadians = (value) => (value * Math.PI) / 180;
 
 const distanceMeters = (from, to) => {
@@ -161,6 +175,7 @@ const OrderDetailPage = () => {
   const routeOriginRef = useRef(null);
   const routeRequestRef = useRef({ phase: "", startedAt: 0 });
   const [returnCountdown, setReturnCountdown] = useState(null);
+  const [isPaying, setIsPaying] = useState(false);
   const refreshRef = useRef({ inFlight: false, lastAt: 0 });
   const identifiersRef = useRef([]);
   const extraRoomRef = useRef("");
@@ -727,26 +742,97 @@ const OrderDetailPage = () => {
   };
 
   const handleRetryPayment = async () => {
+    if (!order || isPaying) return;
+
+    setIsPaying(true);
     try {
-      if (!order) return;
+      const sdkLoaded = await loadRazorpay();
+      if (!sdkLoaded) {
+        throw new Error("Razorpay SDK failed to load");
+      }
+
       const paymentRef =
         Number(order.checkoutGroupSize || 1) > 1
-          ? (order.checkoutGroupId || order.orderId)
+          ? order.checkoutGroupId || order.orderId
           : order.orderId;
+
       const response = await customerApi.createPaymentOrder({
         orderRef: paymentRef,
       });
-      if (response.data.success && response.data.result?.redirectUrl) {
-        window.location.href = response.data.result.redirectUrl;
-      } else {
-        toast.error(response.data.message || "Failed to initiate payment");
+
+      if (!response.data.success || !response.data.result?.gatewayOrderId) {
+        throw new Error(
+          response.data.message || "Failed to initiate payment gateway",
+        );
       }
+
+      const { gatewayOrderId, amount, keyId } = response.data.result;
+      if (!keyId) {
+        throw new Error("Payment key is missing from server response");
+      }
+
+      const options = {
+        key: keyId,
+        amount,
+        currency: "INR",
+        name: "Zozi9",
+        description: `Payment for order #${String(order.orderId || "").slice(-8)}`,
+        order_id: gatewayOrderId,
+        handler: async function (rzpResponse) {
+          try {
+            const verifyRes = await customerApi.verifyClientPayment({
+              razorpay_order_id: rzpResponse.razorpay_order_id,
+              razorpay_payment_id: rzpResponse.razorpay_payment_id,
+              razorpay_signature: rzpResponse.razorpay_signature,
+            });
+            if (verifyRes.data.success) {
+              toast.success("Payment successful!");
+              const refreshed = await customerApi.getOrderDetails(orderId);
+              if (refreshed.data?.success && refreshed.data?.result) {
+                setOrder(refreshed.data.result);
+              } else {
+                window.location.reload();
+              }
+            } else {
+              throw new Error(
+                verifyRes.data.message || "Payment verification failed",
+              );
+            }
+          } catch (error) {
+            toast.error(
+              error?.response?.data?.message ||
+                error?.message ||
+                "Payment verification failed",
+            );
+          } finally {
+            setIsPaying(false);
+          }
+        },
+        prefill: {
+          name: order?.customer?.name || order?.address?.name || "",
+          contact: order?.address?.phone || order?.customer?.phone || "",
+        },
+        theme: {
+          color: "#e21b70",
+        },
+        modal: {
+          ondismiss: () => setIsPaying(false),
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function () {
+        setIsPaying(false);
+        toast.error("Payment failed. Please try again.");
+      });
+      rzp.open();
     } catch (err) {
       console.error("[OrderDetailPage] Retry payment error:", err);
+      setIsPaying(false);
       toast.error(
         err?.response?.data?.message ||
-        err?.message ||
-        "Unable to start payment. Please try again later.",
+          err?.message ||
+          "Unable to start payment. Please try again later.",
       );
     }
   };
@@ -803,10 +889,20 @@ const OrderDetailPage = () => {
                 </p>
               </div>
               <button
+                type="button"
                 onClick={handleRetryPayment}
-                className="bg-black  hover:bg-brand-700 text-primary-foreground px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-brand-200 transition-all active:scale-95 flex items-center gap-2 uppercase tracking-wide shrink-0"
+                disabled={isPaying}
+                className="bg-black hover:bg-brand-700 disabled:opacity-60 disabled:pointer-events-none text-primary-foreground px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-brand-200 transition-all active:scale-95 flex items-center gap-2 uppercase tracking-wide shrink-0"
               >
-                Pay Now <ArrowRight size={14} />
+                {isPaying ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" /> Paying
+                  </>
+                ) : (
+                  <>
+                    Pay Now <ArrowRight size={14} />
+                  </>
+                )}
               </button>
             </div>
           </motion.div>
