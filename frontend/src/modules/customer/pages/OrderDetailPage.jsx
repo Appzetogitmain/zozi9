@@ -76,6 +76,20 @@ const loadRazorpay = () => {
   });
 };
 
+const loadRazorpay = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 const toRadians = (value) => (value * Math.PI) / 180;
 
 const distanceMeters = (from, to) => {
@@ -176,6 +190,7 @@ const OrderDetailPage = () => {
   const routeOriginRef = useRef(null);
   const routeRequestRef = useRef({ phase: "", startedAt: 0 });
   const [returnCountdown, setReturnCountdown] = useState(null);
+  const [isPaying, setIsPaying] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const refreshRef = useRef({ inFlight: false, lastAt: 0 });
   const identifiersRef = useRef([]);
@@ -761,10 +776,21 @@ const OrderDetailPage = () => {
         throw new Error("Razorpay SDK failed to load");
       }
 
+    if (!order || isPaying) return;
+
+    setIsPaying(true);
+    try {
+      const sdkLoaded = await loadRazorpay();
+      if (!sdkLoaded) {
+        throw new Error("Razorpay SDK failed to load");
+      }
+
       const paymentRef =
         Number(order.checkoutGroupSize || 1) > 1
           ? order.checkoutGroupId || order.orderId
+          ? order.checkoutGroupId || order.orderId
           : order.orderId;
+
 
       const response = await customerApi.createPaymentOrder({
         orderRef: paymentRef,
@@ -839,10 +865,11 @@ const OrderDetailPage = () => {
     } catch (err) {
       console.error("[OrderDetailPage] Retry payment error:", err);
       setIsPaying(false);
+      setIsPaying(false);
       toast.error(
         err?.response?.data?.message ||
-        err?.message ||
-        "Unable to start payment. Please try again later.",
+          err?.message ||
+          "Unable to start payment. Please try again later.",
       );
     }
   };
@@ -900,10 +927,22 @@ const OrderDetailPage = () => {
               </div>
               <button
                 type="button"
+                type="button"
                 onClick={handleRetryPayment}
                 disabled={isPaying}
                 className="bg-black hover:bg-brand-700 disabled:opacity-60 disabled:pointer-events-none text-primary-foreground px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-brand-200 transition-all active:scale-95 flex items-center gap-2 uppercase tracking-wide shrink-0"
+                disabled={isPaying}
+                className="bg-black hover:bg-brand-700 disabled:opacity-60 disabled:pointer-events-none text-primary-foreground px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-brand-200 transition-all active:scale-95 flex items-center gap-2 uppercase tracking-wide shrink-0"
               >
+                {isPaying ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" /> Paying
+                  </>
+                ) : (
+                  <>
+                    Pay Now <ArrowRight size={14} />
+                  </>
+                )}
                 {isPaying ? (
                   <>
                     <Loader2 size={14} className="animate-spin" /> Paying
