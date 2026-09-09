@@ -161,7 +161,8 @@ const OrderDetailPage = () => {
   const fileInputRef = useRef(null);
   const [liveLocation, setLiveLocation] = useState(null);
   const [trail, setTrail] = useState([]);
-  const [routePolyline, setRoutePolyline] = useState(null);
+  const [pickupRoute, setPickupRoute] = useState(null);
+  const [deliveryRoute, setDeliveryRoute] = useState(null);
   const [handoffOtp, setHandoffOtp] = useState(null);
   const [clockTick, setClockTick] = useState(Date.now());
   const parsedReturnWindowMinutes = parseInt(
@@ -384,7 +385,8 @@ const OrderDetailPage = () => {
     });
     const offRoute = subscribeToOrderRoute(orderId, (route) => {
       console.log(`[OrderDetailPage] Route update:`, route);
-      setRoutePolyline(route);
+      if (route?.phase === "delivery") setDeliveryRoute(route);
+      else if (route?.phase === "pickup") setPickupRoute(route);
     });
 
     return () => {
@@ -476,13 +478,7 @@ const OrderDetailPage = () => {
     status !== "cancelled";
   const sellerLocation = coordsToLatLng(order?.seller?.location?.coordinates);
   const routePhase = getTrackingRoutePhase(order);
-  const routeMatchesPhase =
-    routePhase === "pickup"
-      ? routePolyline?.phase
-        ? routePolyline.phase === routePhase
-        : !!routePolyline?.polyline
-      : routePolyline?.phase === routePhase;
-  const activeRoutePolyline = routeMatchesPhase ? routePolyline : null;
+  const activeRoutePolyline = routePhase === "pickup" ? pickupRoute : deliveryRoute;
   const estimatedArrival = useMemo(() => {
     if (!order) {
       return {
@@ -541,58 +537,72 @@ const OrderDetailPage = () => {
 
   useEffect(() => {
     if (!orderId || status === "delivered" || status === "cancelled") return;
-    if (!hasValidLatLng(liveLocation)) return;
-
-    const currentOrigin = {
-      lat: liveLocation.lat,
-      lng: liveLocation.lng,
-    };
-    const originDrift =
-      routeOriginRef.current && hasValidLatLng(routeOriginRef.current)
-        ? distanceMeters(routeOriginRef.current, currentOrigin)
-        : null;
-    const routeIsFresh =
-      activeRoutePolyline?.polyline &&
-      originDrift !== null &&
-      originDrift < ROUTE_REFRESH_THRESHOLD_M &&
-      routePhase === activeRoutePolyline?.phase;
-
-    if (routeIsFresh) return;
 
     const now = Date.now();
-    if (
-      routeRequestRef.current.phase === routePhase &&
-      now - routeRequestRef.current.startedAt < ROUTE_REFRESH_INTERVAL_MS &&
-      (originDrift === null || originDrift < ROUTE_REFRESH_THRESHOLD_M)
-    ) {
-      return;
-    }
-
-    routeRequestRef.current = { phase: routePhase, startedAt: now };
     let ignore = false;
 
-    customerApi
-      .getOrderRoute(orderId, {
-        phase: routePhase,
-        originLat: liveLocation.lat,
-        originLng: liveLocation.lng,
-        _t: now,
-      })
-      .then((response) => {
-        if (ignore) return;
-        const nextRoute = response.data?.result;
-        if (nextRoute?.polyline) {
-          setRoutePolyline(nextRoute);
-          routeOriginRef.current = currentOrigin;
+    // 1. ALWAYS fetch the delivery route if missing, because it's static (Store -> Customer)
+    if (!deliveryRoute?.polyline && sellerLocation?.lat) {
+      customerApi.getOrderRoute(orderId, { phase: "delivery", originLat: sellerLocation.lat, originLng: sellerLocation.lng, _t: now })
+        .then((res) => { if (!ignore && res.data?.result?.polyline) setDeliveryRoute(res.data.result); })
+        .catch(() => {});
+    }
+
+    // 2. Fetch active route (pickup or delivery) if we have the rider's live location
+    if (hasValidLatLng(liveLocation)) {
+      const currentOrigin = {
+        lat: liveLocation.lat,
+        lng: liveLocation.lng,
+      };
+      const originDrift =
+        routeOriginRef.current && hasValidLatLng(routeOriginRef.current)
+          ? distanceMeters(routeOriginRef.current, currentOrigin)
+          : null;
+      const routeIsFresh =
+        activeRoutePolyline?.polyline &&
+        originDrift !== null &&
+        originDrift < ROUTE_REFRESH_THRESHOLD_M &&
+        routePhase === activeRoutePolyline?.phase;
+
+      if (!routeIsFresh) {
+        const routeRequestRefCurrent = routeRequestRef.current;
+        if (
+          !(routeRequestRefCurrent.phase === routePhase &&
+          now - routeRequestRefCurrent.startedAt < ROUTE_REFRESH_INTERVAL_MS &&
+          (originDrift === null || originDrift < ROUTE_REFRESH_THRESHOLD_M))
+        ) {
+          routeRequestRef.current = { phase: routePhase, startedAt: now };
+
+          customerApi
+            .getOrderRoute(orderId, {
+              phase: routePhase,
+              originLat: liveLocation.lat,
+              originLng: liveLocation.lng,
+              _t: now,
+            })
+            .then((response) => {
+              if (ignore) return;
+              const nextRoute = response.data?.result;
+              if (nextRoute?.polyline) {
+                if (routePhase === "pickup") setPickupRoute(nextRoute);
+                else setDeliveryRoute(nextRoute);
+                routeOriginRef.current = currentOrigin;
+              }
+            })
+            .catch(() => { });
         }
-      })
-      .catch(() => { });
+      }
+    }
 
     return () => {
       ignore = true;
     };
   }, [
     activeRoutePolyline?.polyline,
+    pickupRoute?.polyline,
+    deliveryRoute?.polyline,
+    sellerLocation?.lat,
+    sellerLocation?.lng,
     liveLocation,
     orderId,
     routePhase,
@@ -801,8 +811,8 @@ const OrderDetailPage = () => {
           } catch (error) {
             toast.error(
               error?.response?.data?.message ||
-                error?.message ||
-                "Payment verification failed",
+              error?.message ||
+              "Payment verification failed",
             );
           } finally {
             setIsPaying(false);
@@ -831,8 +841,8 @@ const OrderDetailPage = () => {
       setIsPaying(false);
       toast.error(
         err?.response?.data?.message ||
-          err?.message ||
-          "Unable to start payment. Please try again later.",
+        err?.message ||
+        "Unable to start payment. Please try again later.",
       );
     }
   };
@@ -927,7 +937,8 @@ const OrderDetailPage = () => {
                   : activeRoutePolyline?.destination || null
               }
               routePhase={routePhase}
-              routePolyline={activeRoutePolyline}
+              pickupRoute={pickupRoute}
+              deliveryRoute={deliveryRoute}
               onOpenInMaps={handleOpenInMaps}
             />
           </motion.div>
@@ -1296,14 +1307,20 @@ const OrderDetailPage = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative z-10 w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 space-y-4"
+            className="relative z-10 w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh]"
           >
-            <h3 className="text-lg font-black text-slate-900">
-              Request Return
-            </h3>
-            <p className="text-xs text-slate-500">
-              Select the items you want to return and tell us why.
-            </p>
+            {/* Header */}
+            <div className="p-6 pb-4 shrink-0 border-b border-slate-100">
+              <h3 className="text-lg font-black text-slate-900">
+                Request Return
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Select the items you want to return and tell us why.
+              </p>
+            </div>
+
+            {/* Scrollable Body */}
+            <div className="p-6 overflow-y-auto space-y-4 custom-scrollbar">
             <div className="max-h-48 overflow-y-auto space-y-3">
               {order.items.map((item, idx) => {
                 const checked = !!selectedReturnItems[idx];
@@ -1417,16 +1434,19 @@ const OrderDetailPage = () => {
               </label>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
+            </div>
+
+            {/* Sticky Footer */}
+            <div className="p-6 pt-4 shrink-0 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 rounded-b-3xl">
               <button
                 onClick={() => !requestingReturn && setShowReturnModal(false)}
-                className="px-4 py-2 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors"
                 disabled={requestingReturn}>
                 Cancel
               </button>
               <button
                 onClick={handleReturnSubmit}
-                className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-70 transition-all"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-70 transition-all shadow-md"
                 disabled={requestingReturn}>
                 {requestingReturn ? "Submitting..." : "Submit Request"}
               </button>

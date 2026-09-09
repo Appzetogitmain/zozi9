@@ -16,6 +16,9 @@ const ROUTE_REFRESH_INTERVAL_MS = 10 * 60 * 1000;
 const RECENTER_INTERVAL_MS = 15000;
 const RIDER_FOCUS_RADIUS_M = 500;
 const LOCATION_POST_INTERVAL_MS = 5000;
+const SNAP_MAX_DISTANCE_M = 200;
+const BEARING_CHANGE_THRESHOLD_DEG = 10;
+const RIDER_ICON_SIZE = 48;
 
 // Container style will be 100% to fill parent
 const containerStyle = {
@@ -56,6 +59,91 @@ function distanceMeters(from, to) {
     Math.sin(dLat / 2) ** 2 +
     Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
   return 2 * r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * Find the closest point on a polyline path to the given position.
+ * Works with Google Maps LatLng objects or plain {lat, lng} objects.
+ * Returns { point: {lat, lng}, segmentIndex, bearing } or null.
+ */
+function snapToPolyline(riderPos, path) {
+  if (!riderPos || !path || path.length < 2) return null;
+
+  const rLat = riderPos.lat;
+  const rLng = riderPos.lng;
+  if (!Number.isFinite(rLat) || !Number.isFinite(rLng)) return null;
+
+  let bestDist = Infinity;
+  let bestPoint = null;
+  let bestSegIdx = 0;
+
+  for (let i = 0; i < path.length - 1; i++) {
+    const aLat = typeof path[i].lat === "function" ? path[i].lat() : path[i].lat;
+    const aLng = typeof path[i].lng === "function" ? path[i].lng() : path[i].lng;
+    const bLat = typeof path[i + 1].lat === "function" ? path[i + 1].lat() : path[i + 1].lat;
+    const bLng = typeof path[i + 1].lng === "function" ? path[i + 1].lng() : path[i + 1].lng;
+
+    // Vector AB
+    const abLat = bLat - aLat;
+    const abLng = bLng - aLng;
+    // Vector AP
+    const apLat = rLat - aLat;
+    const apLng = rLng - aLng;
+
+    const ab2 = abLat * abLat + abLng * abLng;
+    let t = ab2 === 0 ? 0 : (apLat * abLat + apLng * abLng) / ab2;
+    t = Math.max(0, Math.min(1, t));
+
+    const projLat = aLat + t * abLat;
+    const projLng = aLng + t * abLng;
+
+    const d = distanceMeters({ lat: rLat, lng: rLng }, { lat: projLat, lng: projLng });
+    if (d !== null && d < bestDist) {
+      bestDist = d;
+      bestPoint = { lat: projLat, lng: projLng };
+      bestSegIdx = i;
+    }
+  }
+
+  if (!bestPoint || bestDist > SNAP_MAX_DISTANCE_M) return null;
+
+  // Compute bearing of the segment the rider is snapped to
+  const aLat = typeof path[bestSegIdx].lat === "function" ? path[bestSegIdx].lat() : path[bestSegIdx].lat;
+  const aLng = typeof path[bestSegIdx].lng === "function" ? path[bestSegIdx].lng() : path[bestSegIdx].lng;
+  const bLat = typeof path[bestSegIdx + 1].lat === "function" ? path[bestSegIdx + 1].lat() : path[bestSegIdx + 1].lat;
+  const bLng = typeof path[bestSegIdx + 1].lng === "function" ? path[bestSegIdx + 1].lng() : path[bestSegIdx + 1].lng;
+  const bearing = computeBearing({ lat: aLat, lng: aLng }, { lat: bLat, lng: bLng });
+
+  return { point: bestPoint, segmentIndex: bestSegIdx, bearing, distance: bestDist };
+}
+
+/** Compute bearing in degrees (0-360, 0=north, 90=east) from A to B */
+function computeBearing(from, to) {
+  const lat1 = (from.lat * Math.PI) / 180;
+  const lat2 = (to.lat * Math.PI) / 180;
+  const dLng = ((to.lng - from.lng) * Math.PI) / 180;
+  const y = Math.sin(dLng) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+  const brng = (Math.atan2(y, x) * 180) / Math.PI;
+  return (brng + 360) % 360;
+}
+
+/**
+ * Draw the delivery icon rotated by `angleDeg` on an offscreen canvas.
+ * Returns a data:image/png URL. The icon PNG faces north (0°) by default.
+ */
+function rotateIconOnCanvas(image, angleDeg, size) {
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, size, size);
+  ctx.save();
+  ctx.translate(size / 2, size / 2);
+  ctx.rotate((angleDeg * Math.PI) / 180);
+  ctx.drawImage(image, -size / 2, -size / 2, size, size);
+  ctx.restore();
+  return canvas.toDataURL("image/png");
 }
 
 function destinationForPhase(order, phase) {
@@ -123,6 +211,13 @@ const DeliveryTrackingMapComponent = ({
   const lastLocationPostRef = useRef(0);
   const locationInFlightRef = useRef(false);
   const locationAbortRef = useRef(null);
+
+  // Snap-to-polyline and rotation state
+  const [snappedRider, setSnappedRider] = useState(null);
+  const [riderBearing, setRiderBearing] = useState(0);
+  const lastBearingRef = useRef(0);
+  const iconImageRef = useRef(null);
+  const [rotatedIconUrl, setRotatedIconUrl] = useState(null);
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 
@@ -303,15 +398,57 @@ const DeliveryTrackingMapComponent = ({
     return [];
   }, [decodedPath]);
 
+  // Preload the delivery icon image for canvas rotation
+  useEffect(() => {
+    if (iconImageRef.current) return;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = deliveryIcon;
+    img.onload = () => {
+      iconImageRef.current = img;
+      // Generate initial (north-facing) icon
+      const url = rotateIconOnCanvas(img, 0, RIDER_ICON_SIZE);
+      setRotatedIconUrl(url);
+    };
+  }, []);
+
+  // Snap rider to polyline and compute bearing whenever rider or path changes
+  useEffect(() => {
+    if (!rider || !decodedPath?.length) {
+      setSnappedRider(null);
+      return;
+    }
+    const result = snapToPolyline(rider, decodedPath);
+    if (!result) {
+      setSnappedRider(null);
+      return;
+    }
+
+    setSnappedRider(result.point);
+
+    // Only update bearing if it changed significantly to avoid icon flickering
+    const diff = Math.abs(result.bearing - lastBearingRef.current);
+    const normalizedDiff = diff > 180 ? 360 - diff : diff;
+    if (normalizedDiff > BEARING_CHANGE_THRESHOLD_DEG) {
+      lastBearingRef.current = result.bearing;
+      setRiderBearing(result.bearing);
+      if (iconImageRef.current) {
+        const url = rotateIconOnCanvas(iconImageRef.current, result.bearing, RIDER_ICON_SIZE);
+        setRotatedIconUrl(url);
+      }
+    }
+  }, [rider, decodedPath]);
+
   const riderMarkerIcon = useMemo(() => {
     if (!isLoaded || !window.google?.maps) return undefined;
 
+    const iconUrl = rotatedIconUrl || deliveryIcon;
     return {
-      url: deliveryIcon,
-      scaledSize: new window.google.maps.Size(44, 64),
-      anchor: new window.google.maps.Point(22, 64),
+      url: iconUrl,
+      scaledSize: new window.google.maps.Size(RIDER_ICON_SIZE, RIDER_ICON_SIZE),
+      anchor: new window.google.maps.Point(RIDER_ICON_SIZE / 2, RIDER_ICON_SIZE / 2),
     };
-  }, [isLoaded]);
+  }, [isLoaded, rotatedIconUrl]);
 
   const customerMarkerIcon = useMemo(() => {
     if (!isLoaded || !window.google?.maps) return undefined;
@@ -334,10 +471,11 @@ const DeliveryTrackingMapComponent = ({
   }, [isLoaded]);
 
   const mapCenter = useMemo(() => {
+    if (snappedRider) return snappedRider;
     if (rider) return rider;
     if (dest) return dest;
     return { lat: 20.5937, lng: 78.9629 };
-  }, [rider, dest]);
+  }, [snappedRider, rider, dest]);
 
   const onMapLoad = useCallback((map) => {
     mapRef.current = map;
@@ -395,8 +533,9 @@ const DeliveryTrackingMapComponent = ({
     const map = mapRef.current;
     if (!map || !window.google) return;
 
-    if (rider) {
-      focusOnRider500m(map, rider);
+    const focusPos = snappedRider || rider;
+    if (focusPos) {
+      focusOnRider500m(map, focusPos);
       return;
     }
 
@@ -411,7 +550,7 @@ const DeliveryTrackingMapComponent = ({
     } catch {
       /* ignore */
     }
-  }, [linePath, rider, dest, focusOnRider500m]);
+  }, [linePath, rider, snappedRider, dest, focusOnRider500m]);
 
   // Smoothly keep rider centered and zoomed to 500m view.
   useEffect(() => {
@@ -421,13 +560,15 @@ const DeliveryTrackingMapComponent = ({
 
     const id = setInterval(() => {
       const currentMap = mapRef.current;
-      if (!currentMap || !rider) return;
-      currentMap.panTo(rider);
-      focusOnRider500m(currentMap, rider);
+      if (!currentMap) return;
+      const focusPos = snappedRider || rider;
+      if (!focusPos) return;
+      currentMap.panTo(focusPos);
+      focusOnRider500m(currentMap, focusPos);
     }, RECENTER_INTERVAL_MS);
 
     return () => clearInterval(id);
-  }, [isLoaded, rider?.lat, rider?.lng, focusOnRider500m]);
+  }, [isLoaded, rider?.lat, rider?.lng, snappedRider?.lat, snappedRider?.lng, focusOnRider500m]);
 
   // Add resize observer to handle dynamic height changes
   useEffect(() => {
@@ -438,8 +579,9 @@ const DeliveryTrackingMapComponent = ({
       window.google.maps.event.trigger(map, 'resize');
       // Re-focus rider after resize when available
       try {
-        if (rider) {
-          focusOnRider500m(map, rider);
+        const focusPos = snappedRider || rider;
+        if (focusPos) {
+          focusOnRider500m(map, focusPos);
           return;
         }
         const bounds = new window.google.maps.LatLngBounds();
@@ -518,11 +660,12 @@ const DeliveryTrackingMapComponent = ({
           fullscreenControl: false,
         }}
       >
-        {rider && (
+        {(snappedRider || rider) && (
           <Marker
-            position={rider}
+            position={snappedRider || rider}
             title="Your location"
             icon={riderMarkerIcon}
+            zIndex={100}
           />
         )}
         {dest && (

@@ -24,95 +24,112 @@ const InvoiceModal = ({ isOpen, onClose, order }) => {
                         onClick={onClose}
                         className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
                     >
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                            transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative"
-                        >
-                            {/* Header */}
-                            <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                                <div>
-                                    <h2 className="text-lg font-black text-slate-800">Invoice</h2>
-                                    <p className="text-xs text-slate-500 font-medium">#{order.id}</p>
-                                </div>
-                                <button onClick={onClose} className="p-2 bg-white rounded-full hover:bg-slate-200 transition-colors shadow-sm border border-slate-100">
-                                    <X size={20} className="text-slate-500" />
-                                </button>
-                            </div>
-
-                            {/* Printable Area */}
-                            <div className="p-8 space-y-6" id="printable-invoice">
-                                <div className="flex justify-between items-start">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                                transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="bg-white rounded-3xl w-full max-w-lg shadow-2xl relative print-modal-override"
+                            >
+                                {/* Header */}
+                                <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex items-center justify-between print:hidden">
                                     <div>
-                                        <h1 className="text-2xl font-black tracking-tight" style={{ color: primaryColor }}>{appName}</h1>
-                                        <p className="text-xs text-slate-500 mt-1">{settings?.companyName || 'Quick Commerce'}<br />{settings?.address || '—'}</p>
+                                        <h2 className="text-lg font-black text-slate-800">Invoice</h2>
+                                        <p className="text-xs text-slate-500 font-medium">#{order.orderId || order.id}</p>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-sm font-bold text-slate-800">Bill To:</p>
-                                        <p className="text-xs text-slate-500 mt-1">{order.address.name}<br />{order.address.phone}</p>
-                                    </div>
+                                    <button onClick={onClose} className="p-2 bg-white rounded-full hover:bg-slate-200 transition-colors shadow-sm border border-slate-100">
+                                        <X size={20} className="text-slate-500" />
+                                    </button>
                                 </div>
 
-                                <div className="border rounded-xl overflow-hidden border-slate-100">
-                                    <table className="w-full text-sm text-left">
-                                        <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
-                                            <tr>
-                                                <th className="px-4 py-3">Item</th>
-                                                <th className="px-4 py-3 text-right">Qty</th>
-                                                <th className="px-4 py-3 text-right">Price</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-50">
-                                            {order.items.map((item, idx) => (
-                                                <tr key={idx}>
-                                                    <td className="px-4 py-3 text-slate-700 font-medium">{item.name}</td>
-                                                    <td className="px-4 py-3 text-slate-500 text-right">{item.qty}</td>
-                                                    <td className="px-4 py-3 text-slate-800 font-bold text-right">₹{item.price}</td>
+                                {/* Printable Area */}
+                                <div className="p-8 space-y-6 bg-white" id="printable-invoice">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h1 className="text-2xl font-black tracking-tight" style={{ color: primaryColor }}>{appName}</h1>
+                                            <p className="text-xs text-slate-500 mt-1">{settings?.companyName || 'Quick Commerce'}<br />{settings?.address || '—'}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-sm font-bold text-slate-800">Bill To:</p>
+                                            <p className="text-xs text-slate-500 mt-1">{order.customer?.name || order.address?.name}<br />{order.customer?.phone || order.address?.phone}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="border rounded-xl overflow-hidden border-slate-100 print:border-none print:rounded-none">
+                                        <table className="w-full text-sm text-left">
+                                            <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                                                <tr>
+                                                    <th className="px-4 py-3">Item</th>
+                                                    <th className="px-4 py-3 text-right">Qty</th>
+                                                    <th className="px-4 py-3 text-right">Price</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-50">
+                                                {order.items?.map((item, idx) => (
+                                                    <tr key={idx}>
+                                                        <td className="px-4 py-3 text-slate-700 font-medium">{item.name}</td>
+                                                        <td className="px-4 py-3 text-slate-500 text-right">{item.quantity}</td>
+                                                        <td className="px-4 py-3 text-slate-800 font-bold text-right">₹{item.price}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div className="space-y-2 pt-2 border-t border-slate-100">
+                                        <div className="flex justify-between text-sm text-slate-500">
+                                            <span>Subtotal</span>
+                                            <span>₹{order.pricing?.subtotal || 0}</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm text-slate-500">
+                                            <span>Delivery Fee</span>
+                                            <span>₹{order.pricing?.deliveryFee || 0}</span>
+                                        </div>
+                                        <div className="flex justify-between text-base font-black text-slate-800 pt-2 border-t border-slate-100">
+                                            <span>Total Paid</span>
+                                            <span>₹{order.pricing?.total || 0}</span>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div className="space-y-2 pt-2 border-t border-slate-100">
-                                    <div className="flex justify-between text-sm text-slate-500">
-                                        <span>Subtotal</span>
-                                        <span>₹{order.bill.itemTotal}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm text-slate-500">
-                                        <span>Tax</span>
-                                        <span>₹{order.bill.tax}</span>
-                                    </div>
-                                    <div className="flex justify-between text-base font-black text-slate-800 pt-2 border-t border-slate-100">
-                                        <span>Total Paid</span>
-                                        <span>₹{order.bill.grandTotal}</span>
-                                    </div>
+                                {/* Footer Actions */}
+                                <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex gap-3 print:hidden">
+                                    <button onClick={handlePrint} className="flex-1 py-3 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-lg" style={{ backgroundColor: primaryColor }}>
+                                        <Printer size={18} /> Print
+                                    </button>
                                 </div>
-                            </div>
 
-                            {/* Footer Actions */}
-                            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex gap-3">
-                                <button onClick={handlePrint} className="flex-1 py-3 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-lg" style={{ backgroundColor: primaryColor }}>
-                                    <Printer size={18} /> Print
-                                </button>
-                                <button className="flex-1 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors">
-                                    <Download size={18} /> Save PDF
-                                </button>
-                            </div>
+                                <style>
+                                    {`
+                                        @media print {
+                                            body * { visibility: hidden; }
+                                            
+                                            /* Override modal container transform and constraints */
+                                            .print-modal-override {
+                                                position: absolute !important;
+                                                left: 0 !important;
+                                                top: 0 !important;
+                                                transform: none !important;
+                                                max-width: 100% !important;
+                                                width: 100% !important;
+                                                box-shadow: none !important;
+                                            }
 
-                            <style>
-                                {`
-                                    @media print {
-                                        body * { visibility: hidden; }
-                                        #printable-invoice, #printable-invoice * { visibility: visible; }
-                                        #printable-invoice { position: absolute; left: 0; top: 0; width: 100%; }
-                                    }
-                                `}
-                            </style>
-                        </motion.div>
+                                            #printable-invoice, #printable-invoice * { 
+                                                visibility: visible; 
+                                            }
+                                            
+                                            #printable-invoice { 
+                                                position: absolute; 
+                                                left: 0; 
+                                                top: 0; 
+                                                width: 100%; 
+                                            }
+                                        }
+                                    `}
+                                </style>
+                            </motion.div>
                     </motion.div>
                 </>
             )}

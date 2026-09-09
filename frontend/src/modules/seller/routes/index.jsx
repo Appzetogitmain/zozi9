@@ -58,8 +58,6 @@ const navItems = [
     icon: HiOutlineCurrencyDollar,
   },
   { label: "Profile", path: "/seller/profile", icon: HiOutlineUser },
-  { label: "Terms & Conditions", path: "/seller/terms", icon: HiOutlineArchiveBox },
-  { label: "Privacy Policy", path: "/seller/privacy", icon: HiOutlineArchiveBox },
 ];
 
 const SellerRoutes = () => {

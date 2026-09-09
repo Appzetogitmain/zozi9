@@ -1,0 +1,68 @@
+# Live Order Tracking for Customer App — Swiggy/Zomato-Style
+
+Implement a premium live tracking experience on the customer order detail page, showing the **full delivery journey** with two distinct route segments:
+
+1. **Delivery Partner → Seller** (pickup phase): shown as an **animated fly dotted line** (orange/green dashed)
+2. **Seller → Customer** (delivery phase): shown as a **solid polyline** (brand green)
+
+The map will show **all 3 markers** (customer, seller, delivery partner) at all times, with the delivery partner moving live.
+
+## Reference Design
+
+Based on the provided requirement: full-screen map with 3 pins (Customer, Seller, Rider), dotted line for pickup leg, solid polyline for delivery leg, floating ETA card, and a Route View legend panel. This mirrors the `DeliveryTrackingMap` but adapted for the customer view.
+
+---
+
+## Proposed Changes
+
+### 1. Customer Live Tracking Map
+
+#### [MODIFY] [LiveTrackingMap.jsx](file:///c:/Users/admin/Desktop/zozi9/frontend/src/modules/customer/components/order/LiveTrackingMap.jsx)
+
+Rewrite the customer-side tracking map to show:
+
+1. **All 3 markers always visible**: Customer (home pin), Seller/Store (store pin), Delivery Partner (bike icon with rotation).
+2. **Two route segments**:
+   - **Pickup leg** (rider → seller): Animated **dashed/dotted polyline** in orange (`#F97316`), with a CSS dash animation to create a "flying dots" effect.
+   - **Delivery leg** (seller → customer): **Solid polyline** in green/brand color (`#16A34A`).
+3. **Live rider snapping**: Snap the rider icon to the current-phase polyline (same logic as the delivery app).
+4. **Rotated rider icon**: Rotate the delivery bike icon based on segment bearing.
+5. **Auto-fit bounds**: Show all 3 markers + both routes within the visible map area.
+6. **Floating UI overlays**: ETA pill, Route View legend, and phase-aware status text.
+
+**Key implementation details**:
+- Use native `google.maps.Polyline` refs (not React `<Polyline>` components) to prevent duplicate overlays.
+- For the animated dotted line, use a `google.maps.Symbol` with animated `offset`.
+
+### 2. Customer Order Detail Page
+
+#### [MODIFY] [OrderDetailPage.jsx](file:///c:/Users/admin/Desktop/zozi9/frontend/src/modules/customer/pages/OrderDetailPage.jsx)
+
+Updates to pass additional data to the `LiveTrackingMap`:
+
+1. **Fetch both route segments**: When the rider is in the delivery phase, also fetch the pickup route so both can be displayed on the map simultaneously.
+2. **Pass both route polylines** (`pickupRoute` + `deliveryRoute`) to the map component instead of a single `routePolyline`.
+
+### 3. Order Progress Tracker Enhancement
+
+#### [MODIFY] [OrderProgressTracker.jsx](file:///c:/Users/admin/Desktop/zozi9/frontend/src/modules/customer/components/order/OrderProgressTracker.jsx)
+
+Update the progress tracker to show more granular steps matching the reference design:
+- **Order Placed** (with timestamp)
+- **Preparing**
+- **Out for Pickup** 
+- **Picked Up** 
+- **On the Way** 
+- **Delivered**
+
+---
+
+## Verification Plan
+
+### Manual Verification
+- View an active order in the customer app.
+- Verify all 3 markers (customer, store, rider) are visible.
+- Verify the dotted animated line shows from rider to seller.
+- Verify the solid polyline shows from seller to customer.
+- Verify the map auto-fits all markers.
+- Verify the enhanced progress tracker shows all 6 steps.

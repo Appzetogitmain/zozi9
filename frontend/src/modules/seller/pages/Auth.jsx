@@ -992,7 +992,7 @@ const Auth = () => {
                 </div>
               </form>
 
-              <div className="pt-1 border-t border-slate-50 flex flex-col items-center gap-1">
+              <div className="pt-4 mt-2 border-t border-slate-100 flex flex-col items-center gap-3">
                 <p className="text-slate-600 font-bold text-sm">
                   {isLogin ? "New to the platform?" : "Already part of us?"}{" "}
                   <button
@@ -1008,6 +1008,11 @@ const Auth = () => {
                     {isLogin ? "Register Store" : "Sign In"}
                   </button>
                 </p>
+                <div className="flex gap-4 text-xs font-semibold text-slate-400">
+                  <a href="/terms" target="_blank" rel="noopener noreferrer" className="hover:text-slate-700 transition-colors">Terms & Conditions</a>
+                  <span className="text-slate-300">•</span>
+                  <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-slate-700 transition-colors">Privacy Policy</a>
+                </div>
               </div>
             </motion.div>
           </AnimatePresence>
