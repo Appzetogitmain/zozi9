@@ -43,21 +43,42 @@ const ProductDetailSheet = () => {
 
     const scrollRef = useRef(null);
 
+    // Media follows the selected variant: its own images first, then its video.
+    // Falls back to the product-level images when the variant has none.
+    const variantVideo = selectedVariant?.video || '';
     const allImages = useMemo(() => {
         if (!selectedProduct) return [];
-        const images = [];
-        if (selectedProduct.mainImage) images.push(selectedProduct.mainImage);
-        else if (selectedProduct.image) images.push(selectedProduct.image);
+        const images = Array.isArray(selectedVariant?.images)
+            ? selectedVariant.images.filter(Boolean)
+            : [];
+        if (images.length === 0) {
+            if (selectedProduct.mainImage) images.push(selectedProduct.mainImage);
+            else if (selectedProduct.image) images.push(selectedProduct.image);
 
-        if (selectedProduct.galleryImages && Array.isArray(selectedProduct.galleryImages)) {
-            images.push(...selectedProduct.galleryImages);
+            if (selectedProduct.galleryImages && Array.isArray(selectedProduct.galleryImages)) {
+                images.push(...selectedProduct.galleryImages);
+            }
         }
+        if (variantVideo) images.push(variantVideo);
         return images.length > 0
           ? images
           : [
               "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&q=80&w=400&h=400",
             ];
-    }, [selectedProduct]);
+    }, [selectedProduct, selectedVariant, variantVideo]);
+    const isVideoMedia = (src) => !!variantVideo && src === variantVideo;
+
+    const scrollToMedia = (index) => {
+        setActiveImageIndex(index);
+        const el = scrollRef.current;
+        if (el) el.scrollTo({ left: index * el.offsetWidth, behavior: 'smooth' });
+    };
+
+    // Jump back to the first photo when the shopper switches variant
+    useEffect(() => {
+        setActiveImageIndex(0);
+        if (scrollRef.current) scrollRef.current.scrollTo({ left: 0 });
+    }, [selectedVariant?.sku, selectedVariant?.name]);
 
     // Update variant when product changes
     useEffect(() => {
@@ -358,7 +379,14 @@ const ProductDetailSheet = () => {
                                                                 : 'border-gray-200/60 opacity-50 hover:opacity-90 bg-white/60'
                                                         )}
                                                     >
-                                                        <img src={applyCloudinaryTransform(img, "f_auto,q_auto:best,w_160,dpr_auto")} alt="" loading="lazy" className="w-full h-full object-contain p-1.5" />
+                                                        {isVideoMedia(img) ? (
+                                                            <span className="relative block w-full h-full bg-slate-900">
+                                                                <video src={img} muted preload="metadata" className="w-full h-full object-cover" />
+                                                                <span className="absolute inset-0 flex items-center justify-center text-white text-lg">▶</span>
+                                                            </span>
+                                                        ) : (
+                                                            <img src={applyCloudinaryTransform(img, "f_auto,q_auto:best,w_160,dpr_auto")} alt="" loading="lazy" className="w-full h-full object-contain p-1.5" />
+                                                        )}
                                                     </motion.button>
                                                 ))}
                                             </div>
@@ -367,16 +395,29 @@ const ProductDetailSheet = () => {
                                         {/* Main image viewer */}
                                         <div className="flex-1 flex items-center justify-center p-6 lg:p-8 relative min-h-[350px]">
                                             <AnimatePresence mode="wait">
-                                                <motion.img
-                                                    key={activeImageIndex}
-                                                    initial={{ scale: 0.93, opacity: 0 }}
-                                                    animate={{ scale: 1, opacity: 1 }}
-                                                    exit={{ scale: 0.93, opacity: 0 }}
-                                                    transition={{ duration: 0.15 }}
-                                                    src={applyCloudinaryTransform(allImages[activeImageIndex], "f_auto,q_auto:best,w_1200,dpr_auto")}
-                                                    alt={`${selectedProduct.name} ${activeImageIndex + 1}`}
-                                                    className="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl hover:scale-[1.03] transition-transform duration-500 absolute inset-0 m-auto p-12"
-                                                />
+                                                {isVideoMedia(allImages[activeImageIndex]) ? (
+                                                    <motion.video
+                                                        key={`video-${activeImageIndex}`}
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        exit={{ opacity: 0 }}
+                                                        src={allImages[activeImageIndex]}
+                                                        controls
+                                                        playsInline
+                                                        className="w-full h-full object-contain absolute inset-0 m-auto p-6 rounded-2xl"
+                                                    />
+                                                ) : (
+                                                    <motion.img
+                                                        key={activeImageIndex}
+                                                        initial={{ scale: 0.93, opacity: 0 }}
+                                                        animate={{ scale: 1, opacity: 1 }}
+                                                        exit={{ scale: 0.93, opacity: 0 }}
+                                                        transition={{ duration: 0.15 }}
+                                                        src={applyCloudinaryTransform(allImages[activeImageIndex], "f_auto,q_auto:best,w_1200,dpr_auto")}
+                                                        alt={`${selectedProduct.name} ${activeImageIndex + 1}`}
+                                                        className="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl hover:scale-[1.03] transition-transform duration-500 absolute inset-0 m-auto p-12"
+                                                    />
+                                                )}
                                             </AnimatePresence>
                                         </div>
                                     </div>
@@ -797,15 +838,24 @@ const ProductDetailSheet = () => {
                                 >
                                     {allImages.map((img, i) => (
                                         <div key={i} className="flex-shrink-0 w-full h-full snap-center flex items-center justify-center px-0 sm:px-4">
-                                            <motion.img
-                                                initial={{ scale: 0.8, opacity: 0 }}
-                                                animate={{ scale: 1, opacity: 1 }}
-                                                transition={{ duration: 0.4 }}
-                                                src={applyCloudinaryTransform(img, "f_auto,q_auto:best,w_1200,dpr_auto")}
-                                                alt={`${selectedProduct.name} ${i + 1}`}
-                                                className="w-full h-full object-contain mix-blend-multiply drop-shadow-xl"
-                                                style={{ objectPosition: 'center calc(50% - 40px)' }}
-                                            />
+                                            {isVideoMedia(img) ? (
+                                                <video
+                                                    src={img}
+                                                    controls
+                                                    playsInline
+                                                    className="w-full h-full object-contain p-2"
+                                                />
+                                            ) : (
+                                                <motion.img
+                                                    initial={{ scale: 0.8, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    transition={{ duration: 0.4 }}
+                                                    src={applyCloudinaryTransform(img, "f_auto,q_auto:best,w_1200,dpr_auto")}
+                                                    alt={`${selectedProduct.name} ${i + 1}`}
+                                                    className="w-full h-full object-contain mix-blend-multiply drop-shadow-xl"
+                                                    style={{ objectPosition: 'center calc(50% - 40px)' }}
+                                                />
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -814,8 +864,11 @@ const ProductDetailSheet = () => {
                                 {allImages.length > 1 && (
                                     <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10">
                                         {allImages.map((_, i) => (
-                                            <div
+                                            <button
                                                 key={i}
+                                                type="button"
+                                                aria-label={`Show media ${i + 1}`}
+                                                onClick={() => scrollToMedia(i)}
                                                 className={cn(
                                                     "h-1.5 rounded-full transition-all duration-300",
                                                     i === activeImageIndex ? "w-6 bg-primary" : "w-1.5 bg-gray-300"
@@ -825,6 +878,32 @@ const ProductDetailSheet = () => {
                                     </div>
                                 )}
                             </div>
+
+                            {/* Mobile thumbnails: tap to jump to a photo or the video */}
+                            {allImages.length > 1 && (
+                                <div className="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+                                    {allImages.map((img, i) => (
+                                        <button
+                                            key={i}
+                                            type="button"
+                                            onClick={() => scrollToMedia(i)}
+                                            className={cn(
+                                                "relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border-2 bg-white transition-all",
+                                                i === activeImageIndex ? "border-primary" : "border-gray-200 opacity-60"
+                                            )}
+                                        >
+                                            {isVideoMedia(img) ? (
+                                                <span className="relative block w-full h-full bg-slate-900">
+                                                    <video src={img} muted preload="metadata" className="w-full h-full object-cover" />
+                                                    <span className="absolute inset-0 flex items-center justify-center text-white text-lg">▶</span>
+                                                </span>
+                                            ) : (
+                                                <img src={applyCloudinaryTransform(img, "f_auto,q_auto:best,w_160,dpr_auto")} alt="" loading="lazy" className="w-full h-full object-contain p-1" />
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
 
                             {/* Product Info Container */}
                             <div className="px-5 pt-2 pb-6">

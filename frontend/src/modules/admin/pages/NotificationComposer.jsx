@@ -26,6 +26,7 @@ import { useSettings } from '@core/context/SettingsContext';
 import { Smile } from 'lucide-react';
 import axiosInstance from '@core/api/axios';
 import { adminApi } from '../services/adminApi';
+import ImageSpecHint, { checkImageSpec } from '@shared/components/ui/ImageSpecHint';
 
 const EMOJIS = [
     '🔥', '🎉', '✅', '⚡', '💥', '💸', '🛍️', '🎁', '🚚', '📦',
@@ -166,6 +167,7 @@ const NotificationComposer = () => {
             if (e.target) e.target.value = '';
             return;
         }
+        checkImageSpec(file, 'notification').then((w) => w && showToast(w, 'warning'));
 
         const reader = new FileReader();
         reader.onload = (evt) => {
@@ -366,6 +368,7 @@ const NotificationComposer = () => {
                                     </div>
                                     <div className="space-y-2">
                                         <label className="ds-label">Image (Optional)</label>
+                                        <ImageSpecHint type="notification" />
                                         <input
                                             ref={imageInputRef}
                                             type="file"

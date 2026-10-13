@@ -25,6 +25,7 @@ import {
 import Modal from '@shared/components/ui/Modal';
 import Pagination from '@shared/components/ui/Pagination';
 import { cn } from '@/lib/utils';
+import ImageSpecHint, { checkImageSpec } from '@shared/components/ui/ImageSpecHint';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ProductManagement = () => {
@@ -252,6 +253,7 @@ const ProductManagement = () => {
             return;
         }
 
+        files.slice(0, 1).forEach((f) => checkImageSpec(f, 'product').then((w) => w && toast.warning(w)));
         if (type === 'main') {
             const file = files[0];
             const reader = new FileReader();
@@ -967,6 +969,7 @@ const ProductManagement = () => {
                                         <div className="ds-section-spacing animate-in fade-in slide-in-from-right-2 duration-300">
                                             <div className="space-y-3">
                                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Main Cover Photo</label>
+                                                <ImageSpecHint type="product" />
                                                 <div className="flex flex-col md:flex-row items-start gap-6">
                                                     <div className="w-48 aspect-square rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center group hover:border-primary hover:bg-primary/5 transition-all cursor-pointer overflow-hidden relative">
                                                         <input

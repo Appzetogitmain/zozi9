@@ -14,12 +14,17 @@ import {
   HiOutlineTrash,
   HiOutlinePlus,
   HiOutlineSquaresPlus,
+  HiOutlineVideoCamera,
 } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { sellerApi } from "../services/sellerApi";
+import ImageSpecHint, { IMAGE_SPECS, checkImageSpec } from "@shared/components/ui/ImageSpecHint";
 
+
+const MAX_VARIANT_IMAGES = 4;
+const MAX_VIDEO_SIZE_MB = 50;
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -160,19 +165,20 @@ const AddProduct = () => {
       // Tags
       data.append("tags", formData.tags);
 
-      // Images
-      if (formData.mainImageFile) {
-        data.append("mainImage", formData.mainImageFile);
-      }
-
-      if (formData.galleryFiles && formData.galleryFiles.length > 0) {
-        formData.galleryFiles.forEach(file => {
-          data.append("galleryImages", file);
-        });
-      }
-
-      // Variants
-      data.append("variants", JSON.stringify(formData.variants));
+      // Variants (media is sent as files; the JSON only carries stored URLs)
+      const variantsPayload = formData.variants.map((variant, idx) => {
+        const { images = [], video, ...rest } = variant;
+        images
+          .filter((img) => img.file)
+          .forEach((img) => data.append(`variantImages_${idx}`, img.file));
+        if (video?.file) data.append(`variantVideo_${idx}`, video.file);
+        return {
+          ...rest,
+          images: images.filter((img) => !img.file).map((img) => img.src),
+          video: video && !video.file ? video.src : "",
+        };
+      });
+      data.append("variants", JSON.stringify(variantsPayload));
 
       const response = await sellerApi.createProduct(data);
       const approvalStatus = response?.data?.result?.approvalStatus;
@@ -189,28 +195,62 @@ const AddProduct = () => {
     }
   };
 
-  const handleImageUpload = (e, type) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (type === "main") {
-          setFormData({
-            ...formData,
-            mainImage: reader.result,
-            mainImageFile: file
-          });
-        } else {
-          setFormData({
-            ...formData,
-            galleryImages: [...formData.galleryImages, reader.result],
-            galleryFiles: [...(formData.galleryFiles || []), file]
-          });
-        }
-      };
-      reader.readAsDataURL(file);
-    }
+  const updateVariant = (index, updater) =>
+    setFormData((prev) => ({
+      ...prev,
+      variants: prev.variants.map((v, i) => (i === index ? updater(v) : v)),
+    }));
+
+  const handleVariantImageUpload = (e, index) => {
+    const picked = Array.from(e.target.files || []);
+    e.target.value = "";
+    if (picked.length === 0) return;
+    const valid = picked.filter((f) => f.type.startsWith("image/"));
+    if (valid.length !== picked.length) toast.error("Only image files are allowed here");
+    valid.slice(0, 1).forEach((f) => checkImageSpec(f, "product").then((w) => w && toast.warning(w)));
+    updateVariant(index, (v) => {
+      const current = v.images || [];
+      const room = MAX_VARIANT_IMAGES - current.length;
+      if (valid.length > room) toast.error(`Maximum ${MAX_VARIANT_IMAGES} images per variant`);
+      const added = valid
+        .slice(0, Math.max(0, room))
+        .map((file) => ({ src: URL.createObjectURL(file), file }));
+      return { ...v, images: [...current, ...added] };
+    });
   };
+
+  const removeVariantImage = (index, imgIndex) =>
+    updateVariant(index, (v) => ({
+      ...v,
+      images: (v.images || []).filter((_, i) => i !== imgIndex),
+    }));
+
+  const handleVariantVideoUpload = (e, index) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("video/")) {
+      toast.error("Please select a video file (MP4 or WebM)");
+      return;
+    }
+    if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
+      toast.error(`Video must be smaller than ${MAX_VIDEO_SIZE_MB}MB`);
+      return;
+    }
+    updateVariant(index, (v) => ({
+      ...v,
+      video: { src: URL.createObjectURL(file), file },
+    }));
+  };
+
+  const removeVariantVideo = (index) =>
+    updateVariant(index, (v) => ({ ...v, video: null }));
+
+  const [mediaVariantIndex, setMediaVariantIndex] = useState(0);
+  const activeMediaIndex = Math.min(mediaVariantIndex, formData.variants.length - 1);
+  const activeMediaVariant = formData.variants[activeMediaIndex] || {};
+  const activeImages = activeMediaVariant.images || [];
+  const activeVideo = activeMediaVariant.video;
 
   return (
     <div className="max-w-6xl mx-auto space-y-4 pb-12">
@@ -591,83 +631,126 @@ const AddProduct = () => {
 
           {modalTab === "media" && (
             <div className="space-y-5 animate-in fade-in slide-in-from-right-2 duration-300">
-              {/* Main Image Section */}
+              {/* Variant selector */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
+                  Photos &amp; Video for Variant
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {formData.variants.map((variant, idx) => {
+                    const count = (variant.images || []).length;
+                    return (
+                      <button
+                        key={variant.id}
+                        type="button"
+                        onClick={() => setMediaVariantIndex(idx)}
+                        className={cn(
+                          "px-3 py-2 rounded-lg text-xs font-bold border transition-all",
+                          idx === activeMediaIndex
+                            ? "bg-primary/10 text-primary border-primary"
+                            : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50",
+                        )}>
+                        {variant.name || `Variant ${idx + 1}`}
+                        <span className="ml-2 text-[10px] font-semibold opacity-70">
+                          {count}/{MAX_VARIANT_IMAGES} photos{variant.video ? " + video" : ""}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-slate-500 font-medium ml-1">
+                  Each variant has its own {MAX_VARIANT_IMAGES} photos and 1 video. The first photo
+                  of a variant is its cover image.
+                </p>
+              </div>
+
+              {/* Variant photos */}
               <div className="space-y-3">
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
-                  Main Cover Photo
+                  Photos (Max {MAX_VARIANT_IMAGES})
                 </label>
-                <div className="flex flex-col md:flex-row items-start gap-4">
-                  <div className="w-48 aspect-square rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center group hover:border-primary hover:bg-primary/5 transition-all cursor-pointer overflow-hidden relative">
-                    <input
-                      type="file"
-                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                      onChange={(e) => handleImageUpload(e, "main")}
-                    />
-                    {formData.mainImage ? (
-                      <img
-                        src={formData.mainImage}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <>
-                        <HiOutlinePhoto className="h-10 w-10 text-slate-200 group-hover:text-primary transition-colors" />
-                        <p className="text-xs font-bold text-slate-600 mt-2 uppercase tracking-widest group-hover:text-primary">
-                          Upload Cover
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex-1 space-y-2 pt-2">
-                    <p className="text-xs font-bold text-slate-900">
-                      Choose a primary image
-                    </p>
-                    <p className="text-xs text-slate-600 font-medium leading-relaxed">
-                      We show this image on the search page and the main
-                      store listing. Make sure it is clear and bright.
-                    </p>
-                    <button className="text-xs font-black text-primary uppercase tracking-wider hover:underline">
-                      Pick from Library
-                    </button>
-                  </div>
+                <ImageSpecHint type="product" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {Array.from({ length: MAX_VARIANT_IMAGES }).map((_, i) => {
+                    const img = activeImages[i];
+                    return (
+                      <div
+                        key={i}
+                        className="aspect-square rounded-md border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center group hover:border-primary hover:bg-primary/5 transition-all cursor-pointer relative overflow-hidden">
+                        {img ? (
+                          <>
+                            <img src={img.src} alt="" className="w-full h-full object-cover" />
+                            {i === 0 && (
+                              <span className="absolute top-1 left-1 bg-primary text-white text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
+                                Cover
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeVariantImage(activeMediaIndex, i)}
+                              className="absolute top-1 right-1 z-20 p-1 bg-white/90 rounded-full text-slate-500 hover:text-rose-700 shadow">
+                              <HiOutlineTrash className="h-3.5 w-3.5" />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                              onChange={(e) => handleVariantImageUpload(e, activeMediaIndex)}
+                            />
+                            {i === 0 ? (
+                              <HiOutlinePhoto className="h-8 w-8 text-slate-200 group-hover:text-primary transition-colors" />
+                            ) : (
+                              <HiOutlinePlus className="h-5 w-5 text-slate-200 group-hover:text-primary transition-colors" />
+                            )}
+                            <p className="text-[8px] font-bold text-slate-600 mt-1 uppercase tracking-widest group-hover:text-primary">
+                              {i === 0 ? "Upload Cover" : "Add"}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Gallery Section */}
+              {/* Variant video */}
               <div className="space-y-3">
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
-                  Gallery Photos (Max 5)
+                  Video (Max 1, up to {MAX_VIDEO_SIZE_MB}MB)
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div
-                      key={i}
-                      className="aspect-square rounded-md border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center group hover:border-primary hover:bg-primary/5 transition-all cursor-pointer relative overflow-hidden">
-                      {formData.galleryImages[i - 1] ? (
-                        <img
-                          src={formData.galleryImages[i - 1]}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <>
-                          <input
-                            type="file"
-                            className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                            onChange={(e) => handleImageUpload(e, "gallery")}
-                          />
-                          <HiOutlinePlus className="h-5 w-5 text-slate-200 group-hover:text-primary transition-colors" />
-                          <p className="text-[8px] font-bold text-slate-600 mt-1 uppercase tracking-widest group-hover:text-primary">
-                            Add
-                          </p>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                <ImageSpecHint type="video" compact />
+                {activeVideo ? (
+                  <div className="relative w-full max-w-sm rounded-lg overflow-hidden bg-black">
+                    <video src={activeVideo.src} controls className="w-full max-h-56" />
+                    <button
+                      type="button"
+                      onClick={() => removeVariantVideo(activeMediaIndex)}
+                      className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full text-slate-500 hover:text-rose-700 shadow">
+                      <HiOutlineTrash className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-full max-w-sm h-28 rounded-md border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center group hover:border-primary hover:bg-primary/5 transition-all cursor-pointer relative overflow-hidden">
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm,video/quicktime"
+                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                      onChange={(e) => handleVariantVideoUpload(e, activeMediaIndex)}
+                    />
+                    <HiOutlineVideoCamera className="h-8 w-8 text-slate-200 group-hover:text-primary transition-colors" />
+                    <p className="text-[8px] font-bold text-slate-600 mt-1 uppercase tracking-widest group-hover:text-primary">
+                      Upload Video
+                    </p>
+                  </div>
+                )}
               </div>
 
               <p className="text-xs text-slate-600 font-medium italic text-center pt-4 border-t border-slate-50">
-                Quick Tip: Using WebP format at 800x800px makes your store load
-                3x faster.
+                Quick Tip: Square {IMAGE_SPECS.product.width}x{IMAGE_SPECS.product.height}px WebP photos look sharp on every phone and load fast.
               </p>
             </div>
           )}

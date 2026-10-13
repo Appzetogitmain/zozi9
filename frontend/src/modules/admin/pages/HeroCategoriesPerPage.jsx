@@ -10,6 +10,7 @@ import Card from "@shared/components/ui/Card";
 import Modal from "@shared/components/ui/Modal";
 import { useToast } from "@shared/components/ui/Toast";
 import { cn } from "@/lib/utils";
+import ImageSpecHint, { checkImageSpec } from "@shared/components/ui/ImageSpecHint";
 
 const emptyBannerItem = () => ({
   imageUrl: "",
@@ -140,6 +141,8 @@ export default function HeroCategoriesPerPage() {
 
   const handleBannerFileChange = async (idx, file) => {
     if (!file) return;
+    const sizeWarning = await checkImageSpec(file, "banner");
+    if (sizeWarning) showToast(sizeWarning, "warning");
     updateBannerItem(idx, { isUploading: true });
     try {
       const fd = new FormData();
@@ -334,13 +337,14 @@ export default function HeroCategoriesPerPage() {
                   Add banner
                 </button>
               </div>
+              <ImageSpecHint type="banner" className="mb-3" />
               <div className="space-y-3 max-h-48 overflow-y-auto">
                 {formBanners.map((item, idx) => (
                   <Card key={idx} className="p-3 bg-white border-slate-100">
                     <div className="flex items-start gap-3">
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-3">
-                          <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                          <div className="w-28 h-[52px] rounded-xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
                             {item.imageUrl ? (
                               <img
                                 src={item.imageUrl}

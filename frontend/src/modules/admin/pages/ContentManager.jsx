@@ -19,6 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { adminApi } from '../services/adminApi';
+import ImageSpecHint, { checkImageSpec } from '@shared/components/ui/ImageSpecHint';
 
 const DISPLAY_TYPES = [
     { id: 'banners', label: 'Banners' },
@@ -329,6 +330,8 @@ const ContentManager = () => {
 
     const handleBannerFileChange = async (idx, file) => {
         if (!file) return;
+        const sizeWarning = await checkImageSpec(file, 'banner');
+        if (sizeWarning) showToast(sizeWarning, 'warning');
         updateBannerItem(idx, { isUploading: true });
         try {
             const fd = new FormData();
@@ -600,13 +603,14 @@ const ContentManager = () => {
                                     Add banner
                                 </button>
                             </div>
+                            <ImageSpecHint type="banner" className="mb-3" />
                             <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
                                 {formData.bannerItems.map((item, idx) => (
                                     <Card key={idx} className="p-3 bg-white border-slate-100">
                                         <div className="flex items-start gap-3">
                                             <div className="flex-1 space-y-2">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center">
+                                                    <div className="w-28 h-[52px] rounded-xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center">
                                                         {item.imageUrl ? (
                                                             <img
                                                                 src={item.imageUrl}

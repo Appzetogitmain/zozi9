@@ -25,6 +25,7 @@ const ProductDetailPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeImage, setActiveImage] = useState('');
+    const [selectedVariantKey, setSelectedVariantKey] = useState('');
     const [reviews, setReviews] = useState([]);
     const [reviewLoading, setReviewLoading] = useState(false);
     const [isSubmittingReview, setIsSubmittingReview] = useState(false);
@@ -173,6 +174,21 @@ const ProductDetailPage = () => {
         );
     }
 
+    const variants = Array.isArray(product.variants) ? product.variants : [];
+    const selectedVariant =
+        variants.find((v) => (v.sku || v.name) === selectedVariantKey) || variants[0] || null;
+    const variantSku = String(selectedVariant?.sku || selectedVariant?.name || '').trim();
+    const variantVideo = selectedVariant?.video || '';
+    const variantImages = Array.isArray(selectedVariant?.images) ? selectedVariant.images.filter(Boolean) : [];
+    const mediaItems = [
+        ...(variantImages.length > 0 ? variantImages : product.images),
+        ...(variantVideo ? [variantVideo] : []),
+    ];
+    const currentMedia = mediaItems.includes(activeImage) ? activeImage : mediaItems[0] || activeImage;
+    const isVideo = (src) => !!variantVideo && src === variantVideo;
+    const displayPrice = selectedVariant?.price ?? product.price;
+    const displaySale = selectedVariant ? selectedVariant.salePrice : product.salePrice;
+
     const cartItem = cart.find(item => item.id === product.id);
     const quantity = cartItem ? cartItem.quantity : 0;
     const isWishlisted = isInWishlist(product.id);
@@ -186,12 +202,22 @@ const ProductDetailPage = () => {
             <div className="flex flex-col lg:flex-row gap-10 xl:gap-16">
                 <div className="lg:w-[45%] xl:w-[40%] space-y-4">
                     <div className="relative aspect-square rounded-[2rem] overflow-hidden bg-white border border-slate-100 shadow-sm transition-all hover:shadow-xl group">
-                        <img
-                            src={applyCloudinaryTransform(activeImage)}
-                            alt={product.name}
-                            loading="lazy"
-                            className="w-full h-full object-contain p-2 md:p-4 transition-transform duration-700 group-hover:scale-105"
-                        />
+                        {isVideo(currentMedia) ? (
+                            <video
+                                key={currentMedia}
+                                src={currentMedia}
+                                controls
+                                playsInline
+                                className="w-full h-full object-contain bg-black"
+                            />
+                        ) : (
+                            <img
+                                src={applyCloudinaryTransform(currentMedia)}
+                                alt={product.name}
+                                loading="lazy"
+                                className="w-full h-full object-contain p-2 md:p-4 transition-transform duration-700 group-hover:scale-105"
+                            />
+                        )}
                         <button
                             onClick={handleToggleWishlist}
                             className={cn(
@@ -204,16 +230,23 @@ const ProductDetailPage = () => {
                     </div>
 
                     <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                        {product.images.map((img, idx) => (
+                        {mediaItems.map((img, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => setActiveImage(img)}
                                 className={cn(
                                     "relative h-20 w-20 md:h-24 md:w-24 rounded-2xl overflow-hidden flex-shrink-0 transition-all border-2",
-                                    activeImage === img ? "border-primary shadow-lg scale-95" : "border-transparent opacity-70 hover:opacity-100"
+                                    currentMedia === img ? "border-primary shadow-lg scale-95" : "border-transparent opacity-70 hover:opacity-100"
                                 )}
                             >
-                                <img src={applyCloudinaryTransform(img)} alt={`Angle ${idx}`} loading="lazy" className="w-full h-full object-contain p-1" />
+                                {isVideo(img) ? (
+                                    <span className="relative block w-full h-full bg-slate-900">
+                                        <video src={img} muted preload="metadata" className="w-full h-full object-cover" />
+                                        <span className="absolute inset-0 flex items-center justify-center text-white text-xl">▶</span>
+                                    </span>
+                                ) : (
+                                    <img src={applyCloudinaryTransform(img)} alt={`Angle ${idx}`} loading="lazy" className="w-full h-full object-contain p-1" />
+                                )}
                             </button>
                         ))}
                     </div>
@@ -235,16 +268,43 @@ const ProductDetailPage = () => {
                         </h1>
 
                         <div className="flex items-baseline gap-4 mb-5">
-                            <span className="text-4xl font-black text-primary">₹{product.salePrice || product.price}</span>
-                            {(product.salePrice && product.salePrice < product.price) && (
-                                <span className="text-lg text-slate-400 line-through font-bold">₹{product.price}</span>
+                            <span className="text-4xl font-black text-primary">₹{displaySale || displayPrice}</span>
+                            {(displaySale && displaySale < displayPrice) && (
+                                <span className="text-lg text-slate-400 line-through font-bold">₹{displayPrice}</span>
                             )}
-                            {product.salePrice && product.salePrice < product.price && (
+                            {displaySale && displaySale < displayPrice && (
                                 <span className="text-xs bg-red-50 text-red-500 px-2 py-1 rounded-lg font-black uppercase">
-                                    {Math.round(((product.price - product.salePrice) / product.price) * 100)}% OFF
+                                    {Math.round(((displayPrice - displaySale) / displayPrice) * 100)}% OFF
                                 </span>
                             )}
                         </div>
+
+                        {variants.length > 0 && (
+                            <div className="mb-6">
+                                <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Select Variant</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {variants.map((v, idx) => {
+                                        const key = v.sku || v.name;
+                                        const active = (selectedVariant?.sku || selectedVariant?.name) === key;
+                                        return (
+                                            <button
+                                                key={key || idx}
+                                                onClick={() => {
+                                                    setSelectedVariantKey(key);
+                                                    setActiveImage('');
+                                                }}
+                                                className={cn(
+                                                    "px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all",
+                                                    active ? "border-primary bg-primary/10 text-primary" : "border-slate-200 text-slate-600 hover:border-slate-300"
+                                                )}
+                                            >
+                                                {v.name || `Option ${idx + 1}`}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
 
                         <p className="text-slate-600 text-lg leading-relaxed mb-6 font-medium max-w-2xl">
                             {product.description || "Fresh and premium quality product sourced directly from local vendors."}
@@ -271,7 +331,7 @@ const ProductDetailPage = () => {
                         ) : (
                             <Button
                                 onClick={() => {
-                                    addToCart(product);
+                                    addToCart({ ...product, variantSku });
                                     showToast(`${product.name} added to cart`, 'success');
                                 }}
                                 className="h-16 w-full sm:w-64 bg-primary hover:bg-[var(--brand-400)] text-white text-lg font-black rounded-2xl shadow-xl transition-all hover:-translate-y-1"

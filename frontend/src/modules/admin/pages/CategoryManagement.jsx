@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { adminApi } from '../services/adminApi';
 import { toast } from 'sonner';
+import ImageSpecHint from '@shared/components/ui/ImageSpecHint';
 
 const CategoryManagement = () => {
     const [categories, setCategories] = useState([]);
@@ -655,6 +656,7 @@ const CategoryManagement = () => {
                                             onChange={handleImageChange}
                                         />
                                     </div>
+                                    <ImageSpecHint type="category" />
                                     <div className="p-4 bg-slate-900 rounded-2xl text-white">
                                         <div className="flex flex-col items-center text-center">
                                             <Badge variant="primary" className="text-[7px] font-bold mb-1 uppercase tracking-widest">{formData.type}</Badge>

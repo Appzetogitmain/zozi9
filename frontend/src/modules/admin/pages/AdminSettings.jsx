@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@shared/components/ui/Toast';
 import { adminApi } from '../services/adminApi';
 import { useSettings } from '@core/context/SettingsContext';
+import ImageSpecHint, { checkImageSpec } from '@shared/components/ui/ImageSpecHint';
 
 const AdminSettings = () => {
     const normalizeProductApprovalConfig = (raw) => {
@@ -151,6 +152,7 @@ const AdminSettings = () => {
             showToast('Please select an image file (PNG, JPG, etc.)', 'error');
             return;
         }
+        checkImageSpec(file, 'logo').then((w) => w && showToast(w, 'warning'));
         setLogoUploading(true);
         try {
             const fd = new FormData();
@@ -177,6 +179,7 @@ const AdminSettings = () => {
             showToast('Please select an image file (PNG, ICO, etc.)', 'error');
             return;
         }
+        checkImageSpec(file, 'favicon').then((w) => w && showToast(w, 'warning'));
         setFaviconUploading(true);
         try {
             const fd = new FormData();
@@ -441,6 +444,7 @@ const AdminSettings = () => {
                                             )}
                                         </div>
                                         <input type="url" value={settings.logoUrl} onChange={(e) => handleInputChange('logoUrl', e.target.value)} placeholder="Or paste logo URL" className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20" />
+                                        <ImageSpecHint type="logo" />
                                     </div>
                                     <div className="space-y-3">
                                         <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Favicon</label>
@@ -474,6 +478,7 @@ const AdminSettings = () => {
                                             )}
                                         </div>
                                         <input type="url" value={settings.faviconUrl} onChange={(e) => handleInputChange('faviconUrl', e.target.value)} placeholder="Or paste favicon URL" className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-brand-500/20" />
+                                        <ImageSpecHint type="favicon" />
                                     </div>
                                 </div>
                                 <div className="space-y-3">

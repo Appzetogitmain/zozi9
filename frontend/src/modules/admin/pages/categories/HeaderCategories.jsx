@@ -43,6 +43,7 @@ import DiamondIcon from "@mui/icons-material/Diamond";
 import ColorLensIcon from "@mui/icons-material/ColorLens";
 import BuildIcon from "@mui/icons-material/Build";
 import LuggageIcon from "@mui/icons-material/Luggage";
+import ImageSpecHint from '@shared/components/ui/ImageSpecHint';
 
 const makeSlug = (value) =>
   String(value || "")
@@ -548,6 +549,7 @@ const HeaderCategories = () => {
                         accept="image/*"
                       />
                       <span className="text-xs text-gray-500">Custom Image</span>
+                      <ImageSpecHint type="category" compact className="mt-1" />
                     </div>
                   </div>
                   <p className="text-xs text-gray-500 text-center">

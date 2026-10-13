@@ -120,6 +120,8 @@ const productSchema = new mongoose.Schema(
                 salePrice: Number,
                 stock: Number,
                 sku: String,
+                images: [{ type: String }], // up to 4 images per variant
+                video: { type: String, default: "" }, // single video per variant
             }
         ],
         isFeatured: {

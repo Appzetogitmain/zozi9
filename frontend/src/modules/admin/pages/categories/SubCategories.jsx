@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { adminApi } from "../../services/adminApi";
 import { toast } from "sonner";
+import ImageSpecHint from '@shared/components/ui/ImageSpecHint';
 
 const makeSlug = (value) =>
   String(value || "")
@@ -541,6 +542,7 @@ const SubCategories = () => {
                     onChange={handleImageChange}
                     accept="image/*"
                   />
+                  <ImageSpecHint type="category" compact className="mt-1" />
                 </div>
 
                 <div className="space-y-2">

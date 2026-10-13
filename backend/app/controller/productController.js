@@ -1,4 +1,5 @@
 import Product from "../models/product.js";
+import Category from "../models/category.js";
 import { handleResponse } from "../utils/helper.js";
 import { slugify } from "../utils/slugify.js";
 import getPagination from "../utils/pagination.js";
@@ -117,6 +118,66 @@ function applyMediaFields(productData) {
   }
 }
 
+const MAX_VARIANT_IMAGES = 4;
+
+/**
+ * Uploads per-variant media sent as multipart files named
+ * `variantImages_<index>` (max 4 per variant) and `variantVideo_<index>`,
+ * and merges the resulting URLs into productData.variants[index].
+ * Variants in the JSON payload carry only already-uploaded (http) URLs.
+ */
+async function attachVariantMedia(productData, files = []) {
+  if (!Array.isArray(productData.variants)) return;
+
+  productData.variants = productData.variants.map((variant) => ({
+    ...variant,
+    images: parseImageList(variant?.images),
+    video: normalizeUrl(variant?.video),
+  }));
+
+  for (const file of files) {
+    const imageMatch = /^variantImages_(\d+)$/.exec(file.fieldname);
+    const videoMatch = /^variantVideo_(\d+)$/.exec(file.fieldname);
+    const match = imageMatch || videoMatch;
+    if (!match) continue;
+    const variant = productData.variants[Number(match[1])];
+    if (!variant) continue;
+
+    try {
+      if (imageMatch) {
+        if (variant.images.length >= MAX_VARIANT_IMAGES) continue;
+        variant.images.push(
+          await uploadToCloudinary(file.buffer, "products", {
+            mimeType: file.mimetype,
+            originalname: file.originalname,
+            resourceType: "image",
+          }),
+        );
+      } else {
+        if (!String(file.mimetype || "").startsWith("video/")) continue;
+        variant.video = await uploadToCloudinary(file.buffer, "products/videos", {
+          mimeType: file.mimetype,
+          originalname: file.originalname,
+          resourceType: "video",
+        });
+      }
+    } catch (err) {
+      console.error("Variant media upload failed:", err);
+    }
+  }
+
+  productData.variants.forEach((variant) => {
+    variant.images = variant.images.slice(0, MAX_VARIANT_IMAGES);
+  });
+
+  // Keep product-level cover/gallery in sync with the first variant for listings.
+  const first = productData.variants[0];
+  if (first?.images?.length > 0) {
+    if (!productData.mainImage) productData.mainImage = first.images[0];
+    if (!productData.galleryImages) productData.galleryImages = first.images.slice(1);
+  }
+}
+
 const RESTRICTED_MODERATION_FIELDS = [
   "approvalStatus",
   "approvalRequestedAt",
@@ -188,6 +249,64 @@ function buildAdminRejectedModerationUpdate(adminId, note = "") {
   };
 }
 
+const MAX_SEARCH_LENGTH = 60;
+const MAX_SEARCH_TOKENS = 6;
+
+const escapeRegex = (value) =>
+  String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * Builds a safe Mongo filter for a free-text product search.
+ * - user input is regex-escaped (no crashes / ReDoS from "(" or "[")
+ * - every word must match somewhere (so "rice basmati" finds "Basmati Rice")
+ * - a word can match name, brand, tags, sku, variant name/sku or category name
+ * Returns null when there is nothing searchable.
+ */
+async function buildProductSearchFilter(rawSearch) {
+  const normalized = String(rawSearch ?? "")
+    .normalize("NFKC")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, MAX_SEARCH_LENGTH);
+  if (!normalized) return null;
+
+  const tokens = [...new Set(normalized.toLowerCase().split(" "))]
+    .filter(Boolean)
+    .slice(0, MAX_SEARCH_TOKENS);
+  if (!tokens.length) return null;
+
+  const clauses = [];
+  for (const token of tokens) {
+    const pattern = new RegExp(escapeRegex(token), "i");
+
+    let categoryIds = [];
+    try {
+      const matched = await Category.find({ name: pattern }).select("_id").limit(50).lean();
+      categoryIds = matched.map((c) => c._id);
+    } catch {
+      categoryIds = [];
+    }
+
+    const or = [
+      { name: pattern },
+      { brand: pattern },
+      { tags: pattern },
+      { sku: pattern },
+      { "variants.name": pattern },
+      { "variants.sku": pattern },
+    ];
+    if (categoryIds.length) {
+      or.push(
+        { headerId: { $in: categoryIds } },
+        { categoryId: { $in: categoryIds } },
+        { subcategoryId: { $in: categoryIds } },
+      );
+    }
+    clauses.push({ $or: or });
+  }
+  return { $and: clauses };
+}
+
 /* ===============================
    GET ALL PRODUCTS (Public/Admin)
 ================================ */
@@ -214,8 +333,9 @@ export const getProducts = async (req, res) => {
     const enforceRadius = isCustomerVisibilityRequest(req);
 
     const query = {};
-    if (search) {
-      query.name = { $regex: search, $options: "i" };
+    const searchFilter = await buildProductSearchFilter(search);
+    if (searchFilter) {
+      query.$and = searchFilter.$and;
     }
 
     // Support both field names for flexibility (backward compatibility)
@@ -607,6 +727,7 @@ export const createProduct = async (req, res) => {
         console.error("Failed to parse variants JSON:", e);
       }
     }
+    await attachVariantMedia(productData, files);
     if (typeof productData.tags === "string" && productData.tags.startsWith("[")) {
       try {
         productData.tags = JSON.parse(productData.tags);
@@ -866,6 +987,7 @@ export const updateProduct = async (req, res) => {
         console.error("Failed to parse variants JSON during update:", e);
       }
     }
+    await attachVariantMedia(productData, files);
     if (typeof productData.tags === "string" && productData.tags.startsWith("[")) {
       try {
         productData.tags = JSON.parse(productData.tags);
@@ -1134,7 +1256,7 @@ export const getModerationProducts = async (req, res) => {
     }
 
     if (search && String(search).trim()) {
-      const term = String(search).trim();
+      const term = escapeRegex(String(search).trim().slice(0, MAX_SEARCH_LENGTH));
       baseQuery.$or = [
         { name: { $regex: term, $options: "i" } },
         { slug: { $regex: term, $options: "i" } },
