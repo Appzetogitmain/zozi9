@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { sellerApi } from "../services/sellerApi";
 import ImageSpecHint, { IMAGE_SPECS, checkImageSpec } from "@shared/components/ui/ImageSpecHint";
+import SearchableSelect from "@shared/components/ui/SearchableSelect";
 
 
 const MAX_VARIANT_IMAGES = 4;
@@ -566,40 +567,26 @@ const AddProduct = () => {
                   <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                     Main Group <span className="text-rose-700">*</span>
                   </label>
-                  <select
+                  <SearchableSelect
                     value={formData.header}
-                    onChange={(e) =>
-                      setFormData({ ...formData, header: e.target.value, category: "", subcategory: "" })
-                    }
-                    className="w-full px-4 py-2.5 bg-slate-100 border-none rounded-md text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-primary/5 transition-all">
-                    <option value="">Select Main Group</option>
-                    {categories.map((h) => (
-                      <option key={h._id || h.id} value={h._id || h.id}>
-                        {h.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(v) => setFormData({ ...formData, header: v, category: "", subcategory: "" })}
+                    options={categories.map((h) => ({ value: h._id || h.id, label: h.name }))}
+                    placeholder="Select Main Group"
+                    searchPlaceholder="Search main group..."
+                  />
                 </div>
                 <div className="space-y-1.5 flex flex-col">
                   <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                     Specific Category <span className="text-rose-700">*</span>
                   </label>
-                  <select
+                  <SearchableSelect
                     value={formData.category}
-                    onChange={(e) =>
-                      setFormData({ ...formData, category: e.target.value, subcategory: "" })
-                    }
+                    onChange={(v) => setFormData({ ...formData, category: v, subcategory: "" })}
                     disabled={!formData.header}
-                    className="w-full px-4 py-2.5 bg-slate-100 border-none rounded-md text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                    <option value="">Select Category</option>
-                    {categories
-                      .find((h) => (h._id || h.id) === formData.header)
-                      ?.children?.map((c) => (
-                        <option key={c._id || c.id} value={c._id || c.id}>
-                          {c.name}
-                        </option>
-                      ))}
-                  </select>
+                    options={(categories.find((h) => (h._id || h.id) === formData.header)?.children || []).map((c) => ({ value: c._id || c.id, label: c.name }))}
+                    placeholder="Select Category"
+                    searchPlaceholder="Search category..."
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-4">
@@ -607,23 +594,14 @@ const AddProduct = () => {
                   <label className="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1">
                     Sub-Category <span className="text-rose-700">*</span>
                   </label>
-                  <select
+                  <SearchableSelect
                     value={formData.subcategory}
-                    onChange={(e) =>
-                      setFormData({ ...formData, subcategory: e.target.value })
-                    }
+                    onChange={(v) => setFormData({ ...formData, subcategory: v })}
                     disabled={!formData.category}
-                    className="w-full px-4 py-2.5 bg-slate-100 border-none rounded-md text-sm font-bold outline-none cursor-pointer focus:ring-2 focus:ring-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                    <option value="">Select Sub-Category</option>
-                    {categories
-                      .find((h) => (h._id || h.id) === formData.header)
-                      ?.children?.find((c) => (c._id || c.id) === formData.category)
-                      ?.children?.map((sc) => (
-                        <option key={sc._id || sc.id} value={sc._id || sc.id}>
-                          {sc.name}
-                        </option>
-                      ))}
-                  </select>
+                    options={(categories.find((h) => (h._id || h.id) === formData.header)?.children?.find((c) => (c._id || c.id) === formData.category)?.children || []).map((sc) => ({ value: sc._id || sc.id, label: sc.name }))}
+                    placeholder="Select Sub-Category"
+                    searchPlaceholder="Search sub-category..."
+                  />
                 </div>
               </div>
             </div>
