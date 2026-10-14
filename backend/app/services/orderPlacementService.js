@@ -28,6 +28,8 @@ import {
   validateIdempotencyKey,
 } from "./idempotencyService.js";
 import { buildCheckoutPricingSnapshot } from "./checkoutPricingService.js";
+import { loadRewardForCheckout, claimRewardForOrder } from "./spin/spinRedemption.js";
+import { SpinError } from "./spin/spinService.js";
 import { emitNotificationEvent } from "../modules/notifications/notification.emitter.js";
 import { NOTIFICATION_EVENTS } from "../modules/notifications/notification.constants.js";
 import * as logger from "./logger.js";
@@ -309,13 +311,31 @@ export async function placeOrderAtomic({
       session,
     });
 
+    // Optional Spin & Win reward: validated here, priced from server data only
+    const spinReward = normalizedPayload.spinRewardId
+      ? await loadRewardForCheckout({
+          customerId,
+          rewardId: normalizedPayload.spinRewardId,
+          session,
+        })
+      : null;
+
     const pricingSnapshot = await buildCheckoutPricingSnapshot({
       orderItems: orderItemsInput,
       address: normalizedAddress,
       tipAmount,
       discountTotal: Math.max(0, Number(normalizedPayload.discountTotal || 0)),
       session,
+      spinReward,
     });
+
+    if (spinReward && !pricingSnapshot.spinRewardOutcome?.applicable) {
+      throw new SpinError(
+        400,
+        pricingSnapshot.spinRewardOutcome?.reason || "This reward cannot be applied to your order",
+        "REWARD_NOT_APPLICABLE",
+      );
+    }
 
     const checkoutGroupId = await generateUniqueCheckoutGroupId({ session });
     const checkoutReservation = computeStockReservationWindow(paymentMode);
@@ -377,6 +397,8 @@ export async function placeOrderAtomic({
         orderId,
         customer: customerId,
         appliedCoupon: normalizedPayload.couponId || undefined,
+        spinRewardId: spinReward ? spinReward._id : undefined,
+        spinRewardDiscount: spinReward ? Number(entry.rewardDiscount || 0) : 0,
         seller: entry.sellerId,
         items: mapOrderItemsForPersistence(entry.items),
         address: normalizedAddress,
@@ -427,6 +449,19 @@ export async function placeOrderAtomic({
       freezeFinancialSnapshot(order, entry.breakdown);
       await order.save({ session });
       orders.push(order);
+    }
+
+    // Redeem the reward atomically in the same transaction as the orders. If another
+    // order used it first (or it just expired) this throws and everything rolls back.
+    if (spinReward) {
+      await claimRewardForOrder({
+        rewardId: spinReward._id,
+        customerId,
+        order: orders[0],
+        checkoutGroupId,
+        discountApplied: pricingSnapshot.spinRewardOutcome.discount,
+        session,
+      });
     }
 
     checkoutGroup.orderIds = orders.map((order) => order._id);

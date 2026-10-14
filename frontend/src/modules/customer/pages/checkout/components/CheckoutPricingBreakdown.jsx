@@ -1,5 +1,5 @@
 import React from "react";
-import { Clipboard, Tag, Heart, Wallet } from "lucide-react";
+import { Clipboard, Tag, Heart, Wallet, Gift } from "lucide-react";
 import { motion } from "framer-motion";
 
 /**
@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
  *   cartTotal         – number (fallback when preview is loading)
  *   selectedCoupon    – coupon object or null
  *   discountAmount    – number
+ *   spinReward        – server preview of the applied Spin & Win reward (or null)
  */
 const CheckoutPricingBreakdown = React.memo(function CheckoutPricingBreakdown({
   pricingPreview,
@@ -28,6 +29,7 @@ const CheckoutPricingBreakdown = React.memo(function CheckoutPricingBreakdown({
   cartTotal,
   selectedCoupon,
   discountAmount,
+  spinReward,
 }) {
   const deliveryFee = pricingPreview?.deliveryFeeCharged || 0;
   const handlingFee = pricingPreview?.handlingFeeCharged || 0;
@@ -125,6 +127,19 @@ const CheckoutPricingBreakdown = React.memo(function CheckoutPricingBreakdown({
                 Coupon Reserved
               </span>
               <span className="font-black text-primary">-₹{discountAmount}</span>
+            </motion.div>
+          )}
+
+          {spinReward?.applied && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex justify-between items-center px-3 py-2 bg-brand-50 rounded-xl border border-brand-100">
+              <span className="text-primary font-black text-xs flex items-center gap-2 uppercase tracking-wider">
+                <Gift size={14} />
+                {spinReward.freeDelivery ? "Free Delivery Reward" : "Spin & Win Reward"}
+              </span>
+              <span className="font-black text-primary">-₹{spinReward.discountAmount}</span>
             </motion.div>
           )}
 

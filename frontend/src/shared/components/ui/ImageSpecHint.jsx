@@ -62,6 +62,15 @@ export const IMAGE_SPECS = {
     maxKB: 100,
     tip: "Shown in the browser tab at 16-32px. Use a bold, simple mark with no small text.",
   },
+  spinBanner: {
+    label: "Spin & Win logo",
+    width: 600,
+    height: 200,
+    ratioLabel: "3 : 1 (wide)",
+    format: "PNG or WebP (transparent)",
+    maxKB: 150,
+    tip: "Shown small at the top of the popup. Keep it simple and centred with some empty space around it.",
+  },
   video: {
     label: "Product video",
     width: 1080,

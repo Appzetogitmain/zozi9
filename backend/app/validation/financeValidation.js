@@ -37,6 +37,9 @@ export const checkoutPreviewSchema = Joi.object({
   paymentMode: Joi.string().valid("ONLINE", "COD").default("COD"),
   timeSlot: Joi.string().allow("", null),
   couponId: Joi.string().allow("", null).optional(),
+  // Spin & Win reward the customer wants to use. Only the id is accepted;
+  // the discount is always recomputed on the server.
+  spinRewardId: Joi.string().hex().length(24).allow("", null).optional(),
   deliveryType: Joi.string().valid("express", "scheduled").default("express"),
   scheduledDate: Joi.date().iso().optional(),
   scheduledSlot: Joi.object({

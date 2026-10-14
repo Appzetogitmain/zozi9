@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     User, MapPin, Package, CreditCard, Wallet, ChevronRight,
-    LogOut, ShieldCheck, Heart, HelpCircle, Info, Edit2, ChevronLeft, Bell
+    LogOut, ShieldCheck, Heart, HelpCircle, Info, Edit2, ChevronLeft, Bell, Gift
 } from 'lucide-react';
 import { useAuth } from '@core/context/AuthContext';
 import { useSettings } from '@core/context/SettingsContext';
@@ -179,6 +179,14 @@ const ProfilePage = () => {
                                 path="/wallet"
                                 color="#10b981"
                                 bg="rgba(16,185,129,0.10)"
+                            />
+                            <MenuItem
+                                icon={Gift}
+                                label="My Rewards"
+                                sub="Coupons won with Spin & Win"
+                                path="/rewards"
+                                color="var(--primary)"
+                                bg="rgba(56,189,248,0.10)"
                             />
                             <MenuItem
                                 icon={Heart}

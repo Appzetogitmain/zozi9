@@ -17,6 +17,7 @@ import { placeOrderAtomic } from "../services/orderPlacementService.js";
 import { orderMatchQueryFromRouteParam } from "../utils/orderLookup.js";
 import { verifyClientPaymentCallback } from "../services/paymentService.js";
 import { buildCheckoutPricingSnapshot } from "../services/checkoutPricingService.js";
+import { loadRewardForCheckout } from "../services/spin/spinRedemption.js";
 
 function validateWithJoi(schema, payload) {
   const { error, value } = schema.validate(payload, {
@@ -35,12 +36,41 @@ function validateWithJoi(schema, payload) {
 export const previewCheckoutFinance = async (req, res) => {
   try {
     const payload = validateWithJoi(checkoutPreviewSchema, req.body || {});
+
+    // Optional Spin & Win reward: validated read-only here (nothing is redeemed by a preview)
+    let spinReward = null;
+    let spinRewardError = null;
+    if (payload.spinRewardId) {
+      try {
+        spinReward = await loadRewardForCheckout({
+          customerId: req.user?.id,
+          rewardId: payload.spinRewardId,
+        });
+      } catch (rewardError) {
+        spinRewardError = rewardError.message;
+      }
+    }
+
     const pricingSnapshot = await buildCheckoutPricingSnapshot({
       orderItems: payload.items,
       address: payload.address,
       tipAmount: payload.tipAmount,
       discountTotal: payload.discountTotal || 0,
+      spinReward,
     });
+
+    const rewardOutcome = pricingSnapshot.spinRewardOutcome;
+    const spinRewardResult = payload.spinRewardId
+      ? {
+          rewardId: payload.spinRewardId,
+          applied: !!rewardOutcome?.applicable,
+          discountAmount: rewardOutcome?.applicable ? rewardOutcome.discount : 0,
+          freeDelivery: !!rewardOutcome?.freeDelivery,
+          code: spinReward?.code || null,
+          label: spinReward?.label || null,
+          reason: spinRewardError || rewardOutcome?.reason || "",
+        }
+      : null;
 
     const sellerBreakdowns = pricingSnapshot.sellerBreakdownEntries.map((entry) => ({
       sellerId: entry.sellerId,
@@ -58,6 +88,7 @@ export const previewCheckoutFinance = async (req, res) => {
     return handleResponse(res, 200, "Checkout preview generated", {
       paymentMode: payload.paymentMode,
       breakdown: pricingSnapshot.aggregateBreakdown,
+      spinReward: spinRewardResult,
       sellerCount: pricingSnapshot.sellerCount,
       itemCount: pricingSnapshot.itemCount,
       sellerBreakdowns,
@@ -84,6 +115,7 @@ export const createOrderWithFinancialSnapshot = async (req, res) => {
       tipAmount: validated.tipAmount || 0,
       walletAmount: validated.walletAmount || 0,
       couponId: validated.couponId || null,
+      spinRewardId: validated.spinRewardId || null,
       deliveryType: validated.deliveryType || "express",
       scheduledDate: validated.scheduledDate || null,
       scheduledSlot: validated.scheduledSlot || null,

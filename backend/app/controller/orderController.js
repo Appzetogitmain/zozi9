@@ -24,6 +24,7 @@ import {
   processToDeliveryAtomic,
 } from "../services/orderWorkflowService.js";
 import { applyDeliveredSettlement } from "../services/orderSettlement.js";
+import { restoreRewardForOrder } from "../services/spin/spinRedemption.js";
 import {
   freezeFinancialSnapshot,
   reverseOrderFinanceOnCancellation,
@@ -1675,6 +1676,14 @@ export const completeReturnAndRefund = async (order) => {
   }
 
   await order.save();
+
+  // Spin & Win: give the reward back after a FULL return, if the admin policy allows it
+  const returnedQty = (order.returnItems || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
+  const orderedQty = (order.items || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
+  if (order.spinRewardId && orderedQty > 0 && returnedQty >= orderedQty) {
+    await restoreRewardForOrder(order, { reason: "refund" });
+  }
+
   emitNotificationEvent(NOTIFICATION_EVENTS.REFUND_COMPLETED, {
     orderId: order.orderId,
     customerId: order.customer,

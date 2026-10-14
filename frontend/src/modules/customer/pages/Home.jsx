@@ -58,6 +58,7 @@ import CardBanner from "@/assets/CardBanner.jpg";
 import QuickCategoriesBg from "@/assets/Catagorysection_bg.png";
 import SectionRenderer from "../components/experience/SectionRenderer";
 import ExperienceBannerCarousel from "../components/experience/ExperienceBannerCarousel";
+import SpinWinPopup from "../components/spin/SpinWinPopup";
 import { useLocation } from "../context/LocationContext";
 import { useSettings } from "@core/context/SettingsContext";
 
@@ -1766,6 +1767,8 @@ const Home = () => {
           )}
         </>
       )}
+      {/* Spin & Win: renders nothing unless an active campaign exists and the customer is eligible */}
+      <SpinWinPopup />
     </div>
   );
 };

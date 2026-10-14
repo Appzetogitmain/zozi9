@@ -96,6 +96,16 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Coupon",
     },
+    // Spin & Win reward redeemed on this order (discount already reflected in pricing.discount)
+    spinRewardId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CustomerReward",
+      index: true,
+    },
+    spinRewardDiscount: {
+      type: Number,
+      default: 0,
+    },
     paymentMode: {
       type: String,
       enum: ALL_PAYMENT_MODES,

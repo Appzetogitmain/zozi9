@@ -82,6 +82,7 @@ const SupportTickets = React.lazy(() => import("../pages/SupportTickets"));
 const ReviewModeration = React.lazy(() => import("../pages/ReviewModeration"));
 const FleetTracking = React.lazy(() => import("../pages/FleetTracking"));
 const CouponManagement = React.lazy(() => import("../pages/CouponManagement"));
+const SpinWinManagement = React.lazy(() => import("../pages/SpinWinManagement"));
 const ContentManager = React.lazy(() => import("../pages/ContentManager"));
 const HeroCategoriesPerPage = React.lazy(() => import("../pages/HeroCategoriesPerPage"));
 const NotificationComposer = React.lazy(
@@ -132,6 +133,7 @@ const navItems = [
       { label: "Hero & categories per page", path: "/admin/hero-categories" },
       { label: "Send Notifications", path: "/admin/notifications" },
       { label: "Coupons & Promos", path: "/admin/coupons" },
+      { label: "Spin & Win", path: "/admin/spin-win" },
       { label: "Offer Sections", path: "/admin/offer-sections" },
       { label: "Shop by Store", path: "/admin/shop-by-store" },
     ],
@@ -310,6 +312,7 @@ const AdminRoutes = () => {
         <Route path="/offer-sections" element={<OfferSectionsManagement />} />
         <Route path="/shop-by-store" element={<ShopByStoreManagement />} />
         <Route path="/coupons" element={<CouponManagement />} />
+        <Route path="/spin-win" element={<SpinWinManagement />} />
         <Route path="/sellers/pending" element={<PendingSellers />} />
         <Route path="/seller-locations" element={<SellerLocations />} />
         <Route path="/delivery-boys/active" element={<ActiveDeliveryBoys />} />

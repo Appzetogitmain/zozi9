@@ -65,6 +65,7 @@ import CheckoutCartSummary from "./checkout/components/CheckoutCartSummary";
 import CheckoutPricingBreakdown from "./checkout/components/CheckoutPricingBreakdown";
 import CheckoutPaymentSelector from "./checkout/components/CheckoutPaymentSelector";
 import CheckoutCouponSection from "./checkout/components/CheckoutCouponSection";
+import CheckoutRewardSection from "./checkout/components/CheckoutRewardSection";
 import CheckoutRecommendedProducts from "./checkout/components/CheckoutRecommendedProducts";
 import CheckoutWishlistSection from "./checkout/components/CheckoutWishlistSection";
 import CheckoutOrderSuccess from "./checkout/components/CheckoutOrderSuccess";
@@ -188,6 +189,14 @@ const CheckoutPage = () => {
   const [savedRecipient, setSavedRecipient] = useState(null);
   const [recommendedProducts, setRecommendedProducts] = useState([]);
   const [coupons, setCoupons] = useState([]);
+  // Spin & Win rewards (the server decides the real discount; this is only selection state)
+  const [availableRewards, setAvailableRewards] = useState([]);
+  const [autoApplyRewards, setAutoApplyRewards] = useState(false);
+  const [selectedRewardId, setSelectedRewardId] = useState(null);
+  const [spinRewardPreview, setSpinRewardPreview] = useState(null);
+  const [rewardsLoading, setRewardsLoading] = useState(true);
+  const rewardAutoPickedRef = useRef(false);
+  const rewardUserChoseRef = useRef(false);
   const [manualCode, setManualCode] = useState("");
   const [emptyBoxData, setEmptyBoxData] = useState(null);
 
@@ -691,6 +700,24 @@ const CheckoutPage = () => {
       // ignore parse errors
     }
 
+    const fetchRewards = async () => {
+      try {
+        const res = await customerApi.getMyRewards({ status: "available", limit: 50 });
+        const data = res.data?.result;
+        const usable = (data?.items || []).filter((r) =>
+          ["fixed", "percentage", "free_delivery", "free_product"].includes(r.type),
+        );
+        setAvailableRewards(usable);
+        setAutoApplyRewards(!!data?.settings?.autoApplyReward);
+      } catch {
+        setAvailableRewards([]); // rewards are optional: checkout must work without them
+      } finally {
+        setRewardsLoading(false);
+      }
+    };
+    if (isAuthenticated) fetchRewards();
+    else setRewardsLoading(false);
+
     const fetchCoupons = async () => {
       try {
         const res = await customerApi.getActiveCoupons();
@@ -729,6 +756,7 @@ const CheckoutPage = () => {
         paymentMode: selectedPayment === "online" ? "ONLINE" : "COD",
         timeSlot: selectedTimeSlot,
         deliveryType,
+        ...(selectedRewardId ? { spinRewardId: selectedRewardId } : {}),
       };
       if (deliveryType === "scheduled") {
         if (scheduledDate) payload.scheduledDate = scheduledDate;
@@ -743,6 +771,12 @@ const CheckoutPage = () => {
         const res = await customerApi.checkoutPreview(buildPreviewPayload());
         if (res.data?.success) {
           setPricingPreview(res.data.result?.breakdown ?? null);
+          const rewardResult = res.data.result?.spinReward ?? null;
+          setSpinRewardPreview(rewardResult);
+          // an auto-picked reward that does not apply to this cart is dropped quietly
+          if (rewardResult && !rewardResult.applied && !rewardUserChoseRef.current) {
+            setSelectedRewardId(null);
+          }
         }
       } catch (error) {
         console.error("Checkout preview failed", error);
@@ -762,6 +796,7 @@ const CheckoutPage = () => {
     selectedTip,
     selectedTimeSlot,
     discountAmount,
+    selectedRewardId,
     savedRecipient,
     currentAddress,
     currentLocation,
@@ -793,6 +828,29 @@ const CheckoutPage = () => {
       .catch(() => {});
   }, [cartProductIdKey]);
 
+  // Auto-apply (admin setting): pre-select the best reward whose minimum the cart already meets
+  useEffect(() => {
+    if (!autoApplyRewards || rewardAutoPickedRef.current || rewardUserChoseRef.current) return;
+    if (!availableRewards.length || !cartTotal) return;
+    const estimate = (r) =>
+      r.type === "percentage"
+        ? Math.min((cartTotal * (r.value || 0)) / 100, r.maxDiscount ?? Infinity)
+        : r.type === "fixed"
+          ? Math.min(r.value || 0, cartTotal)
+          : 0;
+    const best = availableRewards
+      .filter((r) => cartTotal >= (r.minCartValue || 0) && !r.freeProductId)
+      .sort((a, b) => estimate(b) - estimate(a))[0];
+    rewardAutoPickedRef.current = true;
+    if (best) setSelectedRewardId(best.id);
+  }, [autoApplyRewards, availableRewards, cartTotal]);
+
+  const handleSelectReward = (id) => {
+    rewardUserChoseRef.current = true; // a manual choice always wins over auto-apply
+    setSelectedRewardId(id);
+    if (!id) setSpinRewardPreview(null);
+  };
+
   const handlePlaceOrder = async () => {
     if (deliveryType !== "store_pickup") {
       if (!currentAddress || !currentAddress.address) {
@@ -808,6 +866,10 @@ const CheckoutPage = () => {
         address: buildAddressForOrder(),
         paymentMode: selectedPayment === "online" ? "ONLINE" : "COD",
         discountTotal: discountAmount,
+        // only send a reward the server has just confirmed applies to this cart
+        ...(selectedRewardId && spinRewardPreview?.applied && spinRewardPreview.rewardId === selectedRewardId
+          ? { spinRewardId: selectedRewardId }
+          : {}),
         taxTotal: taxAmount,
         tipAmount: selectedTip,
         timeSlot: selectedTimeSlot,
@@ -1165,6 +1227,16 @@ const CheckoutPage = () => {
               onApplyManualCode={handleApplyManualCode}
             />
 
+            {/* Spin & Win rewards */}
+            <CheckoutRewardSection
+              rewards={availableRewards}
+              selectedId={selectedRewardId}
+              onSelect={handleSelectReward}
+              preview={spinRewardPreview}
+              cartTotal={cartTotal}
+              isLoading={rewardsLoading}
+            />
+
             {/* Delivery Type Selector */}
             <CheckoutDeliveryTypeSelector
               deliveryType={deliveryType}
@@ -1187,6 +1259,7 @@ const CheckoutPage = () => {
               cartTotal={cartTotal}
               selectedCoupon={selectedCoupon}
               discountAmount={discountAmount}
+              spinReward={selectedRewardId ? spinRewardPreview : null}
             />
 
             {/* Payment Selector */}

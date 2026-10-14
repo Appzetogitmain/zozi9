@@ -2,6 +2,7 @@ import Transaction from "../models/transaction.js";
 import Order from "../models/order.js";
 import CheckoutGroup from "../models/checkoutGroup.js";
 import { releaseReservedStockForOrder } from "./stockService.js";
+import { restoreRewardForOrder } from "./spin/spinRedemption.js";
 
 /**
  * Reverse stock and fail seller transaction when an order is cancelled
@@ -20,6 +21,9 @@ export async function compensateOrderCancellation(order, orderIdString) {
     { reference: orderIdString },
     { status: "Failed" },
   );
+
+  // Spin & Win: give the reward back when the whole order set is cancelled (policy-controlled)
+  await restoreRewardForOrder(existing || order, { reason: "cancelled" });
 
   if (existing?.checkoutGroupId) {
     const activeCount = await Order.countDocuments({

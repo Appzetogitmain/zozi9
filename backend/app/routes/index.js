@@ -25,6 +25,7 @@ import authOtpRoute from "../modules/otp/otp.routes.js";
 import legalRoute from "./legalRoutes.js";
 import roleRoute from "./roleRoutes.js";
 import deliverySlotRoute from "./deliverySlotRoutes.js";
+import { spinCustomerRouter, spinAdminRouter } from "./spinRoutes.js";
 import { maintenanceMiddleware } from "../middleware/maintenanceMiddleware.js";
 
 import express from "express";
@@ -43,6 +44,8 @@ const setupRoutes = (app) => {
     router.use("/delivery", deliveryRoute);
     router.use("/admin/categories", categoryRoute);
     router.use("/admin/roles", roleRoute);
+    router.use("/admin/spin", spinAdminRouter);
+    router.use("/spin", spinCustomerRouter);
     router.use("/admin", adminRoute);
     router.use("/seller", sellerRoute);
     router.use("/settings", settingsRoute);

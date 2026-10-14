@@ -16,6 +16,7 @@ import { handleOnlineOrderFinance } from "./finance/orderFinanceService.js";
 import { DEFAULT_SELLER_TIMEOUT_MS, WORKFLOW_STATUS } from "../constants/orderWorkflow.js";
 import { afterPlaceOrderV2 } from "./orderWorkflowService.js";
 import { releaseReservedStockForOrder } from "./stockService.js";
+import { restoreRewardForOrder } from "./spin/spinRedemption.js";
 import { emitNotificationEvent } from "../modules/notifications/notification.emitter.js";
 import { NOTIFICATION_EVENTS } from "../modules/notifications/notification.constants.js";
 
@@ -442,6 +443,10 @@ async function handleOrderSideEffectsFromPaymentStatus(payment, nextStatus, reas
       session.endSession();
     }
     await updateCheckoutGroupPaymentStatus(payment.checkoutGroupId, nextStatus);
+    // Give back any Spin & Win reward used on the failed payment (after the transaction committed)
+    for (const order of orders) {
+      await restoreRewardForOrder(order, { reason: "payment_failed" });
+    }
     for (const order of orders) {
       emitNotificationEvent(NOTIFICATION_EVENTS.ORDER_CANCELLED, {
         orderId: order.orderId,

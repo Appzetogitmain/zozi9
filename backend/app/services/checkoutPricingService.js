@@ -3,6 +3,11 @@ import Category from "../models/category.js";
 import { distanceMeters } from "../utils/geoUtils.js";
 import { HANDLING_FEE_STRATEGY } from "../constants/finance.js";
 import {
+  allocateProportionally,
+  computeRewardDiscount,
+  itemMatchesReward,
+} from "./spin/spinLogic.js";
+import {
   calculateHandlingFee,
   generateOrderPaymentBreakdown,
   hydrateOrderItems,
@@ -245,12 +250,44 @@ function applyGlobalHandlingFeeToSellerBreakdowns(
   }
 }
 
+/**
+ * Per-seller weights used to split a Spin & Win reward discount across the
+ * seller orders of one checkout, so the parts always add up to the exact discount.
+ */
+function rewardAllocationWeights({ reward, hydratedItems, sellerIds, assembledEntries }) {
+  if (reward.type === "free_delivery" && assembledEntries) {
+    const feeBySeller = new Map(
+      assembledEntries.map((entry) => [
+        entry.sellerId,
+        Number(entry.breakdown?.deliveryFeeCharged || 0),
+      ]),
+    );
+    return sellerIds.map((id) => feeBySeller.get(id) || 0);
+  }
+
+  const relevant =
+    reward.type === "free_product"
+      ? hydratedItems.filter(
+          (item) => reward.freeProductId && String(item.productId) === String(reward.freeProductId),
+        )
+      : hydratedItems.filter((item) => itemMatchesReward(item, reward));
+
+  return sellerIds.map((id) =>
+    relevant
+      .filter((item) => String(item.sellerId) === id)
+      .reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0), 0),
+  );
+}
+
 export async function buildCheckoutPricingSnapshot({
   orderItems = [],
   address = {},
   tipAmount = 0,
   discountTotal = 0,
   session = null,
+  // Optional Spin & Win reward (CustomerReward snapshot). The discount is always
+  // recomputed here from server-side prices - callers never pass an amount.
+  spinReward = null,
 }) {
   const hydratedItems = await hydrateOrderItems(orderItems, {
     session,
@@ -264,7 +301,6 @@ export async function buildCheckoutPricingSnapshot({
 
   const itemsBySeller = groupHydratedItemsBySeller(hydratedItems);
   const sellerIds = Array.from(itemsBySeller.keys()).sort((a, b) => a.localeCompare(b));
-  const sellerBreakdownEntries = [];
 
   const globalHandling = await computeGlobalHandlingFeeForCheckout(hydratedItems, { session });
 
@@ -278,47 +314,90 @@ export async function buildCheckoutPricingSnapshot({
     totalSubtotal += subtotal;
   }
 
-  for (const sellerId of sellerIds) {
-    const sellerItems = itemsBySeller.get(sellerId) || [];
-    const distanceKm = await computeDistanceKmForSeller({
-      sellerId,
-      addressLocation: address?.location,
-      session,
-    });
-    // Distribute discount proportionally by seller subtotal
-    const sellerRatio = totalSubtotal > 0 ? (sellerSubtotals.get(sellerId) || 0) / totalSubtotal : 1 / sellerIds.length;
-    const sellerDiscount = round2(discountTotal * sellerRatio);
-    const breakdown = await generateOrderPaymentBreakdown({
-      preHydratedItems: sellerItems,
-      distanceKm,
-      discountTotal: sellerDiscount,
-      taxTotal: 0,
-      session,
-    });
-    sellerBreakdownEntries.push({
-      sellerId,
-      distanceKm,
-      items: sellerItems,
-      breakdown: {
-        ...breakdown,
+  // Builds the per-seller breakdowns. `rewardPortions` (sellerId -> amount) is the
+  // Spin & Win discount share that is added to each seller's normal discount.
+  const assemble = async (rewardPortions = null) => {
+    const sellerBreakdownEntries = [];
+    for (const sellerId of sellerIds) {
+      const sellerItems = itemsBySeller.get(sellerId) || [];
+      const distanceKm = await computeDistanceKmForSeller({
         sellerId,
-      },
-    });
+        addressLocation: address?.location,
+        session,
+      });
+      // Distribute discount proportionally by seller subtotal
+      const sellerRatio =
+        totalSubtotal > 0
+          ? (sellerSubtotals.get(sellerId) || 0) / totalSubtotal
+          : 1 / sellerIds.length;
+      const rewardDiscount = round2(rewardPortions?.get(sellerId) || 0);
+      const sellerDiscount = round2(discountTotal * sellerRatio + rewardDiscount);
+      const breakdown = await generateOrderPaymentBreakdown({
+        preHydratedItems: sellerItems,
+        distanceKm,
+        discountTotal: sellerDiscount,
+        taxTotal: 0,
+        session,
+      });
+      sellerBreakdownEntries.push({
+        sellerId,
+        distanceKm,
+        items: sellerItems,
+        rewardDiscount,
+        breakdown: {
+          ...breakdown,
+          sellerId,
+        },
+      });
+    }
+
+    applyGlobalHandlingFeeToSellerBreakdowns(sellerBreakdownEntries, globalHandling);
+    allocateCheckoutTipToSellerBreakdowns(sellerBreakdownEntries, tipAmount);
+
+    const aggregateBreakdown = buildAggregateBreakdown(
+      sellerBreakdownEntries.map((entry) => entry.breakdown),
+    );
+    return { sellerBreakdownEntries, aggregateBreakdown };
+  };
+
+  let assembled = null;
+  let rewardOutcome = null;
+
+  if (spinReward) {
+    // free delivery needs the real delivery fee, so price the cart once without it first
+    if (spinReward.type === "free_delivery") {
+      assembled = await assemble(null);
+      rewardOutcome = computeRewardDiscount({
+        reward: spinReward,
+        items: hydratedItems,
+        deliveryFee: assembled.aggregateBreakdown.deliveryFeeCharged,
+      });
+    } else {
+      rewardOutcome = computeRewardDiscount({ reward: spinReward, items: hydratedItems });
+    }
+
+    if (rewardOutcome.applicable) {
+      const weights = rewardAllocationWeights({
+        reward: spinReward,
+        hydratedItems,
+        sellerIds,
+        assembledEntries: assembled?.sellerBreakdownEntries,
+      });
+      const parts = allocateProportionally(rewardOutcome.discount, weights);
+      const portions = new Map(sellerIds.map((id, index) => [id, parts[index]]));
+      assembled = await assemble(portions);
+    }
   }
 
-  applyGlobalHandlingFeeToSellerBreakdowns(sellerBreakdownEntries, globalHandling);
-  allocateCheckoutTipToSellerBreakdowns(sellerBreakdownEntries, tipAmount);
-
-  const aggregateBreakdown = buildAggregateBreakdown(
-    sellerBreakdownEntries.map((entry) => entry.breakdown),
-  );
+  if (!assembled) assembled = await assemble(null);
 
   return {
     hydratedItems,
-    sellerBreakdownEntries,
-    aggregateBreakdown,
-    sellerCount: sellerBreakdownEntries.length,
+    sellerBreakdownEntries: assembled.sellerBreakdownEntries,
+    aggregateBreakdown: assembled.aggregateBreakdown,
+    sellerCount: assembled.sellerBreakdownEntries.length,
     itemCount: hydratedItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0),
+    spinRewardOutcome: rewardOutcome,
   };
 }
 

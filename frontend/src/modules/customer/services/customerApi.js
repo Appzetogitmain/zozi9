@@ -137,6 +137,15 @@ export const customerApi = {
   validateCoupon: (data) => axiosInstance.post("/coupons/validate", data),
   getActiveCoupons: () => getWithDedupe("/coupons", { status: "active" }),
 
+  // Spin & Win
+  getSpinCampaign: () => axiosInstance.get("/spin/campaign/active"),
+  getSpinEligibility: () => axiosInstance.get("/spin/eligibility"),
+  trackSpinImpression: (data) => axiosInstance.post("/spin/impression", data),
+  // The winner is chosen by the server; the Idempotency-Key makes a retried click return the same result
+  playSpin: (idempotencyKey) =>
+    axiosInstance.post("/spin/play", {}, { headers: { "Idempotency-Key": idempotencyKey }, timeout: 30000 }),
+  getMyRewards: (params) => axiosInstance.get("/spin/my-rewards", { params }),
+
   // Maps (server-side geocoding)
   geocodeAddress: (address, params = {}) =>
     axiosInstance.get("/maps/geocode", { params: { address, ...params } }),

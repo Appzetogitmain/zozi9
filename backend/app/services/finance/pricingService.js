@@ -328,7 +328,7 @@ export async function hydrateOrderItems(
     .filter(Boolean);
 
   const productQuery = Product.find({ _id: { $in: productIds } })
-    .select("_id name salePrice price mainImage headerId sellerId status approvalStatus variants")
+    .select("_id name salePrice price mainImage headerId categoryId subcategoryId sellerId status approvalStatus variants")
     .lean();
   if (session) productQuery.session(session);
   const products = await productQuery;
@@ -380,6 +380,8 @@ export async function hydrateOrderItems(
       price: inferredUnitPrice,
       image: item.image || product.mainImage,
       headerCategoryId: String(product.headerId),
+      categoryId: product.categoryId ? String(product.categoryId) : undefined,
+      subcategoryId: product.subcategoryId ? String(product.subcategoryId) : undefined,
       sellerId: String(product.sellerId),
       variantSku: rawVariantSku || "",
       variantName: resolvedVariant ? String(resolvedVariant?.name || "").trim() : "",

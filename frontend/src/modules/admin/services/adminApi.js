@@ -61,6 +61,20 @@ export const adminApi = {
 
     // Product Management
     getProducts: (params) => axiosInstance.get('/products', { params }),
+
+    // Spin & Win
+    getSpinSettings: () => axiosInstance.get('/admin/spin/settings'),
+    updateSpinSettings: (data) => axiosInstance.patch('/admin/spin/settings', data),
+    getSpinCampaigns: (params) => axiosInstance.get('/admin/spin/campaigns', { params }),
+    getSpinCampaign: (id) => axiosInstance.get(`/admin/spin/campaigns/${id}`),
+    createSpinCampaign: (data) => axiosInstance.post('/admin/spin/campaigns', data),
+    updateSpinCampaign: (id, data) => axiosInstance.patch(`/admin/spin/campaigns/${id}`, data),
+    setSpinCampaignStatus: (id, status) => axiosInstance.patch(`/admin/spin/campaigns/${id}/status`, { status }),
+    addSpinReward: (campaignId, data) => axiosInstance.post(`/admin/spin/campaigns/${campaignId}/rewards`, data),
+    updateSpinReward: (id, data) => axiosInstance.patch(`/admin/spin/rewards/${id}`, data),
+    deleteSpinReward: (id) => axiosInstance.delete(`/admin/spin/rewards/${id}`),
+    reorderSpinRewards: (campaignId, ids) => axiosInstance.put(`/admin/spin/campaigns/${campaignId}/rewards/order`, { ids }),
+    getSpinReport: (params) => axiosInstance.get('/admin/spin/reports', { params }),
     getProductModerationList: (params) => axiosInstance.get('/products/moderation', { params }),
     approveProductModeration: (id, data = {}) => axiosInstance.patch(`/products/moderation/${id}/approve`, data),
     rejectProductModeration: (id, data = {}) => axiosInstance.patch(`/products/moderation/${id}/reject`, data),
