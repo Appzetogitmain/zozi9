@@ -18,6 +18,7 @@ import { orderMatchQueryFromRouteParam } from "../utils/orderLookup.js";
 import { verifyClientPaymentCallback } from "../services/paymentService.js";
 import { buildCheckoutPricingSnapshot } from "../services/checkoutPricingService.js";
 import { loadRewardForCheckout } from "../services/spin/spinRedemption.js";
+import { processDeliveredOrderForReferral } from "../services/referralService.js";
 
 function validateWithJoi(schema, payload) {
   const { error, value } = schema.validate(payload, {
@@ -57,6 +58,7 @@ export const previewCheckoutFinance = async (req, res) => {
       tipAmount: payload.tipAmount,
       discountTotal: payload.discountTotal || 0,
       spinReward,
+      customerId: req.user?.id || null,
     });
 
     const rewardOutcome = pricingSnapshot.spinRewardOutcome;
@@ -259,6 +261,7 @@ export const markOrderDeliveredAndSettle = async (req, res) => {
     const updated = await settleDeliveredOrder(order._id, {
       actorId: req.user?.id || null,
     });
+    await processDeliveredOrderForReferral(updated);
 
     // For COD orders, "delivery" implies cash is collected by the assigned delivery partner.
     // This updates System Float (COD) as: grandTotal - riderPayoutTotal.

@@ -130,6 +130,8 @@ export const customerApi = {
 
   // Public offers
   getOffers: () => getWithDedupe("/offers"),
+  // Flash sales (live + upcoming) near ?lat&lng — short cache, prices/stock change quickly
+  getFlashSales: (params) => getWithDedupe("/flash-sales", params, { ttl: 15000 }),
   // Offer sections (category → products, banner + side image)
   getOfferSections: (params) => getWithDedupe("/offer-sections", params),
 
@@ -145,6 +147,11 @@ export const customerApi = {
   playSpin: (idempotencyKey) =>
     axiosInstance.post("/spin/play", {}, { headers: { "Idempotency-Key": idempotencyKey }, timeout: 30000 }),
   getMyRewards: (params) => axiosInstance.get("/spin/my-rewards", { params }),
+
+  // Refer & Earn
+  getReferralProgram: () => axiosInstance.get("/referral/program"),
+  getMyReferrals: () => axiosInstance.get("/referral/me"),
+  applyReferralCode: (code) => axiosInstance.post("/referral/apply", { code }),
 
   // Maps (server-side geocoding)
   geocodeAddress: (address, params = {}) =>

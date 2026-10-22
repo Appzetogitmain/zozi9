@@ -2,6 +2,7 @@ import Product from "../../models/product.js";
 import { SearchBackend } from "./searchBackend.js";
 import * as logger from "../logger.js";
 import { getApprovedOrLegacyFilter } from "../productModerationService.js";
+import { notExpiredFilter } from "../productExpiryService.js";
 
 /**
  * MongoDB Search Backend
@@ -53,7 +54,7 @@ export class MongoSearchBackend extends SearchBackend {
     
     // Status filter (always active)
     mongoQuery.status = "active";
-    Object.assign(mongoQuery, getApprovedOrLegacyFilter());
+    Object.assign(mongoQuery, getApprovedOrLegacyFilter(), notExpiredFilter());
     
     // Category filter
     if (query.categoryId) {

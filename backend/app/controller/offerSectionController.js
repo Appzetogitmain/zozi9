@@ -6,6 +6,7 @@ import {
 } from "../services/customerVisibilityService.js";
 import { buildKey, getOrSet, getTTL } from "../services/cacheService.js";
 import { getApprovedOrLegacyFilter } from "../services/productModerationService.js";
+import { filterOutExpired, notExpiredFilter } from "../services/productExpiryService.js";
 
 export const getPublicOfferSections = async (req, res) => {
   try {
@@ -41,10 +42,11 @@ export const getPublicOfferSections = async (req, res) => {
           .populate("sellerIds", "shopName name logo")
           .populate({
             path: "productIds",
-            select: "name slug price salePrice mainImage stock unit sellerId status approvalStatus",
+            select: "name slug price salePrice mainImage stock unit sellerId status approvalStatus expiryDate",
             match: {
               status: "active",
               ...getApprovedOrLegacyFilter(),
+              ...notExpiredFilter(),
             },
           })
           .lean();
@@ -74,7 +76,14 @@ export const getPublicOfferSections = async (req, res) => {
       getTTL("homepage"),
     );
 
-    return handleResponse(res, 200, "Offer sections fetched", filteredSections);
+    // Sections are cached; drop products that expired since the cache was filled
+    const now = new Date();
+    const freshSections = filteredSections.map((section) => ({
+      ...section,
+      productIds: filterOutExpired(section.productIds, now),
+    }));
+
+    return handleResponse(res, 200, "Offer sections fetched", freshSections);
   } catch (error) {
     return handleResponse(res, 500, error.message);
   }

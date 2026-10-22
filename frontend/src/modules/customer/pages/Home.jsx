@@ -59,6 +59,7 @@ import QuickCategoriesBg from "@/assets/Catagorysection_bg.png";
 import SectionRenderer from "../components/experience/SectionRenderer";
 import ExperienceBannerCarousel from "../components/experience/ExperienceBannerCarousel";
 import SpinWinPopup from "../components/spin/SpinWinPopup";
+import FlashSaleSection from "../components/home/FlashSaleSection";
 import { useLocation } from "../context/LocationContext";
 import { useSettings } from "@core/context/SettingsContext";
 
@@ -1051,7 +1052,7 @@ const Home = () => {
 
     const href = applyCloudinaryTransform(
       firstUrl,
-      "f_auto,q_auto,c_fill,g_auto,w_824,h_380",
+      "f_auto,q_auto,c_limit,w_824",
     );
 
     const link = document.createElement("link");
@@ -1615,6 +1616,9 @@ const Home = () => {
               </div>
             </div>
           </div>
+
+          {/* Flash Sales: live + upcoming deals with countdown (hidden when none) */}
+          <FlashSaleSection location={currentLocation} />
 
           {/* Offer Sections (admin-configured: Trending, etc.) */}
           {offerSections.length > 0 && (

@@ -22,6 +22,8 @@ import { toast } from "sonner";
 import { sellerApi } from "../services/sellerApi";
 import ImageSpecHint, { IMAGE_SPECS, checkImageSpec } from "@shared/components/ui/ImageSpecHint";
 import SearchableSelect from "@shared/components/ui/SearchableSelect";
+import ExpiryDateFields from "@shared/components/ExpiryDateFields";
+import { appendExpiryFields } from "@/shared/utils/productExpiry";
 
 
 const MAX_VARIANT_IMAGES = 4;
@@ -53,6 +55,8 @@ const AddProduct = () => {
     salePrice: "",
     stock: "",
     lowStockAlert: 5,
+    expiryDate: "",
+    expiryAlertDays: 7,
     category: "",
     subcategory: "",
     header: "",
@@ -152,6 +156,7 @@ const AddProduct = () => {
       data.append("brand", formData.brand);
       data.append("weight", formData.weight);
       data.append("status", formData.status);
+      appendExpiryFields(data, formData);
 
       // Map top-level price/stock from first variant for indexing/listing
       data.append("price", firstVariant.price);
@@ -402,6 +407,13 @@ const AddProduct = () => {
                   />
                 </div>
               </div>
+              <ExpiryDateFields
+                expiryDate={formData.expiryDate}
+                expiryAlertDays={formData.expiryAlertDays}
+                onChange={(field, value) => setFormData((prev) => ({ ...prev, [field]: value }))}
+                labelClassName="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1"
+                inputClassName="w-full px-4 py-2.5 bg-slate-100 border-none rounded-md text-sm font-semibold outline-none ring-primary/5 focus:ring-2 transition-all"
+              />
             </div>
           )}
 

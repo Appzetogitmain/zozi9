@@ -28,6 +28,7 @@ import {
   validateIdempotencyKey,
 } from "./idempotencyService.js";
 import { buildCheckoutPricingSnapshot } from "./checkoutPricingService.js";
+import { reserveFlashSaleQuantities } from "./flashSaleService.js";
 import { loadRewardForCheckout, claimRewardForOrder } from "./spin/spinRedemption.js";
 import { SpinError } from "./spin/spinService.js";
 import { emitNotificationEvent } from "../modules/notifications/notification.emitter.js";
@@ -63,6 +64,13 @@ function mapOrderItemsForPersistence(hydratedItems = []) {
     price: item.price,
     variantSlot: String(item.variantSku || item.variantSlot || "").trim() || undefined,
     image: item.image || "",
+    ...(item.flashSaleItemId
+      ? {
+          flashSale: item.flashSaleId,
+          flashSaleItem: item.flashSaleItemId,
+          regularPrice: item.regularPrice,
+        }
+      : {}),
   }));
 }
 
@@ -327,7 +335,11 @@ export async function placeOrderAtomic({
       discountTotal: Math.max(0, Number(normalizedPayload.discountTotal || 0)),
       session,
       spinReward,
+      customerId,
     });
+
+    // Count flash-priced units as sold (atomic; aborts the order if a deal just sold out)
+    await reserveFlashSaleQuantities(pricingSnapshot.hydratedItems, { session });
 
     if (spinReward && !pricingSnapshot.spinRewardOutcome?.applicable) {
       throw new SpinError(
@@ -484,7 +496,7 @@ export async function placeOrderAtomic({
       user.walletBalance -= walletAmount;
       await user.save({ session });
 
-      await Transaction.create({
+      await Transaction.create([{
         user: customerId,
         userModel: "User",
         type: "Wallet Payment",
@@ -492,7 +504,7 @@ export async function placeOrderAtomic({
         status: "Settled",
         reference: `WLT-CHOUT-${checkoutGroupId}`,
         meta: { checkoutGroupId }
-      }, { session });
+      }], { session });
     }
 
     const transactionRows = orders.map((order) => ({

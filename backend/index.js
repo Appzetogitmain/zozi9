@@ -30,6 +30,7 @@ import { registerScheduledJob, startScheduledJobs } from "./app/services/distrib
 import { getOrderAutoCancelJobHandler, getOrderAutoCancelJobInterval } from "./app/jobs/orderAutoCancelJob.js";
 import { getReturnWindowReleaseJobHandler, getReturnWindowReleaseJobInterval } from "./app/jobs/returnWindowReleaseJob.js";
 import { getScheduledOrdersJobHandler, getScheduledOrdersJobInterval } from "./app/jobs/notifyScheduledOrdersJob.js";
+import { getProductExpiryJobHandler, getProductExpiryJobInterval } from "./app/jobs/productExpiryJob.js";
 import {
   getPayoutBatchJobHandler,
   getPayoutBatchJobInterval,
@@ -285,6 +286,13 @@ async function startScheduler() {
     getScheduledOrdersJobHandler()
   );
   
+  // Register product expiry job (warns sellers; customers are filtered at query time)
+  registerScheduledJob(
+    'productExpiryJob',
+    getProductExpiryJobInterval(),
+    getProductExpiryJobHandler()
+  );
+
   // Register payout batch job (if enabled)
   if (isPayoutBatchJobEnabled()) {
     registerScheduledJob(

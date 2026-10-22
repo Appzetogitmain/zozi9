@@ -2,11 +2,14 @@ import Wishlist from "../models/wishlist.js";
 import Product from "../models/product.js";
 import handleResponse from "../utils/helper.js";
 import { getApprovedOrLegacyFilter } from "../services/productModerationService.js";
+import { notExpiredFilter } from "../services/productExpiryService.js";
 
-const CUSTOMER_VISIBLE_PRODUCT_MATCH = {
+// Evaluated per request: expiry depends on the current time
+const customerVisibleProductMatch = () => ({
   status: "active",
   ...getApprovedOrLegacyFilter(),
-};
+  ...notExpiredFilter(),
+});
 
 function sanitizeWishlist(wishlist) {
   if (!wishlist || !Array.isArray(wishlist.products)) return wishlist;
@@ -18,7 +21,7 @@ async function findCustomerVisibleProductById(productId) {
   if (!productId) return null;
   return Product.findOne({
     _id: productId,
-    ...CUSTOMER_VISIBLE_PRODUCT_MATCH,
+    ...customerVisibleProductMatch(),
   })
     .select("_id")
     .lean();
@@ -29,7 +32,7 @@ async function fetchPopulatedWishlist(wishlistId) {
     .populate({
       path: "products",
       select: "name slug price salePrice mainImage stock status approvalStatus",
-      match: CUSTOMER_VISIBLE_PRODUCT_MATCH,
+      match: customerVisibleProductMatch(),
     })
     .lean();
 
@@ -52,7 +55,7 @@ export const getWishlist = async (req, res) => {
       const rawIds = Array.isArray(wishlist?.products) ? wishlist.products : [];
       const visibleProducts = await Product.find({
         _id: { $in: rawIds },
-        ...CUSTOMER_VISIBLE_PRODUCT_MATCH,
+        ...customerVisibleProductMatch(),
       })
         .select("_id")
         .lean();

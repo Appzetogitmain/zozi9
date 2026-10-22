@@ -83,6 +83,7 @@ const ReviewModeration = React.lazy(() => import("../pages/ReviewModeration"));
 const FleetTracking = React.lazy(() => import("../pages/FleetTracking"));
 const CouponManagement = React.lazy(() => import("../pages/CouponManagement"));
 const SpinWinManagement = React.lazy(() => import("../pages/SpinWinManagement"));
+const ReferralManagement = React.lazy(() => import("../pages/ReferralManagement"));
 const ContentManager = React.lazy(() => import("../pages/ContentManager"));
 const HeroCategoriesPerPage = React.lazy(() => import("../pages/HeroCategoriesPerPage"));
 const NotificationComposer = React.lazy(
@@ -94,6 +95,10 @@ const OffersManagement = React.lazy(
 const OfferSectionsManagement = React.lazy(
   () => import("../pages/OfferSectionsManagement"),
 );
+const FlashSalesManagement = React.lazy(
+  () => import("../pages/FlashSalesManagement"),
+);
+const ProductExpiry = React.lazy(() => import("../pages/ProductExpiry"));
 const ShopByStoreManagement = React.lazy(
   () => import("../pages/ShopByStoreManagement"),
 );
@@ -123,7 +128,15 @@ const navItems = [
       { label: "Sub-Categories", path: "/admin/categories/sub" },
     ],
   },
-  { label: "Products", path: "/admin/products", icon: Box, color: "amber" },
+  {
+    label: "Products",
+    icon: Box,
+    color: "amber",
+    children: [
+      { label: "All Products", path: "/admin/products" },
+      { label: "Product Expiry", path: "/admin/product-expiry" },
+    ],
+  },
   {
     label: "Marketing Tools",
     icon: Sparkles,
@@ -134,6 +147,8 @@ const navItems = [
       { label: "Send Notifications", path: "/admin/notifications" },
       { label: "Coupons & Promos", path: "/admin/coupons" },
       { label: "Spin & Win", path: "/admin/spin-win" },
+      { label: "Refer & Earn", path: "/admin/refer-earn" },
+      { label: "Flash Sales", path: "/admin/flash-sales" },
       { label: "Offer Sections", path: "/admin/offer-sections" },
       { label: "Shop by Store", path: "/admin/shop-by-store" },
     ],
@@ -301,6 +316,7 @@ const AdminRoutes = () => {
         <Route path="categories/hierarchy" element={<CategoryHierarchy />} />
         <Route path="/categories/sub" element={<SubCategories />} />
         <Route path="/products" element={<ProductManagement />} />
+        <Route path="/product-expiry" element={<ProductExpiry />} />
         <Route path="/sellers/active" element={<ActiveSellers />} />
         <Route path="/sellers/active/:id" element={<SellerDetail />} />
         <Route path="/support-tickets" element={<SupportTickets />} />
@@ -313,6 +329,8 @@ const AdminRoutes = () => {
         <Route path="/shop-by-store" element={<ShopByStoreManagement />} />
         <Route path="/coupons" element={<CouponManagement />} />
         <Route path="/spin-win" element={<SpinWinManagement />} />
+        <Route path="/refer-earn" element={<ReferralManagement />} />
+        <Route path="/flash-sales" element={<FlashSalesManagement />} />
         <Route path="/sellers/pending" element={<PendingSellers />} />
         <Route path="/seller-locations" element={<SellerLocations />} />
         <Route path="/delivery-boys/active" element={<ActiveDeliveryBoys />} />

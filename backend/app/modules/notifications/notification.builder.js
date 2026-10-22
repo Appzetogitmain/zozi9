@@ -64,6 +64,17 @@ function buildSellerInventoryLink(productId) {
     : `${baseUrl}/seller/inventory`;
 }
 
+function buildSellerExpiryLink(bucket) {
+  return `${getFrontendBaseUrl()}/seller/expiry?bucket=${encodeURIComponent(bucket)}`;
+}
+
+function formatExpiryDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
+}
+
 function eventDefinition(eventType) {
   switch (eventType) {
     case NOTIFICATION_EVENTS.ORDER_PLACED:
@@ -358,12 +369,45 @@ function eventDefinition(eventType) {
           return `Only ${currentStock} left for ${itemLabel}. Restock soon.`;
         },
       };
+    case NOTIFICATION_EVENTS.PRODUCT_EXPIRING_SOON:
+      return {
+        role: NOTIFICATION_ROLES.SELLER,
+        recipientIds: (payload) => normalizeIdList(payload.sellerId),
+        title: (payload) => `${String(payload.productName || "Product").trim()} expires soon`,
+        body: (payload) => {
+          const days = Number(payload.daysLeft || 0);
+          const when = days <= 1 ? "tomorrow" : `in ${days} days`;
+          return `Expires ${when} (${formatExpiryDate(payload.expiryDate)}). It will be hidden from customers automatically. Sell it off or update the date for new stock.`;
+        },
+      };
+    case NOTIFICATION_EVENTS.PRODUCT_EXPIRED:
+      return {
+        role: NOTIFICATION_ROLES.SELLER,
+        recipientIds: (payload) => normalizeIdList(payload.sellerId),
+        title: (payload) => `${String(payload.productName || "Product").trim()} has expired`,
+        body: (payload) =>
+          `Expired on ${formatExpiryDate(payload.expiryDate)} and is now hidden from customers. Remove the stock or set a new expiry date for a fresh batch.`,
+      };
     default:
       return null;
   }
 }
 
 function eventData(eventType, payload = {}, role) {
+  if (
+    eventType === NOTIFICATION_EVENTS.PRODUCT_EXPIRING_SOON ||
+    eventType === NOTIFICATION_EVENTS.PRODUCT_EXPIRED
+  ) {
+    return {
+      eventType,
+      productId: String(payload.productId || "").trim() || undefined,
+      expiryDate: payload.expiryDate ? new Date(payload.expiryDate).toISOString() : undefined,
+      imageUrl: String(payload.imageUrl || "").trim() || undefined,
+      link: buildSellerExpiryLink(eventType === NOTIFICATION_EVENTS.PRODUCT_EXPIRED ? "expired" : "expiring"),
+      ...(payload.data || {}),
+    };
+  }
+
   if (eventType === NOTIFICATION_EVENTS.LOW_STOCK_ALERT) {
     const productId = String(payload.productId || "").trim() || undefined;
     return {

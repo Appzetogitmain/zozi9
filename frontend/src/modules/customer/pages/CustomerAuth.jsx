@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@core/context/AuthContext';
 import { useSettings } from '@core/context/SettingsContext';
 import {
@@ -16,7 +16,8 @@ import {
     ShoppingBasket,
     Heart,
     Star,
-    ChevronLeft
+    ChevronLeft,
+    Gift
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { customerApi } from '../services/customerApi';
@@ -66,7 +67,11 @@ const CATEGORIES = [
 ];
 
 const CustomerAuth = () => {
-    const [isLogin, setIsLogin] = useState(true);
+    // Invite links look like /signup?ref=CODE
+    const [searchParams] = useSearchParams();
+    const inviteCode = (searchParams.get('ref') || '').trim().toUpperCase();
+    const [isLogin, setIsLogin] = useState(!inviteCode);
+    const [referralProgram, setReferralProgram] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [showOtp, setShowOtp] = useState(false);
     const [timer, setTimer] = useState(0);
@@ -80,10 +85,18 @@ const CustomerAuth = () => {
     const [formData, setFormData] = useState({
         phone: '',
         otp: '',
-        name: ''
+        name: '',
+        referralCode: inviteCode
     });
 
     const activeCategory = CATEGORIES[carouselIndex];
+    const showReferralField = !isLogin && !!referralProgram?.enabled;
+
+    useEffect(() => {
+        customerApi.getReferralProgram()
+            .then((res) => setReferralProgram(res.data?.result || null))
+            .catch(() => setReferralProgram(null));
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -117,7 +130,7 @@ const CustomerAuth = () => {
             setTimer(30);
             toast.success('OTP sent!');
         } catch (error) {
-            toast.error('Failed to send OTP');
+            toast.error(error.response?.data?.message || 'Failed to send OTP');
         } finally {
             setIsLoading(false);
         }
@@ -131,10 +144,17 @@ const CustomerAuth = () => {
         }
         setIsLoading(true);
         try {
-            const response = await customerApi.verifyOtp({ phone: formData.phone, otp: formData.otp });
-            const { token, customer } = response.data.result;
+            const referralCode = showReferralField ? formData.referralCode.trim() : '';
+            const response = await customerApi.verifyOtp({
+                phone: formData.phone,
+                otp: formData.otp,
+                ...(referralCode ? { referralCode } : {}),
+            });
+            const { token, customer, referral } = response.data.result;
             login({ ...customer, token, role: 'customer' });
             toast.success('Successfully Logged In!');
+            if (referral?.applied) toast.success(referral.message);
+            else if (referral?.message) toast.error(`Referral code not applied: ${referral.message}`);
             navigate('/');
         } catch (error) {
             const apiMessage = error?.response?.data?.message;
@@ -362,6 +382,30 @@ const CustomerAuth = () => {
                                                 onBlur={(e) => e.target.style.borderColor = '#F3F4F6'}
                                             />
                                         </div>
+                                        {showReferralField && (
+                                            <div className="space-y-1.5">
+                                                <div className="relative group">
+                                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
+                                                        <Gift size={18} />
+                                                    </div>
+                                                    <input
+                                                        name="referralCode"
+                                                        maxLength={32}
+                                                        value={formData.referralCode}
+                                                        placeholder="Referral Code (optional)"
+                                                        className="w-full bg-gray-50 border border-gray-100 rounded-2xl pl-12 pr-4 py-4 text-sm font-bold text-gray-800 uppercase tracking-widest outline-none focus:bg-white transition-all placeholder:normal-case placeholder:tracking-normal"
+                                                        onChange={(e) => setFormData({ ...formData, referralCode: e.target.value.toUpperCase().replace(/\s/g, '') })}
+                                                        onFocus={(e) => e.target.style.borderColor = activeCategory.theme}
+                                                        onBlur={(e) => e.target.style.borderColor = '#F3F4F6'}
+                                                    />
+                                                </div>
+                                                {formData.referralCode && referralProgram?.refereeReward?.label && (
+                                                    <p className="px-2 text-[11px] font-bold" style={{ color: activeCategory.theme }}>
+                                                        You'll get {referralProgram.refereeReward.label} after your first order is delivered
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
 
                                         <button
                                             type="submit"

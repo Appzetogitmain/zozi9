@@ -37,6 +37,8 @@ import { sellerApi } from "../services/sellerApi";
 import { toast } from "sonner";
 import Pagination from "@shared/components/ui/Pagination";
 import BulkUploadModal from "../components/BulkUploadModal";
+import ExpiryDateFields from "@shared/components/ExpiryDateFields";
+import { appendExpiryFields, toExpiryInput } from "@/shared/utils/productExpiry";
 
 const ProductManagement = () => {
   const navigate = useNavigate();
@@ -204,6 +206,8 @@ const ProductManagement = () => {
     salePrice: "",
     stock: "",
     lowStockAlert: 5,
+    expiryDate: "",
+    expiryAlertDays: 7,
     category: "",
     header: "",
     subcategory: "",
@@ -338,6 +342,7 @@ const ProductManagement = () => {
       data.append("brand", formData.brand);
       data.append("weight", formData.weight);
       data.append("tags", formData.tags);
+      appendExpiryFields(data, formData);
       // Variant media: new files go as multipart, the JSON keeps already-stored URLs
       const variantsPayload = formData.variants.map((variant, idx) => {
         const { images = [], video, ...rest } = variant;
@@ -464,6 +469,8 @@ const ProductManagement = () => {
         salePrice: item.salePrice || "",
         stock: item.stock || "",
         lowStockAlert: item.lowStockAlert || 5,
+        expiryDate: toExpiryInput(item.expiryDate),
+        expiryAlertDays: item.expiryAlertDays ?? 7,
         header: item.headerId?._id || item.headerId || "",
         category: item.categoryId?._id || item.categoryId || "",
         subcategory: item.subcategoryId?._id || item.subcategoryId || "",
@@ -500,6 +507,8 @@ const ProductManagement = () => {
         salePrice: "",
         stock: "",
         lowStockAlert: 5,
+        expiryDate: "",
+        expiryAlertDays: 7,
         category: "",
         header: "",
         status: "active",
@@ -1191,6 +1200,13 @@ const ProductManagement = () => {
                           />
                         </div>
                       </div>
+                      <ExpiryDateFields
+                        expiryDate={formData.expiryDate}
+                        expiryAlertDays={formData.expiryAlertDays}
+                        onChange={(field, value) => setFormData((prev) => ({ ...prev, [field]: value }))}
+                        labelClassName="text-xs sm:text-xs font-bold text-slate-600 uppercase tracking-widest ml-1"
+                        inputClassName="w-full px-4 py-2.5 bg-slate-100 border-none rounded-xl text-sm font-semibold outline-none ring-primary/5 focus:ring-2"
+                      />
                     </div>
                   )}
                   {/* Additional tabs populated as needed */}

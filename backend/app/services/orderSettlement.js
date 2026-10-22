@@ -3,11 +3,21 @@ import {
   handleCodOrderFinance,
   settleDeliveredOrder,
 } from "./finance/orderFinanceService.js";
+import { processDeliveredOrderForReferral } from "./referralService.js";
 
 /**
  * Financial side effects when order becomes delivered (mirrors orderController).
+ * Refer & Earn runs even if settlement fails: the order is already delivered.
  */
 export async function applyDeliveredSettlement(order, orderIdString) {
+  try {
+    await applyFinanceSettlement(order, orderIdString);
+  } finally {
+    await processDeliveredOrderForReferral(order._id);
+  }
+}
+
+async function applyFinanceSettlement(order, orderIdString) {
   const settled = await settleDeliveredOrder(order._id);
 
   const method = (order.payment?.method || "").toLowerCase();

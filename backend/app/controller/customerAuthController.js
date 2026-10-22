@@ -13,6 +13,7 @@ import {
     validateSchema,
     verifyOtpSchema,
 } from "../validation/customerAuthValidation.js";
+import { applyReferralCode } from "../services/referralService.js";
 
 import { getFirebaseAdminApp } from "../config/firebaseAdmin.js";
 import admin from "firebase-admin";
@@ -106,6 +107,16 @@ export const verifyCustomerOTP = async (req, res) => {
         customer.lastLogin = new Date();
         await customer.save();
 
+        // A bad referral code must never block the login itself
+        let referral;
+        if (payload.referralCode) {
+            try {
+                referral = await applyReferralCode({ customerId: customer._id, code: payload.referralCode });
+            } catch (referralError) {
+                referral = { applied: false, message: referralError.message };
+            }
+        }
+
         return handleResponse(
             res,
             200,
@@ -114,6 +125,7 @@ export const verifyCustomerOTP = async (req, res) => {
                 token,
                 refreshToken,
                 customer: sanitizeCustomer(customer),
+                ...(referral ? { referral } : {}),
             }
         );
     } catch (error) {
@@ -266,10 +278,16 @@ export const getCustomerTransactions = async (req, res) => {
             Transaction.countDocuments({ user: customerId, userModel: "User" }),
         ]);
 
+        const bonusTitle = (t) => {
+            if (t.meta?.source === "referral") return "Referral reward";
+            if (t.meta?.source === "spin_win") return "Spin & Win cashback";
+            return "Bonus";
+        };
         const items = transactions.map((t) => ({
             _id: t._id,
-            type: t.type === "Refund" ? "credit" : "debit",
-            title: t.type === "Refund" ? "Refund" : t.type,
+            // Refunds and bonuses are stored as positive amounts, wallet payments as negative
+            type: Number(t.amount) >= 0 ? "credit" : "debit",
+            title: t.type === "Bonus" ? bonusTitle(t) : t.type,
             amount: Math.abs(t.amount),
             date: t.createdAt,
             reference: t.reference,

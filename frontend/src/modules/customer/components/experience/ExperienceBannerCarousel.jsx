@@ -63,11 +63,14 @@ const ExperienceBannerCarousel = ({ section, items, fullWidth = false, slideGap 
   const getBannerOptimizedSrc = React.useCallback((url) => {
     if (!url) return url;
     if (!isCloudinaryUrl(url)) return url;
-    return applyCloudinaryTransform(url, "f_auto,q_auto,c_fill,g_auto,w_824,h_380");
-  }, []);
+    return applyCloudinaryTransform(
+      url,
+      fullWidth ? "f_auto,q_auto,c_limit,w_824" : "f_auto,q_auto,c_fill,g_auto,w_824,h_380"
+    );
+  }, [fullWidth]);
 
   return (
-    <div className={cn("overflow-hidden touch-pan-y", fullWidth && "w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]")}>
+    <div className={cn("overflow-hidden touch-pan-y", fullWidth && "w-full")}>
       <motion.div
         ref={containerRef}
         drag="x"
@@ -76,35 +79,35 @@ const ExperienceBannerCarousel = ({ section, items, fullWidth = false, slideGap 
         onDragEnd={handleDragEnd}
         animate={{ x: `-${(activeIndex / totalItems) * 100}%` }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="flex"
+        className={cn("flex", fullWidth && "items-start")}
         style={{ width: `${totalItems * 100}%` }}
       >
         {visibleItems.map((banner, idx) => (
           <div
             key={idx}
             className={cn(
-              "relative shrink-0 overflow-hidden bg-slate-100 flex items-center justify-center box-border",
-              fullWidth ? "h-[190px] rounded-none px-0" : "h-[190px] px-4 md:px-8"
+              "relative shrink-0 overflow-hidden flex items-center justify-center box-border",
+              fullWidth ? "rounded-none px-0" : "h-[190px] px-4 md:px-8 bg-slate-100"
             )}
             style={{ width: `${100 / totalItems}%` }}
           >
             {fullWidth ? (
+              // Full-width hero: keep the banner's own aspect ratio so nothing gets cropped on small screens
               <img
                 src={getBannerOptimizedSrc(banner.imageUrl)}
                 srcSet={
                   isCloudinaryUrl(banner.imageUrl)
-                    ? buildCloudinarySrcSet(banner.imageUrl, [
-                        { w: 412, h: 190 },
-                        { w: 824, h: 380 },
-                        { w: 1248, h: 570 },
-                      ])
+                    ? buildCloudinarySrcSet(
+                        banner.imageUrl,
+                        [{ w: 412 }, { w: 824 }, { w: 1248 }],
+                        "f_auto,q_auto,c_limit"
+                      )
                     : undefined
                 }
                 sizes="100vw"
                 alt={banner.title || section?.title || "Banner"}
-                className="w-full h-full object-cover object-center pointer-events-none"
-                width={412}
-                height={190}
+                className="block w-full h-auto pointer-events-none select-none"
+                draggable={false}
                 loading={idx === 0 ? "eager" : "lazy"}
                 fetchPriority={idx === 0 ? "high" : "low"}
                 decoding="async"

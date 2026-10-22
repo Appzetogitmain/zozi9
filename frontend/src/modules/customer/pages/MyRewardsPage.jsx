@@ -16,7 +16,7 @@ const PAGE_SIZE = 10;
 const EMPTY_COPY = {
   available: {
     title: "No rewards yet",
-    text: "Spin the wheel when it appears on the home screen to win discounts, free delivery and more.",
+    text: "Spin the wheel when it appears on the home screen, or invite friends with Refer & Earn, to get discounts, free delivery and more.",
   },
   redeemed: { title: "Nothing redeemed yet", text: "Rewards you use on an order will show up here." },
   expired: { title: "No expired rewards", text: "Use your rewards before their expiry date so they don't go to waste." },
@@ -83,7 +83,7 @@ const MyRewardsPage = () => {
           </button>
           <div>
             <h1 className="text-xl font-black tracking-tight">My Rewards</h1>
-            <p className="text-xs font-medium text-white/80">Coupons you won with Spin &amp; Win</p>
+            <p className="text-xs font-medium text-white/80">Coupons from Spin &amp; Win and Refer &amp; Earn</p>
           </div>
         </div>
       </div>

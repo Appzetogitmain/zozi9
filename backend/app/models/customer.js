@@ -109,6 +109,22 @@ const userSchema = new mongoose.Schema(
             default: 0,
         },
 
+        // Refer & Earn: own shareable code (created on first visit to the Refer page)
+        referralCode: {
+            type: String,
+            uppercase: true,
+            trim: true,
+            unique: true,
+            sparse: true,
+        },
+
+        // Customer whose code was used at signup
+        referredBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+
         isActive: {
             type: Boolean,
             default: true,

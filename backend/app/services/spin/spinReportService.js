@@ -32,8 +32,10 @@ export async function buildSpinReport({ campaignId = null, from = null, to = nul
 
   const impressionMatch = { ...campaignMatch, ...timeMatch };
   const attemptMatch = { ...campaignMatch, ...timeMatch };
-  const rewardMatch = { ...campaignMatch, ...timeMatch };
-  const ledgerMatch = { ...campaignMatch, ...timeMatch };
+  // Refer & Earn rewards share these collections; keep them out of Spin & Win numbers
+  const notReferral = { source: { $ne: "referral" } };
+  const rewardMatch = { ...campaignMatch, ...timeMatch, ...notReferral };
+  const ledgerMatch = { ...campaignMatch, ...timeMatch, ...notReferral };
 
   const [
     impressionTotals,
@@ -96,6 +98,7 @@ export async function buildSpinReport({ campaignId = null, from = null, to = nul
         },
       },
       { $unwind: "$reward" },
+      { $match: { "reward.source": { $ne: "referral" } } },
       ...(campaignId ? [{ $match: { "reward.campaignId": oid(campaignId) } }] : []),
       {
         $group: {

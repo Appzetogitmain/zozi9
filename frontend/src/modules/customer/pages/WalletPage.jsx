@@ -25,27 +25,15 @@ const WalletPage = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const [profileRes, ordersRes] = await Promise.all([
+                const [profileRes, txRes] = await Promise.all([
                     customerApi.getProfile(),
-                    customerApi.getMyOrders(),
+                    customerApi.getWalletTransactions({ limit: 50 }),
                 ]);
                 const profile = profileRes.data?.result ?? profileRes.data?.data ?? profileRes.data;
-                const rawOrders = ordersRes.data?.results ?? ordersRes.data?.result ?? [];
-                const orders = Array.isArray(rawOrders) ? rawOrders : [];
                 setBalance(profile?.walletBalance ?? 0);
-                // Only orders purchased using wallet
-                const walletOrders = orders.filter(
-                    (o) => (o.payment?.method || '').toLowerCase() === 'wallet'
-                );
-                const items = walletOrders.map((o) => ({
-                    _id: o._id,
-                    type: 'debit',
-                    title: 'Order Payment',
-                    amount: o.pricing?.total ?? o.payableAmount ?? 0,
-                    date: o.createdAt,
-                    orderId: o.orderId,
-                }));
-                setTransactions(items);
+                // Wallet ledger: refunds, referral / spin cashback (credits) and wallet payments (debits)
+                const items = txRes.data?.result?.items ?? [];
+                setTransactions(Array.isArray(items) ? items : []);
             } catch (err) {
                 console.error('Wallet fetch error:', err);
                 setBalance(0);
@@ -75,7 +63,7 @@ const WalletPage = () => {
                     <h2 className="text-3xl font-semibold text-slate-900 mt-1">
                         {loading ? '...' : `₹${(balance || 0).toLocaleString('en-IN')}`}
                     </h2>
-                    <p className="text-xs text-slate-500 mt-1">Return refunds are credited here</p>
+                    <p className="text-xs text-slate-500 mt-1">Refunds and rewards are credited here</p>
                 </div>
 
                 <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -90,9 +78,9 @@ const WalletPage = () => {
                         </div>
                     ) : transactions.length === 0 ? (
                         <div className="py-12 flex flex-col items-center justify-center text-center px-6">
-                            <p className="text-sm font-semibold text-slate-500 mb-1">No wallet payments yet</p>
+                            <p className="text-sm font-semibold text-slate-500 mb-1">No wallet activity yet</p>
                             <p className="text-xs text-slate-400">
-                                Orders paid using wallet will appear here.
+                                Refunds, rewards and wallet payments will appear here.
                             </p>
                         </div>
                     ) : (

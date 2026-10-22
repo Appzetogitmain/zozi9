@@ -20,11 +20,19 @@ const snapshotSchema = new mongoose.Schema(
   { _id: false },
 );
 
+function isSpinReward() {
+  return this.source !== "referral";
+}
+
 const customerRewardSchema = new mongoose.Schema(
   {
+    // spin = won on the wheel, referral = issued by Refer & Earn (no campaign / reward / attempt)
+    source: { type: String, enum: ["spin", "referral"], default: "spin" },
+    referralId: { type: mongoose.Schema.Types.ObjectId, ref: "Referral", default: null },
     customerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    campaignId: { type: mongoose.Schema.Types.ObjectId, ref: "SpinCampaign", required: true },
-    rewardId: { type: mongoose.Schema.Types.ObjectId, ref: "SpinReward", required: true },
+    campaignId: { type: mongoose.Schema.Types.ObjectId, ref: "SpinCampaign", required: isSpinReward },
+    rewardId: { type: mongoose.Schema.Types.ObjectId, ref: "SpinReward", required: isSpinReward },
+    // Unique index below: referral rewards get a fresh ObjectId here so they never collide on null
     attemptId: { type: mongoose.Schema.Types.ObjectId, ref: "SpinAttempt", required: true },
     code: { type: String, required: true, unique: true },
 
