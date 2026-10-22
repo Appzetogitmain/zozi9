@@ -27,6 +27,9 @@ import Pagination from '@shared/components/ui/Pagination';
 import { cn } from '@/lib/utils';
 import ImageSpecHint, { checkImageSpec } from '@shared/components/ui/ImageSpecHint';
 import { motion, AnimatePresence } from 'framer-motion';
+import ExpiryDateFields from '@shared/components/ExpiryDateFields';
+import VariantMediaEditor, { appendVariantMedia, toEditableVariantMedia } from '@shared/components/VariantMediaEditor';
+import { appendExpiryFields, toExpiryInput } from '@/shared/utils/productExpiry';
 
 const ProductManagement = () => {
     const [products, setProducts] = useState([]);
@@ -68,6 +71,8 @@ const ProductManagement = () => {
         salePrice: '',
         stock: '',
         lowStockAlert: 5,
+        expiryDate: '',
+        expiryAlertDays: 7,
         unit: 'packet',
         header: '',
         categoryId: '',
@@ -160,6 +165,7 @@ const ProductManagement = () => {
             data.append('salePrice', Number(formData.salePrice) || 0);
             data.append('stock', Number(formData.stock));
             data.append('lowStockAlert', Number(formData.lowStockAlert) || 5);
+            appendExpiryFields(data, formData);
             data.append('unit', formData.unit);
             data.append('headerId', formData.header);
             data.append('categoryId', formData.categoryId);
@@ -169,7 +175,7 @@ const ProductManagement = () => {
             data.append('brand', formData.brand);
             data.append('weight', formData.weight);
             data.append('tags', formData.tags);
-            data.append('variants', JSON.stringify(formData.variants));
+            appendVariantMedia(data, formData.variants);
 
             if (formData.mainImageFile) {
                 data.append('mainImage', formData.mainImageFile);
@@ -297,6 +303,8 @@ const ProductManagement = () => {
                 salePrice: item.salePrice || item.discountPrice || '',
                 stock: item.stock || '',
                 lowStockAlert: item.lowStockAlert || 5,
+                expiryDate: toExpiryInput(item.expiryDate),
+                expiryAlertDays: item.expiryAlertDays ?? 7,
                 unit: item.unit || 'packet',
                 header: item.headerId?._id || item.headerId || '',
                 categoryId: item.categoryId?._id || item.categoryId || '',
@@ -308,7 +316,7 @@ const ProductManagement = () => {
                 brand: item.brand || '',
                 mainImage: item.mainImage || null,
                 galleryImages: item.galleryImages || item.images || [],
-                variants: (item.variants && item.variants.length > 0) ? item.variants.map(v => ({ ...v, id: v._id || Date.now() })) : [
+                variants: (item.variants && item.variants.length > 0) ? item.variants.map(v => ({ ...toEditableVariantMedia(v), id: v._id || Date.now() })) : [
                     {
                         id: Date.now(),
                         name: 'Default',
@@ -323,7 +331,7 @@ const ProductManagement = () => {
         } else {
             setFormData({
                 name: '', slug: '', sku: '', description: '', price: '',
-                salePrice: '', stock: '', lowStockAlert: 5, unit: 'packet',
+                salePrice: '', stock: '', lowStockAlert: 5, expiryDate: '', expiryAlertDays: 7, unit: 'packet',
                 header: '', categoryId: '', subcategoryId: '', status: 'active',
                 isFeatured: false, tags: '', weight: '', brand: '',
                 mainImage: null, galleryImages: [],
@@ -716,7 +724,7 @@ const ProductManagement = () => {
                                         { id: 'general', label: 'General Info', icon: HiOutlineTag },
                                         { id: 'variants', label: 'Item Variants', icon: HiOutlineSwatch },
                                         { id: 'category', label: 'Groups', icon: HiOutlineFolderOpen },
-                                        { id: 'media', label: 'Photos', icon: HiOutlinePhoto }
+                                        { id: 'media', label: 'Photos & Video', icon: HiOutlinePhoto }
                                     ].map((tab) => (
                                         <button
                                             key={tab.id}
@@ -815,6 +823,13 @@ const ProductManagement = () => {
                                                     />
                                                 </div>
                                             </div>
+                                            <ExpiryDateFields
+                                                expiryDate={formData.expiryDate}
+                                                expiryAlertDays={formData.expiryAlertDays}
+                                                onChange={(field, value) => setFormData((prev) => ({ ...prev, [field]: value }))}
+                                                labelClassName="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1"
+                                                inputClassName="w-full px-4 py-2.5 bg-slate-100 border-none rounded-xl text-sm font-semibold outline-none ring-primary/5 focus:ring-2"
+                                            />
                                         </div>
                                     )}
 
@@ -1030,8 +1045,19 @@ const ProductManagement = () => {
                                                 </div>
                                             </div>
 
+                                            <div className="pt-4 border-t border-slate-100">
+                                                <VariantMediaEditor
+                                                    variants={formData.variants}
+                                                    onChangeVariant={(index, updater) => setFormData((prev) => ({
+                                                        ...prev,
+                                                        variants: prev.variants.map((v, i) => (i === index ? updater(v) : v)),
+                                                    }))}
+                                                    labelClassName="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1"
+                                                />
+                                            </div>
+
                                             <p className="text-xs text-slate-500 font-medium italic text-center pt-4 border-t border-slate-50 outline-none">
-                                                Quick Tip: Multiple photos help users trust your products more!
+                                                Quick Tip: Multiple photos and a short video help users trust your products more!
                                             </p>
                                         </div>
                                     )}

@@ -35,9 +35,12 @@ export async function loadRewardForCheckout({ customerId, rewardId, session = nu
   if (status === "expired") throw new SpinError(410, "This reward has expired", "REWARD_EXPIRED");
   if (status !== "available") throw new SpinError(409, "This reward is not available", "REWARD_UNAVAILABLE");
 
-  const settings = await getSpinSettings();
-  if (!settings.enabled && !settings.allowRedemptionWhenDisabled) {
-    throw new SpinError(403, "Spin & Win rewards cannot be used right now", "DISABLED");
+  // Refer & Earn coupons are not tied to the Spin & Win switch
+  if (reward.source !== "referral") {
+    const settings = await getSpinSettings();
+    if (!settings.enabled && !settings.allowRedemptionWhenDisabled) {
+      throw new SpinError(403, "Spin & Win rewards cannot be used right now", "DISABLED");
+    }
   }
 
   if (!CHECKOUT_REWARD_TYPES.includes(reward.snapshot?.type)) {
@@ -85,6 +88,7 @@ export async function claimRewardForOrder({
         entryType: "redeemed",
         customerRewardId: claimed._id,
         campaignId: claimed.campaignId,
+        source: claimed.source || "spin",
         customerId,
         orderId: order._id,
         amount: discountApplied,
@@ -108,7 +112,13 @@ export async function restoreRewardForOrder(order, { reason = "cancelled", sessi
     const rewardId = order?.spinRewardId;
     if (!rewardId) return { restored: false, reason: "no_reward" };
 
-    const settings = await getSpinSettings();
+    const current = await CustomerReward.findById(rewardId, null, session ? { session } : undefined);
+    if (!current || current.status !== "redeemed") return { restored: false, reason: "not_redeemed" };
+
+    // Refer & Earn coupons come back on cancellation but not after a refund
+    const settings = current.source === "referral"
+      ? { restoreOnCancel: true, restoreOnRefund: false }
+      : await getSpinSettings();
     if (reason === "refund" ? !settings.restoreOnRefund : !settings.restoreOnCancel) {
       return { restored: false, reason: "policy" };
     }
@@ -124,9 +134,6 @@ export async function restoreRewardForOrder(order, { reason = "cancelled", sessi
     if (stillActive > 0) return { restored: false, reason: "other_orders_active" };
 
     const now = new Date();
-    const current = await CustomerReward.findById(rewardId, null, session ? { session } : undefined);
-    if (!current || current.status !== "redeemed") return { restored: false, reason: "not_redeemed" };
-
     const nextStatus = new Date(current.expiresAt) > now ? "available" : "expired";
     const restored = await CustomerReward.findOneAndUpdate(
       { _id: rewardId, status: "redeemed" },
@@ -151,6 +158,7 @@ export async function restoreRewardForOrder(order, { reason = "cancelled", sessi
           entryType: "restored",
           customerRewardId: restored._id,
           campaignId: restored.campaignId,
+          source: restored.source || "spin",
           customerId: restored.customerId,
           orderId: order._id,
           amount: current.discountApplied || 0,

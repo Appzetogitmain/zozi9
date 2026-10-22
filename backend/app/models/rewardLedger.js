@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-/** Append-only money trail for Spin & Win (discount cost, cashback credits, restores). */
+/** Append-only money trail for Spin & Win and Refer & Earn rewards (discount cost, cashback credits, restores). */
 const rewardLedgerSchema = new mongoose.Schema(
   {
     entryType: {
@@ -9,7 +9,9 @@ const rewardLedgerSchema = new mongoose.Schema(
       required: true,
     },
     customerRewardId: { type: mongoose.Schema.Types.ObjectId, ref: "CustomerReward", required: true },
-    campaignId: { type: mongoose.Schema.Types.ObjectId, ref: "SpinCampaign", required: true },
+    // null for Refer & Earn rewards
+    campaignId: { type: mongoose.Schema.Types.ObjectId, ref: "SpinCampaign", default: null },
+    source: { type: String, enum: ["spin", "referral"], default: "spin" },
     customerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     orderId: { type: mongoose.Schema.Types.ObjectId, ref: "Order", default: null },
     amount: { type: Number, default: 0 },

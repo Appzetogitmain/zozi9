@@ -5,6 +5,18 @@ export const sellerApi = {
     signup: (data) => axiosInstance.post('/seller/signup', data),
     sendVerificationOtp: (data) => axiosInstance.post('/seller/verification/send-otp', data),
     verifyVerificationOtp: (data) => axiosInstance.post('/seller/verification/verify-otp', data),
+    // Flash Sales (own sales; every create/edit goes to admin for approval)
+    getFlashSales: (params) => axiosInstance.get('/flash-sales/seller', { params }),
+    createFlashSale: (data) => axiosInstance.post('/flash-sales/seller', data),
+    updateFlashSale: (id, data) => axiosInstance.put(`/flash-sales/seller/${id}`, data),
+    setFlashSaleActive: (id, isActive) => axiosInstance.patch(`/flash-sales/seller/${id}/active`, { isActive }),
+    endFlashSale: (id) => axiosInstance.patch(`/flash-sales/seller/${id}/end`),
+    deleteFlashSale: (id) => axiosInstance.delete(`/flash-sales/seller/${id}`),
+
+    // Product expiry (own products)
+    getExpiryProducts: (params) => axiosInstance.get('/products/expiry', { params }),
+    updateProductExpiry: (id, data) => axiosInstance.patch(`/products/${id}/expiry`, data),
+
     // Products
     getProducts: (params) => axiosInstance.get('/products/seller/me', { params }),
     getProductById: (id) => axiosInstance.get(`/products/${id}`),

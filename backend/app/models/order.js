@@ -42,8 +42,20 @@ const orderSchema = new mongoose.Schema(
         },
         variantSlot: String,
         image: String,
+        // Set when this line was bought at a flash sale price
+        flashSale: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "FlashSale",
+        },
+        flashSaleItem: mongoose.Schema.Types.ObjectId,
+        regularPrice: Number,
       },
     ],
+    // True once this order's flash units were given back to their sales (cancel / payment failure)
+    flashSaleReleased: {
+      type: Boolean,
+      default: false,
+    },
     address: {
       type: {
         type: String,

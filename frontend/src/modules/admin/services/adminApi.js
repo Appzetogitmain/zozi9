@@ -75,6 +75,10 @@ export const adminApi = {
     deleteSpinReward: (id) => axiosInstance.delete(`/admin/spin/rewards/${id}`),
     reorderSpinRewards: (campaignId, ids) => axiosInstance.put(`/admin/spin/campaigns/${campaignId}/rewards/order`, { ids }),
     getSpinReport: (params) => axiosInstance.get('/admin/spin/reports', { params }),
+    // Refer & Earn
+    getReferralSettings: () => axiosInstance.get('/admin/referrals/settings'),
+    updateReferralSettings: (data) => axiosInstance.patch('/admin/referrals/settings', data),
+    getReferrals: (params) => axiosInstance.get('/admin/referrals', { params }),
     getProductModerationList: (params) => axiosInstance.get('/products/moderation', { params }),
     approveProductModeration: (id, data = {}) => axiosInstance.patch(`/products/moderation/${id}/approve`, data),
     rejectProductModeration: (id, data = {}) => axiosInstance.patch(`/products/moderation/${id}/reject`, data),
@@ -163,6 +167,19 @@ export const adminApi = {
     updateOffer: (id, data) => axiosInstance.put(`/admin-offers/${id}`, data),
     deleteOffer: (id) => axiosInstance.delete(`/admin-offers/${id}`),
     reorderOffers: (items) => axiosInstance.put('/admin-offers/reorder', { items }),
+
+    // Product expiry (all sellers)
+    getExpiryProducts: (params) => axiosInstance.get('/products/expiry', { params }),
+    updateProductExpiry: (id, data) => axiosInstance.patch(`/products/${id}/expiry`, data),
+
+    // Flash Sales
+    getFlashSales: (params) => axiosInstance.get('/flash-sales/admin', { params }),
+    createFlashSale: (data) => axiosInstance.post('/flash-sales/admin', data),
+    updateFlashSale: (id, data) => axiosInstance.put(`/flash-sales/admin/${id}`, data),
+    reviewFlashSale: (id, action, reason) => axiosInstance.patch(`/flash-sales/admin/${id}/review`, { action, reason }),
+    setFlashSaleActive: (id, isActive) => axiosInstance.patch(`/flash-sales/admin/${id}/active`, { isActive }),
+    endFlashSale: (id) => axiosInstance.patch(`/flash-sales/admin/${id}/end`),
+    deleteFlashSale: (id) => axiosInstance.delete(`/flash-sales/admin/${id}`),
 
     // Offer Sections (category → products, banner + side image)
     getOfferSections: (params) => axiosInstance.get('/admin-offer-sections', { params }),

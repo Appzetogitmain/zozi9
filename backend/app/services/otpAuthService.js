@@ -98,16 +98,6 @@ export async function issueCustomerOtp({
   const phone = normalizeAndValidatePhone(rawPhone);
   const now = new Date();
 
-  const sendAllowed = await incrementWindowCounter(`otp:send:phone:${phone}`, {
-    limit: OTP_SEND_LIMIT_PER_WINDOW(),
-    windowSeconds: OTP_SEND_LIMIT_WINDOW_SECONDS(),
-  });
-  if (!sendAllowed) {
-    const err = new Error("Too many OTP requests. Try again later.");
-    err.statusCode = 429;
-    throw err;
-  }
-
   let customer = await Customer.findOne({ phone }).select(
     "+otpHash +otpExpiresAt +otpFailedAttempts +otpLockedUntil +otpLastSentAt +otpSessionVersion +otp +otpExpiry",
   );
@@ -157,6 +147,18 @@ export async function issueCustomerOtp({
   if (lastSentAt && now.getTime() - lastSentAt.getTime() < cooldownMs) {
     const waitSec = Math.ceil((cooldownMs - (now.getTime() - lastSentAt.getTime())) / 1000);
     const err = new Error(`Please wait ${waitSec}s before requesting another OTP`);
+    err.statusCode = 429;
+    throw err;
+  }
+
+  // Counted only when an OTP is really about to be sent, so taps rejected by the
+  // cooldown above don't use up the per-number quota
+  const sendAllowed = await incrementWindowCounter(`otp:send:phone:${phone}`, {
+    limit: OTP_SEND_LIMIT_PER_WINDOW(),
+    windowSeconds: OTP_SEND_LIMIT_WINDOW_SECONDS(),
+  });
+  if (!sendAllowed) {
+    const err = new Error("Too many OTP requests. Try again later.");
     err.statusCode = 429;
     throw err;
   }

@@ -19,6 +19,12 @@ import {
   roundCurrency,
 } from "../../utils/money.js";
 import { getOrCreateFinanceSettings } from "./financeSettingsService.js";
+import {
+  getActiveFlashOffers,
+  getCustomerFlashUsage,
+  resolveOfferForLine,
+} from "../flashSaleService.js";
+import { isProductExpired } from "../productExpiryService.js";
 
 function toObjectIdString(value) {
   if (!value) return "";
@@ -317,7 +323,7 @@ export function calculateRiderPayout(distanceKm, deliverySettings = {}) {
 
 export async function hydrateOrderItems(
   orderItems = [],
-  { session = null, enforceServerPricing = true } = {},
+  { session = null, enforceServerPricing = true, customerId = null } = {},
 ) {
   if (!Array.isArray(orderItems) || orderItems.length === 0) {
     return [];
@@ -328,14 +334,28 @@ export async function hydrateOrderItems(
     .filter(Boolean);
 
   const productQuery = Product.find({ _id: { $in: productIds } })
-    .select("_id name salePrice price mainImage headerId categoryId subcategoryId sellerId status approvalStatus variants")
+    .select("_id name salePrice price mainImage headerId categoryId subcategoryId sellerId status approvalStatus variants expiryDate")
     .lean();
   if (session) productQuery.session(session);
   const products = await productQuery;
+  const now = new Date();
 
   const productMap = new Map(products.map((product) => [String(product._id), product]));
 
-  return orderItems.map((item) => {
+  // Live flash sale prices (server-side only) and how many flash units this customer already bought
+  const flashOffers = enforceServerPricing
+    ? await getActiveFlashOffers(productIds, { session })
+    : new Map();
+  const flashUsage = flashOffers.size > 0
+    ? await getCustomerFlashUsage(
+        customerId,
+        Array.from(flashOffers.values()).map((offer) => offer.itemId),
+        { session },
+      )
+    : new Map();
+  const flashAllocated = new Map();
+
+  return orderItems.flatMap((item) => {
     const productId = String(item.product || item.productId || item._id || item.id);
     const product = productMap.get(productId);
     if (!product) {
@@ -343,6 +363,11 @@ export async function hydrateOrderItems(
     }
     if (product.status !== "active") {
       throw new Error(`Product is not available for purchase: ${product.name}`);
+    }
+    if (isProductExpired(product, now)) {
+      const err = new Error(`${product.name} has expired and is no longer available. Please remove it from your cart.`);
+      err.statusCode = 409;
+      throw err;
     }
     if (resolveProductApprovalStatus(product) !== PRODUCT_APPROVAL_STATUS.APPROVED) {
       throw new Error(`Product is not approved for purchase: ${product.name}`);
@@ -373,7 +398,7 @@ export async function hydrateOrderItems(
       ? serverUnitPrice
       : normalizeLinePrice(item.price) || serverUnitPrice;
 
-    return {
+    const line = {
       productId,
       productName: item.name || product.name,
       quantity,
@@ -386,6 +411,39 @@ export async function hydrateOrderItems(
       variantSku: rawVariantSku || "",
       variantName: resolvedVariant ? String(resolvedVariant?.name || "").trim() : "",
     };
+
+    const offer = resolveOfferForLine(flashOffers, product, rawVariantSku);
+    if (!offer || !(offer.flashPrice < serverUnitPrice)) {
+      return [line];
+    }
+
+    // Units allowed at the flash price: limited by sale stock and the per-customer cap.
+    // Anything above that is split into a second line at the regular price.
+    const alreadyAllocated = flashAllocated.get(offer.itemId) || 0;
+    let allowed = offer.remaining - alreadyAllocated;
+    if (offer.perCustomerLimit > 0) {
+      allowed = Math.min(
+        allowed,
+        offer.perCustomerLimit - (flashUsage.get(offer.itemId) || 0) - alreadyAllocated,
+      );
+    }
+    const flashQuantity = Math.max(0, Math.min(quantity, allowed));
+    if (flashQuantity === 0) {
+      return [line];
+    }
+    flashAllocated.set(offer.itemId, alreadyAllocated + flashQuantity);
+
+    const flashLine = {
+      ...line,
+      quantity: flashQuantity,
+      price: normalizeLinePrice(offer.flashPrice),
+      regularPrice: serverUnitPrice,
+      flashSaleId: offer.saleId,
+      flashSaleItemId: offer.itemId,
+    };
+    return flashQuantity === quantity
+      ? [flashLine]
+      : [flashLine, { ...line, quantity: quantity - flashQuantity }];
   });
 }
 

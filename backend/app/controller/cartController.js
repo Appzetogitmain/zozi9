@@ -2,18 +2,26 @@ import Cart from "../models/cart.js";
 import Product from "../models/product.js";
 import handleResponse from "../utils/helper.js";
 import { getApprovedOrLegacyFilter } from "../services/productModerationService.js";
+import { applyFlashPricingToProducts } from "../services/flashSaleService.js";
+import { notExpiredFilter } from "../services/productExpiryService.js";
 
 const CART_POPULATE_FIELDS =
   "name slug price salePrice mainImage stock status headerId categoryId subcategoryId sellerId variants";
 
-const CUSTOMER_VISIBLE_PRODUCT_MATCH = {
+// Evaluated per request: expiry depends on the current time
+const customerVisibleProductMatch = () => ({
   status: "active",
   ...getApprovedOrLegacyFilter(),
-};
+  ...notExpiredFilter(),
+});
 
-function sanitizeCartItems(cart) {
+async function sanitizeCartItems(cart) {
   if (!cart || !Array.isArray(cart.items)) return cart;
   cart.items = cart.items.filter((item) => Boolean(item?.productId));
+
+  // Show live flash sale prices in the cart (checkout re-applies them server-side)
+  const pricedProducts = await applyFlashPricingToProducts(cart.items.map((item) => item.productId));
+  cart.items = cart.items.map((item, index) => ({ ...item, productId: pricedProducts[index] }));
   return cart;
 }
 
@@ -21,7 +29,7 @@ async function getCustomerVisibleProductById(productId) {
   if (!productId) return null;
   return Product.findOne({
     _id: productId,
-    ...CUSTOMER_VISIBLE_PRODUCT_MATCH,
+    ...customerVisibleProductMatch(),
   })
     .select("_id")
     .lean();
@@ -32,7 +40,7 @@ async function fetchPopulatedCart(cartId) {
     .populate({
       path: "items.productId",
       select: CART_POPULATE_FIELDS,
-      match: CUSTOMER_VISIBLE_PRODUCT_MATCH,
+      match: customerVisibleProductMatch(),
     })
     .lean();
 
@@ -49,7 +57,7 @@ export const getCart = async (req, res) => {
       .populate({
         path: "items.productId",
         select: CART_POPULATE_FIELDS,
-        match: CUSTOMER_VISIBLE_PRODUCT_MATCH,
+        match: customerVisibleProductMatch(),
       })
       .lean();
 
@@ -58,7 +66,7 @@ export const getCart = async (req, res) => {
       return handleResponse(res, 200, "Cart fetched successfully", newCart);
     }
 
-    return handleResponse(res, 200, "Cart fetched successfully", sanitizeCartItems(cart));
+    return handleResponse(res, 200, "Cart fetched successfully", await sanitizeCartItems(cart));
   } catch (error) {
     return handleResponse(res, 500, error.message);
   }
@@ -74,7 +82,7 @@ export const addToCart = async (req, res) => {
     const normalizedVariantSku = String(variantSku || "").trim();
     const customerVisibleProduct = await Product.findOne({
       _id: productId,
-      ...CUSTOMER_VISIBLE_PRODUCT_MATCH,
+      ...customerVisibleProductMatch(),
     }).select("_id sellerId").lean();
 
     if (!customerVisibleProduct) {

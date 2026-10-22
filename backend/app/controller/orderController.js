@@ -57,6 +57,7 @@ import * as walletService from "../services/finance/walletService.js";
 import { OWNER_TYPE } from "../constants/finance.js";
 import { processPayout } from "../services/finance/payoutService.js";
 import { buildKey, getOrSet, getTTL, invalidate } from "../services/cacheService.js";
+import { releaseFlashSaleForOrder } from "../services/flashSaleService.js";
 
 function validateWithJoi(schema, payload) {
   const { error, value } = schema.validate(payload, {
@@ -929,7 +930,8 @@ export const updateOrderStatus = async (req, res) => {
 
     // Handle Cancellation (Stock Reversal & Transaction Update)
     if (status === "cancelled" && oldStatus !== "cancelled") {
-      // 1. Reverse Stock
+      // 1. Reverse Stock (and give flash sale units back to their sale)
+      await releaseFlashSaleForOrder(order);
       for (const item of order.items) {
         await Product.findByIdAndUpdate(item.product, {
           $inc: { stock: item.quantity },

@@ -23,6 +23,13 @@ import {
   sanitizeApprovalNote,
   resolveProductApprovalStatus,
 } from "../services/productModerationService.js";
+import { applyFlashPricingToProducts } from "../services/flashSaleService.js";
+import {
+  applyExpiryFields,
+  filterOutExpired,
+  isProductExpired,
+  notExpiredFilter,
+} from "../services/productExpiryService.js";
 
 function buildProductListKey(queryParams) {
   const sorted = Object.keys(queryParams)
@@ -162,7 +169,14 @@ async function attachVariantMedia(productData, files = []) {
         });
       }
     } catch (err) {
+      // Fail the save instead of silently dropping the file, so the seller/admin knows
       console.error("Variant media upload failed:", err);
+      const what = imageMatch ? "a photo" : "the video";
+      const error = new Error(
+        `Could not upload ${what} for variant ${Number(match[1]) + 1}: ${err.message || "upload failed"}. Nothing was saved, please try again.`,
+      );
+      error.statusCode = 502;
+      throw error;
     }
   }
 
@@ -416,7 +430,7 @@ export const getProducts = async (req, res) => {
     let finalQuery = { ...query };
     if (enforceRadius) {
       finalQuery.status = "active";
-      finalQuery = { $and: [finalQuery, getApprovedOrLegacyFilter()] };
+      finalQuery = { $and: [finalQuery, getApprovedOrLegacyFilter(), notExpiredFilter()] };
     } else {
       if (status && status !== "all") {
         finalQuery.status = status;
@@ -450,7 +464,7 @@ export const getProducts = async (req, res) => {
       const [rawProducts, total] = await Promise.all([
         Product.find(finalQuery)
           .select(
-            "name slug description sku price salePrice stock brand weight mainImage galleryImages headerId categoryId subcategoryId sellerId status approvalStatus approvalRequestedAt approvalReviewedAt approvalReviewedBy approvalNote lastSubmittedByRole isFeatured variants createdAt",
+            "name slug description sku price salePrice stock brand weight mainImage galleryImages headerId categoryId subcategoryId sellerId status approvalStatus approvalRequestedAt approvalReviewedAt approvalReviewedBy approvalNote lastSubmittedByRole isFeatured variants expiryDate expiryAlertDays createdAt",
           )
           // No .populate() — names resolved via cache-backed entityNameCache
           .sort(sortQuery)
@@ -515,6 +529,15 @@ export const getProducts = async (req, res) => {
       ? await getOrSet(buildProductListKey(req.query), fetchFn, getTTL("productList"))
       : await fetchFn();
 
+    // Flash prices and expiry change by the minute, so they are applied after the cache:
+    // a product that expired after this list was cached is still dropped here
+    if (enforceRadius && Array.isArray(result?.items)) {
+      return handleResponse(res, 200, "Products fetched successfully", {
+        ...result,
+        items: await applyFlashPricingToProducts(filterOutExpired(result.items)),
+      });
+    }
+
     return handleResponse(res, 200, "Products fetched successfully", result);
   } catch (error) {
     return handleResponse(res, 500, error.message);
@@ -573,7 +596,7 @@ export const getSellerProducts = async (req, res) => {
     ] = await Promise.all([
       Product.find(query)
         .select(
-          "name slug description sku price salePrice stock lowStockAlert brand weight mainImage galleryImages headerId categoryId subcategoryId sellerId status approvalStatus approvalRequestedAt approvalReviewedAt approvalReviewedBy approvalNote lastSubmittedByRole isFeatured variants createdAt",
+          "name slug description sku price salePrice stock lowStockAlert brand weight mainImage galleryImages headerId categoryId subcategoryId sellerId status approvalStatus approvalRequestedAt approvalReviewedAt approvalReviewedBy approvalNote lastSubmittedByRole isFeatured variants expiryDate expiryAlertDays createdAt",
         )
         .populate("headerId", "name")
         .populate("categoryId", "name")
@@ -798,6 +821,7 @@ export const createProduct = async (req, res) => {
       }
     }
     Object.assign(productData, moderationUpdate);
+    applyExpiryFields(productData);
 
     const product = await Product.create(productData);
 
@@ -825,7 +849,7 @@ export const createProduct = async (req, res) => {
     if (error.code === 11000) {
       return handleResponse(res, 400, "Slug or SKU already exists");
     }
-    return handleResponse(res, 500, error.message);
+    return handleResponse(res, error.statusCode || 500, error.message);
   }
 };
 
@@ -904,6 +928,7 @@ export const bulkCreateProducts = async (req, res) => {
       }
 
       Object.assign(productData, moderationUpdate);
+      applyExpiryFields(productData);
       return productData;
     });
 
@@ -1063,6 +1088,7 @@ export const updateProduct = async (req, res) => {
       }
     }
     Object.assign(productData, moderationUpdate);
+    applyExpiryFields(productData, product);
 
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
@@ -1104,7 +1130,7 @@ export const updateProduct = async (req, res) => {
     if (error.code === 11000) {
       return handleResponse(res, 400, "Slug or SKU already exists");
     }
-    return handleResponse(res, 500, error.message);
+    return handleResponse(res, error.statusCode || 500, error.message);
   }
 };
 
@@ -1172,7 +1198,7 @@ export const getProductById = async (req, res) => {
       async () =>
         Product.findById(id)
           .select(
-            "name slug description sku price salePrice stock lowStockAlert brand weight mainImage galleryImages headerId categoryId subcategoryId sellerId status approvalStatus approvalRequestedAt approvalReviewedAt approvalReviewedBy approvalNote lastSubmittedByRole isFeatured variants createdAt",
+            "name slug description sku price salePrice stock lowStockAlert brand weight mainImage galleryImages headerId categoryId subcategoryId sellerId status approvalStatus approvalRequestedAt approvalReviewedAt approvalReviewedBy approvalNote lastSubmittedByRole isFeatured variants expiryDate expiryAlertDays createdAt",
           )
           .populate("headerId", "name")
           .populate("categoryId", "name")
@@ -1191,6 +1217,9 @@ export const getProductById = async (req, res) => {
       if (product.status !== "active" || approvalState !== PRODUCT_APPROVAL_STATUS.APPROVED) {
         return handleResponse(res, 404, "Product not found");
       }
+      if (isProductExpired(product)) {
+        return handleResponse(res, 404, "This product is no longer available");
+      }
     }
 
     if (enforceRadius) {
@@ -1200,11 +1229,14 @@ export const getProductById = async (req, res) => {
       }
     }
 
+    const normalizedProduct = normalizeProductDocumentModeration(product);
     return handleResponse(
       res,
       200,
       "Product details fetched",
-      normalizeProductDocumentModeration(product),
+      enforceRadius
+        ? (await applyFlashPricingToProducts([normalizedProduct]))[0]
+        : normalizedProduct,
     );
   } catch (error) {
     return handleResponse(res, 500, error.message);
@@ -1284,7 +1316,7 @@ export const getModerationProducts = async (req, res) => {
       await Promise.all([
         Product.find(moderatedQuery)
           .select(
-            "name slug description sku price salePrice stock lowStockAlert brand weight mainImage galleryImages headerId categoryId subcategoryId sellerId status approvalStatus approvalRequestedAt approvalReviewedAt approvalReviewedBy approvalNote lastSubmittedByRole isFeatured variants createdAt",
+            "name slug description sku price salePrice stock lowStockAlert brand weight mainImage galleryImages headerId categoryId subcategoryId sellerId status approvalStatus approvalRequestedAt approvalReviewedAt approvalReviewedBy approvalNote lastSubmittedByRole isFeatured variants expiryDate expiryAlertDays createdAt",
           )
           .populate("headerId", "name")
           .populate("categoryId", "name")

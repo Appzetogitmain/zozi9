@@ -288,10 +288,13 @@ export async function buildCheckoutPricingSnapshot({
   // Optional Spin & Win reward (CustomerReward snapshot). The discount is always
   // recomputed here from server-side prices - callers never pass an amount.
   spinReward = null,
+  // Used to apply flash sale per-customer limits
+  customerId = null,
 }) {
   const hydratedItems = await hydrateOrderItems(orderItems, {
     session,
     enforceServerPricing: true,
+    customerId,
   });
   if (!hydratedItems.length) {
     const err = new Error("Cannot checkout with empty cart");

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Heart, Plus, Minus, Star } from "lucide-react";
+import { Heart, Plus, Minus, Star, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useWishlist } from "../../context/WishlistContext";
@@ -56,6 +56,8 @@ const ProductCard = React.memo(
         name: String(picked?.name || "").trim(),
       };
     }, [product]);
+
+    const hasVideo = Array.isArray(product?.variants) && product.variants.some((v) => Boolean(v?.video));
 
     const productId = product.id || product._id;
     const variantKey = String(defaultVariant?.key || "").trim();
@@ -235,6 +237,15 @@ const ProductCard = React.memo(
               className="w-full h-full object-cover mix-blend-multiply"
             />
           </div>
+          {hasVideo && (
+            <span
+              className={cn(
+                "absolute z-10 bottom-2 left-2 flex items-center gap-0.5 rounded-full bg-black/60 text-white font-bold backdrop-blur-sm",
+                compact ? "px-1.5 py-0.5 text-[8px]" : "px-2 py-0.5 text-[9px]",
+              )}>
+              <Play size={compact ? 8 : 9} fill="currentColor" /> Video
+            </span>
+          )}
         </div>
 
         {/* Info Section */}

@@ -127,6 +127,27 @@ const productSchema = new mongoose.Schema(
         isFeatured: {
             type: Boolean,
             default: false,
+        },
+        // Product is hidden from customers from this moment on (null = never expires)
+        expiryDate: {
+            type: Date,
+            default: null,
+        },
+        // Seller is warned this many days before expiryDate
+        expiryAlertDays: {
+            type: Number,
+            default: 7,
+            min: 0,
+            max: 365,
+        },
+        // Set once the matching notification went out for the current expiryDate
+        expiryAlertSentAt: {
+            type: Date,
+            default: null,
+        },
+        expiredAlertSentAt: {
+            type: Date,
+            default: null,
         }
     },
     { timestamps: true }
@@ -142,6 +163,8 @@ productSchema.index({ subcategoryId: 1, status: 1 });
 productSchema.index({ sellerId: 1, status: 1 });
 productSchema.index({ sellerId: 1, approvalStatus: 1, createdAt: -1 });
 productSchema.index({ sellerId: 1, createdAt: -1, _id: -1 });
+productSchema.index({ expiryDate: 1 });
+productSchema.index({ sellerId: 1, expiryDate: 1 });
 productSchema.index({ name: "text", tags: "text" }); // For better search if regex is too slow
 
 export default mongoose.model("Product", productSchema);

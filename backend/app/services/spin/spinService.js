@@ -503,6 +503,7 @@ export function toCustomerRewardView(reward, now = new Date()) {
   return {
     id: String(reward._id),
     code: reward.code,
+    source: reward.source || "spin",
     status,
     label: snap.label,
     type: snap.type,

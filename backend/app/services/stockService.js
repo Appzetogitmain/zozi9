@@ -1,6 +1,7 @@
 import Product from "../models/product.js";
 import StockHistory from "../models/stockHistory.js";
 import { createLowStockAlertCandidate } from "./lowStockAlertService.js";
+import { releaseFlashSaleForOrder } from "./flashSaleService.js";
 
 const ONLINE_RESERVATION_MS = () =>
   parseInt(process.env.ONLINE_STOCK_RESERVATION_MS || "900000", 10);
@@ -128,6 +129,9 @@ export async function releaseReservedStockForOrder(order, { session = null, reas
   if (!order || !Array.isArray(order.items) || order.items.length === 0) {
     return false;
   }
+
+  // Flash units go back to the sale even if stock was already released elsewhere (idempotent)
+  await releaseFlashSaleForOrder(order, { session });
 
   const reservation = order.stockReservation || {};
   if (reservation.status === "RELEASED") {
