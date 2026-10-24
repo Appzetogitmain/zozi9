@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Heart, Plus, Minus, Star, ShieldCheck, Clock, ArrowLeft, MessageSquare } from 'lucide-react';
+import { Heart, Plus, Minus, Star, ShieldCheck, Clock, ArrowLeft, MessageSquare, ZoomIn } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from '@shared/components/ui/Toast';
@@ -10,6 +10,8 @@ import { customerApi } from '../services/customerApi';
 import { useLocation as useAppLocation } from '../context/LocationContext';
 import { applyCloudinaryTransform } from '@/core/utils/imageUtils';
 import { useSettings } from '@core/context/SettingsContext';
+import ImageZoomViewer from '../components/shared/ImageZoomViewer';
+import { useProductShopStatus } from '../context/ShopStatusContext';
 
 
 const ProductDetailPage = () => {
@@ -25,6 +27,9 @@ const ProductDetailPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeImage, setActiveImage] = useState('');
+    const [zoomIndex, setZoomIndex] = useState(null);
+    const shop = useProductShopStatus(product);
+    const shopClosed = !!shop && !shop.isOpen;
     const [selectedVariantKey, setSelectedVariantKey] = useState('');
     const [reviews, setReviews] = useState([]);
     const [reviewLoading, setReviewLoading] = useState(false);
@@ -186,6 +191,7 @@ const ProductDetailPage = () => {
     ];
     const currentMedia = mediaItems.includes(activeImage) ? activeImage : mediaItems[0] || activeImage;
     const isVideo = (src) => !!variantVideo && src === variantVideo;
+    const zoomImages = mediaItems.filter((src) => !isVideo(src));
     const displayPrice = selectedVariant?.price ?? product.price;
     const displaySale = selectedVariant ? selectedVariant.salePrice : product.salePrice;
 
@@ -211,12 +217,24 @@ const ProductDetailPage = () => {
                                 className="w-full h-full object-contain bg-black"
                             />
                         ) : (
-                            <img
-                                src={applyCloudinaryTransform(currentMedia)}
-                                alt={product.name}
-                                loading="lazy"
-                                className="w-full h-full object-contain p-2 md:p-4 transition-transform duration-700 group-hover:scale-105"
-                            />
+                            <button
+                                type="button"
+                                onClick={() => setZoomIndex(Math.max(0, zoomImages.indexOf(currentMedia)))}
+                                aria-label="Zoom image"
+                                className="block h-full w-full cursor-zoom-in"
+                            >
+                                <img
+                                    src={applyCloudinaryTransform(currentMedia)}
+                                    alt={product.name}
+                                    loading="lazy"
+                                    className="w-full h-full object-contain p-2 md:p-4 transition-transform duration-700 group-hover:scale-105"
+                                />
+                                <span className="pointer-events-none absolute bottom-4 right-4 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-bold text-slate-600 shadow-md">
+                                    <ZoomIn size={14} />
+                                    <span className="md:hidden">Tap to zoom</span>
+                                    <span className="hidden md:inline">Click to zoom</span>
+                                </span>
+                            </button>
                         )}
                         <button
                             onClick={handleToggleWishlist}
@@ -328,6 +346,14 @@ const ProductDetailPage = () => {
                                     <Plus size={24} strokeWidth={3} />
                                 </button>
                             </div>
+                        ) : shopClosed ? (
+                            <button
+                                type="button"
+                                disabled
+                                className="h-16 w-full sm:w-64 rounded-2xl bg-slate-100 border border-slate-200 text-slate-500 text-base font-black uppercase tracking-wide"
+                            >
+                                {shop.label}
+                            </button>
                         ) : (
                             <Button
                                 onClick={() => {
@@ -464,6 +490,14 @@ const ProductDetailPage = () => {
                     </div>
                 </div>
             </div>
+
+            <ImageZoomViewer
+                images={zoomImages}
+                startIndex={zoomIndex ?? 0}
+                open={zoomIndex !== null}
+                onClose={() => setZoomIndex(null)}
+                alt={product.name}
+            />
         </div>
     );
 };

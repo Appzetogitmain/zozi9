@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Clock } from "lucide-react";
 
 import { useProductDetail } from "../../context/ProductDetailContext";
+import { useProductShopStatus } from "../../context/ShopStatusContext";
 
 const ProductCard = React.memo(
   ({ product, badge, className, compact = false, neutralBg = false }) => {
@@ -23,6 +24,8 @@ const ProductCard = React.memo(
     const { animateAddToCart, animateRemoveFromCart } = useCartAnimation();
 
     const { openProduct } = useProductDetail();
+    const shop = useProductShopStatus(product);
+    const shopClosed = !!shop && !shop.isOpen;
     const [showHeartPopup, setShowHeartPopup] = React.useState(false);
 
     const imageRef = React.useRef(null);
@@ -234,9 +237,21 @@ const ProductCard = React.memo(
               src={applyCloudinaryTransform(product.image)}
               alt={product.name}
               loading="lazy"
-              className="w-full h-full object-cover mix-blend-multiply"
+              className={cn(
+                "w-full h-full object-cover mix-blend-multiply",
+                shopClosed && "grayscale opacity-60",
+              )}
             />
           </div>
+          {shopClosed && (
+            <div
+              className={cn(
+                "absolute inset-x-0 bottom-0 z-10 bg-slate-900/75 text-center font-bold leading-tight text-white backdrop-blur-[2px]",
+                compact ? "px-1 py-0.5 text-[8px]" : "px-1.5 py-1 text-[9px] sm:text-[10px]",
+              )}>
+              {shop.label}
+            </div>
+          )}
           {hasVideo && (
             <span
               className={cn(
@@ -347,6 +362,23 @@ const ProductCard = React.memo(
                     <Plus size={compact ? 10 : 12} strokeWidth={3.5} />
                   </button>
                 </div>
+              ) : shopClosed ? (
+                <button
+                  type="button"
+                  disabled
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  aria-label={`${shop.shopName} is closed`}
+                  className={cn(
+                    "rounded-lg border-[1.5px] border-slate-200 bg-slate-100 font-black uppercase leading-none tracking-wide text-slate-400",
+                    compact
+                      ? "px-2 py-1 text-[9px]"
+                      : "px-2.5 py-1.5 text-[10px] sm:px-5 sm:py-2 sm:text-[12px] md:px-6 md:py-2.5",
+                  )}>
+                  Closed
+                </button>
               ) : (
                 <motion.button
                   whileTap={{ scale: 0.95 }}

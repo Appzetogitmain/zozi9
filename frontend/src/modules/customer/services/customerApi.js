@@ -17,6 +17,8 @@ export const customerApi = {
 
   // Sellers & Location
   getNearbySellers: (params) => getWithDedupe("/seller/nearby", params),
+  // Not cached: open / closed changes during the day
+  getShopStatus: (params) => axiosInstance.get("/seller/shop-status", { params }),
 
   // Cart
   getCart: () => getWithDedupe("/cart", {}, { ttl: 2000 }), // Very short cache for cart

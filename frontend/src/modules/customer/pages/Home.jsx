@@ -1466,28 +1466,33 @@ const Home = () => {
           </motion.div>
 
           {/* Promo Marquee Strip */}
-          <div className="w-full -mt-[2px] md:-mt-[2px] mb-4">
+          <div className="relative z-30 w-full -mt-[2px] mb-3 md:mb-4">
             <div className="relative overflow-hidden border-y border-[#389ecb] bg-primary shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
-              <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-primary via-primary/90 to-transparent pointer-events-none" />
-              <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-primary via-primary/90 to-transparent pointer-events-none" />
-              <div className="classic-marquee-track flex w-max items-center gap-3 px-2 py-1 text-[11px] font-semibold text-white -translate-y-[2px] md:px-4 md:py-1.5 md:text-sm">
-                {[...MARQUEE_MESSAGES, ...MARQUEE_MESSAGES].map(
-                  (message, idx) => (
-                    <React.Fragment key={`${message}-${idx}`}>
-                      <span className="whitespace-nowrap">{message}</span>
-                      <span className="text-white/60">•</span>
-                    </React.Fragment>
-                  ),
-                )}
-                <span className="whitespace-nowrap">❤️</span>
-                <span className="whitespace-nowrap">🎁</span>
+              <div className="absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-primary to-transparent pointer-events-none md:w-12" />
+              <div className="absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-primary to-transparent pointer-events-none md:w-12" />
+              {/* Two identical halves so the -50% animation loops without a jump */}
+              <div className="classic-marquee-track flex w-max">
+                {[0, 1].map((copy) => (
+                  <div
+                    key={copy}
+                    aria-hidden={copy === 1}
+                    className="flex shrink-0 items-center gap-2.5 pr-2.5 py-2 text-xs font-semibold leading-none text-white md:gap-4 md:pr-4 md:py-2.5 md:text-sm"
+                  >
+                    {[...MARQUEE_MESSAGES, ...MARQUEE_MESSAGES, ...MARQUEE_MESSAGES].map((message, idx) => (
+                      <React.Fragment key={`${message}-${idx}`}>
+                        <span className="whitespace-nowrap">{message}</span>
+                        <span className="text-white/60">•</span>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
           {/* Quick Navigation Category Slider (admin-configured or global fallback) */}
           {effectiveQuickCategories.length > 0 && (
-            <div className="w-full mb-3 -mt-[28px] md:mt-2 overflow-hidden relative group z-20">
+            <div className="w-full mb-3 mt-0 md:mt-2 overflow-hidden relative group z-20">
               <div
                 className="relative overflow-hidden bg-white shadow-[0_14px_28px_rgba(15,23,42,0.09)]"
                 style={{

@@ -4,6 +4,7 @@ import handleResponse from "../utils/helper.js";
 import { getApprovedOrLegacyFilter } from "../services/productModerationService.js";
 import { applyFlashPricingToProducts } from "../services/flashSaleService.js";
 import { notExpiredFilter } from "../services/productExpiryService.js";
+import { assertShopsOpen } from "../services/shopStatusService.js";
 
 const CART_POPULATE_FIELDS =
   "name slug price salePrice mainImage stock status headerId categoryId subcategoryId sellerId variants";
@@ -87,6 +88,12 @@ export const addToCart = async (req, res) => {
 
     if (!customerVisibleProduct) {
       return handleResponse(res, 404, "Product is not available for purchase");
+    }
+
+    try {
+      await assertShopsOpen([customerVisibleProduct.sellerId]);
+    } catch (closedError) {
+      return handleResponse(res, closedError.statusCode || 409, closedError.message);
     }
 
     let cart = await Cart.findOne({ customerId }).populate({

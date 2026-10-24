@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import { useInViewAnimation } from "@/core/hooks/useInViewAnimation";
 import { useCart } from "../context/CartContext";
+import { sellerIdOf, useShopStatus } from "../context/ShopStatusContext";
 import { useAuth } from "../../../core/context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import { customerApi } from "../services/customerApi";
@@ -94,6 +95,25 @@ const CheckoutPage = () => {
     useWishlist();
   const { showToast } = useToast();
   const { user, isAuthenticated } = useAuth();
+
+  // Orders cannot be placed while a shop in the cart is closed (the server checks too)
+  const { getShopStatus } = useShopStatus();
+  const closedShop = useMemo(() => {
+    for (const item of cart) {
+      const status = getShopStatus(sellerIdOf(item));
+      if (status && !status.isOpen) return status;
+    }
+    return null;
+  }, [cart, getShopStatus]);
+  const shopClosedNotice = closedShop ? (
+    <div role="alert" className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-center">
+      <p className="text-sm font-black text-amber-800">{closedShop.shopName} is closed right now</p>
+      <p className="mt-0.5 text-xs font-semibold text-amber-700">
+        {closedShop.opensAt ? closedShop.label.replace(/^Closed · /, "") : "You can order when the shop opens again."}
+        {closedShop.note ? ` · ${closedShop.note}` : ""}
+      </p>
+    </div>
+  ) : null;
   const { settings } = useSettings();
 
   const wishlistSectionRef = useRef(null);
@@ -852,6 +872,10 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceOrder = async () => {
+    if (closedShop) {
+      showToast(`${closedShop.shopName}: ${closedShop.label}`, "error");
+      return;
+    }
     if (deliveryType !== "store_pickup") {
       if (!currentAddress || !currentAddress.address) {
         showToast("Please provide a valid delivery address before placing your order.", "error");
@@ -1275,12 +1299,16 @@ const CheckoutPage = () => {
 
             {/* Desktop Slide to Pay */}
             <div className="hidden lg:block">
-              <SlideToPay
-                amount={finalAmountToPay}
-                onSuccess={handlePlaceOrder}
-                isLoading={isPlacingOrder || isPreviewLoading}
-                text={finalAmountToPay === 0 ? "Place Free Order" : "Order Now"}
-              />
+              {closedShop ? (
+                shopClosedNotice
+              ) : (
+                <SlideToPay
+                  amount={finalAmountToPay}
+                  onSuccess={handlePlaceOrder}
+                  isLoading={isPlacingOrder || isPreviewLoading}
+                  text={finalAmountToPay === 0 ? "Place Free Order" : "Order Now"}
+                />
+              )}
               <p className="text-center text-[10px] text-slate-400 font-bold mt-4 uppercase tracking-[0.1em]">
                 🔒 SSL encrypted secure checkout
               </p>
@@ -1292,12 +1320,16 @@ const CheckoutPage = () => {
       {/* Sticky Footer — Mobile Only */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-50 rounded-t-3xl">
         <div className="max-w-4xl mx-auto">
-          <SlideToPay
-            amount={finalAmountToPay}
-            onSuccess={handlePlaceOrder}
-            isLoading={isPlacingOrder || isPreviewLoading}
-            text={finalAmountToPay === 0 ? "Place Free Order" : "Slide to Pay"}
-          />
+          {closedShop ? (
+            shopClosedNotice
+          ) : (
+            <SlideToPay
+              amount={finalAmountToPay}
+              onSuccess={handlePlaceOrder}
+              isLoading={isPlacingOrder || isPreviewLoading}
+              text={finalAmountToPay === 0 ? "Place Free Order" : "Slide to Pay"}
+            />
+          )}
         </div>
       </div>
 

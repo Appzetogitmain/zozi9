@@ -1,6 +1,7 @@
 import Seller from "../models/seller.js";
 import Category from "../models/category.js";
 import { distanceMeters } from "../utils/geoUtils.js";
+import { assertShopsOpen } from "./shopStatusService.js";
 import { HANDLING_FEE_STRATEGY } from "../constants/finance.js";
 import {
   allocateProportionally,
@@ -304,6 +305,9 @@ export async function buildCheckoutPricingSnapshot({
 
   const itemsBySeller = groupHydratedItemsBySeller(hydratedItems);
   const sellerIds = Array.from(itemsBySeller.keys()).sort((a, b) => a.localeCompare(b));
+
+  // Closed shops cannot take orders (checked for both the preview and the real order)
+  await assertShopsOpen(sellerIds, { session });
 
   const globalHandling = await computeGlobalHandlingFeeForCheckout(hydratedItems, { session });
 

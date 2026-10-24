@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Card from "@shared/components/ui/Card";
 import Badge from "@shared/components/ui/Badge";
 import Pagination from "@shared/components/ui/Pagination";
+import Modal from "@shared/components/ui/Modal";
+import ShopTimingEditor from "@shared/components/shopTiming/ShopTimingEditor";
 import {
   HiOutlineBuildingOffice2,
   HiOutlineMagnifyingGlass,
@@ -114,6 +116,7 @@ const ActiveSellers = () => {
   const [lastSyncAt, setLastSyncAt] = useState(null);
   const [refreshTick, setRefreshTick] = useState(0);
   const [selectedSeller, setSelectedSeller] = useState(null);
+  const [timingSeller, setTimingSeller] = useState(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -452,12 +455,38 @@ const ActiveSellers = () => {
 
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-2">
-                        <Badge
-                          variant="success"
-                          className="w-fit text-[8px] font-black uppercase tracking-widest"
-                        >
-                          Active
-                        </Badge>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <Badge
+                            variant="success"
+                            className="w-fit text-[8px] font-black uppercase tracking-widest"
+                          >
+                            Active
+                          </Badge>
+                          {seller.shopStatus && (
+                            <span
+                              title={seller.shopStatus.label}
+                              className={cn(
+                                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[8px] font-black uppercase tracking-widest",
+                                seller.shopStatus.isOpen
+                                  ? "bg-emerald-50 text-emerald-600"
+                                  : "bg-rose-50 text-rose-600",
+                              )}
+                            >
+                              <span
+                                className={cn(
+                                  "h-1.5 w-1.5 rounded-full",
+                                  seller.shopStatus.isOpen ? "bg-emerald-500" : "bg-rose-500",
+                                )}
+                              />
+                              {seller.shopStatus.isOpen ? "Shop open" : "Shop closed"}
+                            </span>
+                          )}
+                        </div>
+                        {seller.shopStatus && (
+                          <span className="text-[11px] font-semibold text-slate-500">
+                            {seller.shopStatus.label}
+                          </span>
+                        )}
                         <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                           Last order: {seller.lastOrderLabel || "No orders yet"}
                         </span>
@@ -466,6 +495,13 @@ const ActiveSellers = () => {
 
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setTimingSeller(seller)}
+                          className="px-4 py-2.5 bg-white text-slate-700 ring-1 ring-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
+                        >
+                          <HiOutlineClock className="h-3.5 w-3.5" />
+                          SHOP HOURS
+                        </button>
                         <button
                           onClick={() => setSelectedSeller(seller)}
                           className="px-4 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-lg flex items-center gap-2"
@@ -694,6 +730,28 @@ const ActiveSellers = () => {
           </div>
         )}
       </AnimatePresence>
+
+      <Modal
+        isOpen={!!timingSeller}
+        onClose={() => {
+          setTimingSeller(null);
+          setRefreshTick((value) => value + 1); // badge shows the new open / closed state
+        }}
+        title={timingSeller ? `Shop hours · ${timingSeller.shopName}` : "Shop hours"}
+        size="xl"
+      >
+        {timingSeller && (
+          <ShopTimingEditor
+            key={timingSeller.id}
+            ownerLabel="this shop"
+            api={{
+              get: () => adminApi.getSellerShopTiming(timingSeller.id),
+              saveHours: (data) => adminApi.updateSellerShopHours(timingSeller.id, data),
+              setStatus: (data) => adminApi.setSellerShopStatus(timingSeller.id, data),
+            }}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

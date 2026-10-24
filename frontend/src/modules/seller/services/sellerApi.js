@@ -5,6 +5,10 @@ export const sellerApi = {
     signup: (data) => axiosInstance.post('/seller/signup', data),
     sendVerificationOtp: (data) => axiosInstance.post('/seller/verification/send-otp', data),
     verifyVerificationOtp: (data) => axiosInstance.post('/seller/verification/verify-otp', data),
+    // Shop opening hours + open / close switch
+    getShopTiming: () => axiosInstance.get('/seller/shop-timing'),
+    updateShopHours: (data) => axiosInstance.put('/seller/shop-timing', data),
+    setShopStatus: (data) => axiosInstance.patch('/seller/shop-timing/status', data),
     // Flash Sales (own sales; every create/edit goes to admin for approval)
     getFlashSales: (params) => axiosInstance.get('/flash-sales/seller', { params }),
     createFlashSale: (data) => axiosInstance.post('/flash-sales/seller', data),

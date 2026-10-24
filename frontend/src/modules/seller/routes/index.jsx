@@ -14,6 +14,7 @@ import {
   HiOutlineMapPin,
   HiOutlineBolt,
   HiOutlineCalendarDays,
+  HiOutlineClock,
 } from "react-icons/hi2";
 
 const Dashboard = React.lazy(() => import("../pages/Dashboard"));
@@ -32,10 +33,12 @@ const Profile = React.lazy(() => import("../pages/Profile"));
 const Withdrawals = React.lazy(() => import("../pages/Withdrawals"));
 const SellerLegalPage = React.lazy(() => import("../pages/SellerLegalPage"));
 const FlashSales = React.lazy(() => import("../pages/FlashSales"));
+const ShopTiming = React.lazy(() => import("../pages/ShopTiming"));
 const ProductExpiry = React.lazy(() => import("../pages/ProductExpiry"));
 
 const navItems = [
   { label: "Dashboard", path: "/seller", icon: HiOutlineSquares2X2, end: true },
+  { label: "Shop Timings", path: "/seller/shop-timing", icon: HiOutlineClock },
   { label: "Products", path: "/seller/products", icon: HiOutlineCube },
   { label: "Stock", path: "/seller/inventory", icon: HiOutlineArchiveBox },
   { label: "Product Expiry", path: "/seller/expiry", icon: HiOutlineCalendarDays },
@@ -75,6 +78,7 @@ const SellerRoutes = () => {
         <Route path="/products/add" element={<AddProduct />} />
         <Route path="/inventory" element={<StockManagement />} />
         <Route path="/flash-sales" element={<FlashSales />} />
+        <Route path="/shop-timing" element={<ShopTiming />} />
         <Route path="/expiry" element={<ProductExpiry />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/returns" element={<Returns />} />

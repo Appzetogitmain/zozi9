@@ -1,6 +1,7 @@
 import Seller from "../../models/seller.js";
 import Order from "../../models/order.js";
 import Product from "../../models/product.js";
+import { computeShopStatus } from "../shopStatusService.js";
 import {
   computeMapBounds,
   computeMapCenter,
@@ -415,6 +416,7 @@ export async function getActiveSellersData({
       category: seller.category || "General",
       status: seller.isVerified && seller.isActive ? "active" : "inactive",
       verificationStatus: seller.isVerified ? "verified" : "unverified",
+      shopStatus: computeShopStatus(seller),
       joinedAt,
       joinedDate: new Date(joinedAt).toLocaleDateString("en-GB", {
         day: "2-digit",

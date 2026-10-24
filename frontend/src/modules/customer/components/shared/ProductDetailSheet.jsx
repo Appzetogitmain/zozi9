@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { motion, AnimatePresence, useAnimation, useDragControls } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { X, ChevronDown, Share2, Heart, Search, Clock, Minus, Plus, ShoppingBag, Star, MessageSquare, ArrowLeft, ChevronRight } from 'lucide-react';
+import { X, ChevronDown, Share2, Heart, Search, Clock, Minus, Plus, ShoppingBag, Star, MessageSquare, ArrowLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { useProductDetail } from '../../context/ProductDetailContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -9,6 +9,8 @@ import { useToast } from '@shared/components/ui/Toast';
 import { useSettings } from '@core/context/SettingsContext';
 import { cn } from '@/lib/utils';
 import { applyCloudinaryTransform } from '@/core/utils/imageUtils';
+import ImageZoomViewer from './ImageZoomViewer';
+import { useProductShopStatus } from '../../context/ShopStatusContext';
 import { customerApi } from '../../services/customerApi';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -67,6 +69,23 @@ const ProductDetailSheet = () => {
             ];
     }, [selectedProduct, selectedVariant, variantVideo]);
     const isVideoMedia = (src) => !!variantVideo && src === variantVideo;
+
+    const shop = useProductShopStatus(selectedProduct);
+    const shopClosed = !!shop && !shop.isOpen;
+
+    // Full-screen zoom shows photos only (videos have their own player)
+    const [zoomIndex, setZoomIndex] = useState(null);
+    const zoomImages = useMemo(
+        () => allImages.filter((src) => !(variantVideo && src === variantVideo)),
+        [allImages, variantVideo]
+    );
+    const openZoom = (src) => {
+        const i = zoomImages.indexOf(src);
+        if (i >= 0) setZoomIndex(i);
+    };
+    useEffect(() => {
+        setZoomIndex(null);
+    }, [isOpen, selectedProduct]);
 
     const scrollToMedia = (index) => {
         setActiveImageIndex(index);
@@ -296,6 +315,7 @@ const ProductDetailSheet = () => {
     };
 
     return (
+        <>
         <AnimatePresence>
             {isOpen && (
                 <>
@@ -415,7 +435,8 @@ const ProductDetailSheet = () => {
                                                         transition={{ duration: 0.15 }}
                                                         src={applyCloudinaryTransform(allImages[activeImageIndex], "f_auto,q_auto:best,w_1200,dpr_auto")}
                                                         alt={`${selectedProduct.name} ${activeImageIndex + 1}`}
-                                                        className="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl hover:scale-[1.03] transition-transform duration-500 absolute inset-0 m-auto p-12"
+                                                        onClick={() => openZoom(allImages[activeImageIndex])}
+                                                        className="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl hover:scale-[1.03] transition-transform duration-500 absolute inset-0 m-auto p-12 cursor-zoom-in"
                                                     />
                                                 )}
                                             </AnimatePresence>
@@ -529,6 +550,14 @@ const ProductDetailSheet = () => {
                                                                 <Plus size={16} strokeWidth={2.5} />
                                                             </motion.button>
                                                         </div>
+                                                    ) : shopClosed ? (
+                                                    <button
+                                                        type="button"
+                                                        disabled
+                                                        className="h-12 px-6 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 font-black text-[12px] uppercase tracking-wider"
+                                                    >
+                                                        {shop.label}
+                                                    </button>
                                                     ) : (
                                                     <motion.button
                                                         whileHover={{ scale: 1.02, y: -2 }}
@@ -852,13 +881,25 @@ const ProductDetailSheet = () => {
                                                     transition={{ duration: 0.4 }}
                                                     src={applyCloudinaryTransform(img, "f_auto,q_auto:best,w_1200,dpr_auto")}
                                                     alt={`${selectedProduct.name} ${i + 1}`}
-                                                    className="w-full h-full object-contain mix-blend-multiply drop-shadow-xl"
+                                                    onClick={() => openZoom(img)}
+                                                    className="w-full h-full object-contain mix-blend-multiply drop-shadow-xl cursor-zoom-in"
                                                     style={{ objectPosition: 'center calc(50% - 40px)' }}
                                                 />
                                             )}
                                         </div>
                                     ))}
                                 </div>
+
+                                {!isVideoMedia(allImages[activeImageIndex]) && (
+                                    <button
+                                        type="button"
+                                        onClick={() => openZoom(allImages[activeImageIndex])}
+                                        aria-label="Zoom image"
+                                        className="absolute bottom-3 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-md active:scale-90"
+                                    >
+                                        <ZoomIn size={17} />
+                                    </button>
+                                )}
 
                                 {/* Carousel Dots */}
                                 {allImages.length > 1 && (
@@ -1098,6 +1139,14 @@ const ProductDetailSheet = () => {
                                                 <Plus size={18} strokeWidth={3.5} />
                                             </motion.button>
                                         </div>
+                                    ) : shopClosed ? (
+                                        <button
+                                            type="button"
+                                            disabled
+                                            className="flex-1 h-[56px] rounded-2xl bg-slate-100 border border-slate-200 text-slate-500 font-black text-sm uppercase tracking-wide px-4"
+                                        >
+                                            {shop.label}
+                                        </button>
                                     ) : (
                                         <motion.button
                                             whileHover={{ scale: 1.02 }}
@@ -1140,6 +1189,14 @@ const ProductDetailSheet = () => {
                 </>
             )}
         </AnimatePresence>
+        <ImageZoomViewer
+            images={zoomImages}
+            startIndex={zoomIndex ?? 0}
+            open={isOpen && zoomIndex !== null}
+            onClose={() => setZoomIndex(null)}
+            alt={selectedProduct?.name || ''}
+        />
+        </>
     );
 };
 

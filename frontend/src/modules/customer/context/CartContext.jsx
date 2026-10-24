@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useRef 
 import { toast } from "sonner";
 import { customerApi } from "../services/customerApi";
 import { useAuth } from "../../../core/context/AuthContext";
+import { sellerIdOf, useShopStatus } from "./ShopStatusContext";
 
 const CartContext = createContext();
 
@@ -9,6 +10,7 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const { isAuthenticated } = useAuth();
+  const { getShopStatus } = useShopStatus();
   const [cart, setCart] = useState(() => {
     try {
       const savedCart = localStorage.getItem("cart");
@@ -119,7 +121,16 @@ export const CartProvider = ({ children }) => {
     };
   }, [cart, isAuthenticated]);
 
+  // Items can still be removed while a shop is closed, but not added
+  const blockIfShopClosed = (product) => {
+    const shop = getShopStatus(sellerIdOf(product));
+    if (!shop || shop.isOpen) return false;
+    toast.error(`${shop.shopName}: ${shop.label}`);
+    return true;
+  };
+
   const addToCart = async (product) => {
+    if (blockIfShopClosed(product)) return;
     const variantSku = String(product?.variantSku || product?.variantName || "").trim();
     const id = product.id || product._id;
     const key = `${id}::${variantSku || ""}`;
@@ -215,6 +226,7 @@ export const CartProvider = ({ children }) => {
         `${item.id || item._id}::${String(item.variantSku || "").trim()}` === key,
     );
     if (!currentItem) return;
+    if (delta > 0 && blockIfShopClosed(currentItem)) return;
 
     const newQty = Math.max(0, currentItem.quantity + delta);
 

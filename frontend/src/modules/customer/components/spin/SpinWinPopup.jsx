@@ -248,7 +248,7 @@ const SpinWinPopup = () => {
     <AnimatePresence>
       <motion.div
         key="spin-backdrop"
-        className="fixed inset-0 z-[300] flex items-end justify-center bg-slate-900/70 backdrop-blur-sm sm:items-center sm:p-4"
+        className="fixed inset-0 z-[9999] flex items-end justify-center bg-slate-900/70 backdrop-blur-sm sm:items-center sm:p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -258,7 +258,7 @@ const SpinWinPopup = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="spin-title"
-          className="relative flex max-h-[94vh] w-full max-w-md flex-col overflow-hidden rounded-t-[2rem] bg-white shadow-2xl sm:rounded-[2rem]"
+          className="relative flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-t-[2rem] bg-white shadow-2xl supports-[height:100dvh]:max-h-[92dvh] sm:rounded-[2rem]"
           initial={{ y: 60, opacity: 0, scale: 0.97 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 260, damping: 26 }}
@@ -299,51 +299,21 @@ const SpinWinPopup = () => {
           </div>
 
           {/* body */}
-          <div className="-mt-7 flex-1 overflow-y-auto rounded-t-[2rem] bg-white px-5 pb-5 pt-6">
+          <div
+            className={`-mt-7 min-h-0 flex-1 overflow-y-auto rounded-t-[2rem] bg-white px-5 pt-6 ${
+              phase === "result" ? "pb-[calc(env(safe-area-inset-bottom)+20px)]" : "pb-4"
+            }`}
+          >
             {phase !== "result" ? (
-              <>
-                <div className="px-2">
-                  <SpinWheel
-                    ref={wheelRef}
-                    slices={campaign.slices}
-                    disabled={spinning || !canSpin}
-                    onSpinClick={handleSpin}
-                  />
-                </div>
-
-                {error && (
-                  <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-600">
-                    {error}
-                  </p>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handleSpin}
-                  disabled={spinning || (isAuthenticated && !canSpin)}
-                  className="mt-5 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-primary text-base font-black uppercase tracking-wider text-white shadow-lg shadow-primary/30 transition enabled:active:scale-[0.98] disabled:opacity-60"
-                >
-                  {spinning ? (
-                    <>
-                      <Loader2 className="animate-spin" size={20} /> Spinning...
-                    </>
-                  ) : !isAuthenticated ? (
-                    "Login to spin"
-                  ) : !canSpin ? (
-                    "No spins left"
-                  ) : (
-                    <>
-                      <RotateCw size={20} /> Spin now
-                    </>
-                  )}
-                </button>
-
-                {isAuthenticated && typeof remaining === "number" && canSpin && (
-                  <p className="mt-2 text-center text-xs font-semibold text-slate-500">
-                    {remaining} {remaining === 1 ? "spin" : "spins"} left
-                  </p>
-                )}
-              </>
+              // Wheel shrinks on short screens so the Spin button below always stays visible
+              <div className="mx-auto w-full max-w-[min(320px,38dvh)] px-2">
+                <SpinWheel
+                  ref={wheelRef}
+                  slices={campaign.slices}
+                  disabled={spinning || !canSpin}
+                  onSpinClick={handleSpin}
+                />
+              </div>
             ) : (
               <ResultCard
                 result={result}
@@ -374,6 +344,44 @@ const SpinWinPopup = () => {
               </div>
             )}
           </div>
+
+          {/* pinned footer: never scrolls away and clears the phone's home indicator */}
+          {phase !== "result" && (
+            <div className="shrink-0 border-t border-slate-100 bg-white px-5 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-3">
+              {error && (
+                <p role="alert" className="mb-3 rounded-xl bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-600">
+                  {error}
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={handleSpin}
+                disabled={spinning || (isAuthenticated && !canSpin)}
+                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-primary text-base font-black uppercase tracking-wider text-white shadow-lg shadow-primary/30 transition enabled:active:scale-[0.98] disabled:opacity-60"
+              >
+                {spinning ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} /> Spinning...
+                  </>
+                ) : !isAuthenticated ? (
+                  "Login to spin"
+                ) : !canSpin ? (
+                  "No spins left"
+                ) : (
+                  <>
+                    <RotateCw size={20} /> Spin now
+                  </>
+                )}
+              </button>
+
+              {isAuthenticated && typeof remaining === "number" && canSpin && (
+                <p className="mt-2 text-center text-xs font-semibold text-slate-500">
+                  {remaining} {remaining === 1 ? "spin" : "spins"} left
+                </p>
+              )}
+            </div>
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>,

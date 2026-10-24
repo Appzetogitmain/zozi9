@@ -7,6 +7,12 @@ import {
 } from "../controller/sellerAuthController.js";
 import { getSellerProfile, updateSellerProfile, requestWithdrawal, getNearbySellers } from "../controller/sellerController.js";
 import { getSellerStats, getSellerEarnings } from "../controller/sellerStatsController.js";
+import {
+    getTiming,
+    updateHours,
+    updateOpenState,
+    getNearbyShopStatuses,
+} from "../controller/shopTimingController.js";
 import { getSellerWalletSummaryController } from "../controller/adminFinanceController.js";
 import { verifyToken, allowRoles } from "../middleware/authMiddleware.js";
 import {
@@ -45,6 +51,12 @@ router.post(
 );
 router.post("/login", loginSeller);
 router.get("/nearby", getNearbySellers);
+router.get("/shop-status", getNearbyShopStatuses);
+
+// Shop opening hours and open / close switch
+router.get("/shop-timing", verifyToken, allowRoles("seller"), getTiming);
+router.put("/shop-timing", verifyToken, allowRoles("seller"), updateHours);
+router.patch("/shop-timing/status", verifyToken, allowRoles("seller"), updateOpenState);
 
 // Profile routes
 router.get(

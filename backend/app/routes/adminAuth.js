@@ -11,6 +11,11 @@ import {
 } from "../controller/adminAuthController.js";
 import { getProductSales } from "../controller/adminReportController.js";
 import {
+    getTiming as getShopTimingForSeller,
+    updateHours as updateShopHoursForSeller,
+    updateOpenState as updateShopOpenStateForSeller,
+} from "../controller/shopTimingController.js";
+import {
     getAdminProfile,
     updateAdminProfile,
     updateAdminPassword,
@@ -179,6 +184,9 @@ router.get("/sellers", verifyToken, allowRoles("admin"), getSellers);
 router.get("/sellers/locations", verifyToken, allowRoles("admin"), getSellerLocations);
 router.get("/sellers/active", verifyToken, allowRoles("admin"), getActiveSellers);
 router.get("/sellers/pending", verifyToken, allowRoles("admin"), getPendingSellers);
+router.get("/sellers/:id/shop-timing", verifyToken, allowRoles("admin"), getShopTimingForSeller);
+router.put("/sellers/:id/shop-timing", verifyToken, allowRoles("admin"), updateShopHoursForSeller);
+router.patch("/sellers/:id/shop-timing/status", verifyToken, allowRoles("admin"), updateShopOpenStateForSeller);
 router.patch("/sellers/approve/:id", verifyToken, allowRoles("admin"), approveSellerApplication);
 router.delete("/sellers/reject/:id", verifyToken, allowRoles("admin"), rejectSellerApplication);
 

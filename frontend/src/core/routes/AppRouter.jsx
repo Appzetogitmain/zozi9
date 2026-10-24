@@ -11,6 +11,7 @@ import { CartProvider } from '../../modules/customer/context/CartContext';
 import { CartAnimationProvider } from '../../modules/customer/context/CartAnimationContext';
 import { ProductDetailProvider } from '../../modules/customer/context/ProductDetailContext';
 import { LocationProvider } from '../../modules/customer/context/LocationContext';
+import { ShopStatusProvider } from '../../modules/customer/context/ShopStatusContext';
 import ScrollToTop from '../../modules/customer/components/shared/ScrollToTop';
 
 // Public Pages
@@ -57,20 +58,22 @@ import CustomerLayout from '../../modules/customer/components/layout/CustomerLay
 
 const CustomerLayoutWrapper = () => (
     <LocationProvider>
-        <WishlistProvider>
-            <CartProvider>
-                <CartAnimationProvider>
-                    <ProductDetailProvider>
-                        <ScrollToTop />
-                        <CustomerLayout>
-                            <Suspense fallback={<div className="flex h-screen items-center justify-center font-outfit">Loading...</div>}>
-                                <Outlet />
-                            </Suspense>
-                        </CustomerLayout>
-                    </ProductDetailProvider>
-                </CartAnimationProvider>
-            </CartProvider>
-        </WishlistProvider>
+        <ShopStatusProvider>
+            <WishlistProvider>
+                <CartProvider>
+                    <CartAnimationProvider>
+                        <ProductDetailProvider>
+                            <ScrollToTop />
+                            <CustomerLayout>
+                                <Suspense fallback={<div className="flex h-screen items-center justify-center font-outfit">Loading...</div>}>
+                                    <Outlet />
+                                </Suspense>
+                            </CustomerLayout>
+                        </ProductDetailProvider>
+                    </CartAnimationProvider>
+                </CartProvider>
+            </WishlistProvider>
+        </ShopStatusProvider>
     </LocationProvider>
 );
 
