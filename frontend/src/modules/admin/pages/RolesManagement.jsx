@@ -7,7 +7,7 @@ const AVAILABLE_MODULES = [
     'Dashboard', 'Categories', 'Products', 'Marketing Tools', 'Customer Support',
     'Sellers', 'Delivery Drivers', 'Wallet', 'Money Requests', 'Seller Payments',
     'Collect Cash', 'Customers', 'FAQs', 'Orders', 'Fees & Charges',
-    'Settings', 'Legal Pages', 'System Settings'
+    'Settings', 'Legal Pages', 'System Settings', 'Careers'
 ];
 
 const RolesManagement = () => {

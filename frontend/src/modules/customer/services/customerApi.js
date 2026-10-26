@@ -150,6 +150,15 @@ export const customerApi = {
     axiosInstance.post("/spin/play", {}, { headers: { "Idempotency-Key": idempotencyKey }, timeout: 30000 }),
   getMyRewards: (params) => axiosInstance.get("/spin/my-rewards", { params }),
 
+  // Careers (public; works for guests)
+  getCareerJobs: (params) => axiosInstance.get("/careers/jobs", { params }),
+  applyForJob: (formData, onUploadProgress) =>
+    axiosInstance.post("/careers/applications", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      timeout: 60000,
+      onUploadProgress,
+    }),
+
   // Refer & Earn
   getReferralProgram: () => axiosInstance.get("/referral/program"),
   getMyReferrals: () => axiosInstance.get("/referral/me"),

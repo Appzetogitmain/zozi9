@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     User, MapPin, Package, CreditCard, Wallet, ChevronRight,
-    LogOut, ShieldCheck, Heart, HelpCircle, Info, Edit2, ChevronLeft, Bell, Gift, UserPlus
+    LogOut, ShieldCheck, Heart, HelpCircle, Info, Edit2, ChevronLeft, Bell, Gift, UserPlus, Briefcase
 } from 'lucide-react';
 import { useAuth } from '@core/context/AuthContext';
 import { useSettings } from '@core/context/SettingsContext';
@@ -221,6 +221,14 @@ const ProfilePage = () => {
                             <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Help & Settings</p>
                         </div>
                         <div className="divide-y divide-slate-100">
+                            <MenuItem
+                                icon={Briefcase}
+                                label="Careers"
+                                sub="Join our team"
+                                path="/careers"
+                                color="#0ea5e9"
+                                bg="rgba(14,165,233,0.08)"
+                            />
                             <MenuItem
                                 icon={HelpCircle}
                                 label="Help & Support"

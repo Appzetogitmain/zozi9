@@ -149,6 +149,26 @@ export async function sendAdminInvitationOtpEmail({ email, otp, expiresInMinutes
   return { delivered: true, mode: "real" };
 }
 
+export function isEmailConfigured() {
+  return Boolean(String(process.env.SMTP_HOST || "").trim() && String(process.env.MAIL_FROM || "").trim());
+}
+
+/**
+ * General notification email. Returns { delivered: false } instead of throwing when
+ * SMTP is not configured, so callers can treat email as best-effort.
+ */
+export async function sendEmail({ to, subject, text, html }) {
+  if (!to) return { delivered: false, reason: "no_recipient" };
+  if (!isEmailConfigured()) {
+    logger.info("Email skipped: SMTP not configured", { to, subject });
+    return { delivered: false, reason: "not_configured" };
+  }
+
+  const transporter = getTransporter();
+  await transporter.sendMail({ from: getMailFrom(), to, subject, text, html });
+  return { delivered: true };
+}
+
 export function __resetEmailTransportForTests() {
   cachedTransporter = null;
 }

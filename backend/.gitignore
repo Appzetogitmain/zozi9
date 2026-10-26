@@ -10,3 +10,5 @@ uploads/
 !uploads/.gitkeep
 
 coverage/
+# Private uploads (resumes) - never served publicly or committed
+private_uploads/

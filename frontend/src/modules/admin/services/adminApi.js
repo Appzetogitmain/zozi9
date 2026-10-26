@@ -78,6 +78,20 @@ export const adminApi = {
     deleteSpinReward: (id) => axiosInstance.delete(`/admin/spin/rewards/${id}`),
     reorderSpinRewards: (campaignId, ids) => axiosInstance.put(`/admin/spin/campaigns/${campaignId}/rewards/order`, { ids }),
     getSpinReport: (params) => axiosInstance.get('/admin/spin/reports', { params }),
+    // Careers
+    getCareersStats: () => axiosInstance.get('/admin/careers/stats'),
+    getCareerJobs: () => axiosInstance.get('/admin/careers/jobs'),
+    createCareerJob: (data) => axiosInstance.post('/admin/careers/jobs', data),
+    updateCareerJob: (id, data) => axiosInstance.put(`/admin/careers/jobs/${id}`, data),
+    setCareerJobActive: (id, isActive) => axiosInstance.patch(`/admin/careers/jobs/${id}/active`, { isActive }),
+    deleteCareerJob: (id) => axiosInstance.delete(`/admin/careers/jobs/${id}`),
+    getJobApplications: (params) => axiosInstance.get('/admin/careers/applications', { params }),
+    getJobApplication: (id) => axiosInstance.get(`/admin/careers/applications/${id}`),
+    updateJobApplicationStatus: (id, data) => axiosInstance.patch(`/admin/careers/applications/${id}/status`, data),
+    addJobApplicationNote: (id, text) => axiosInstance.post(`/admin/careers/applications/${id}/notes`, { text }),
+    // Sent with the admin token; returned as a blob so the PDF never has a public URL
+    getJobApplicationResume: (id) =>
+        axiosInstance.get(`/admin/careers/applications/${id}/resume`, { responseType: 'blob', timeout: 60000 }),
     // Refer & Earn
     getReferralSettings: () => axiosInstance.get('/admin/referrals/settings'),
     updateReferralSettings: (data) => axiosInstance.patch('/admin/referrals/settings', data),

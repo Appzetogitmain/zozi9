@@ -4,6 +4,7 @@ import http from "http";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { Server } from "socket.io";
@@ -80,6 +81,28 @@ function parseAllowedOrigins() {
 /**
  * Parse trust proxy configuration
  */
+/**
+ * Uploaded files are stored with a full URL built from MEDIA_BASE_URL. A missing or
+ * localhost value saves links that only work on the developer's machine.
+ */
+function checkLocalMediaConfig(uploadsDirectory) {
+  const provider = String(process.env.STORAGE_PROVIDER || "local").trim().toLowerCase();
+  if (provider !== "local" || process.env.NODE_ENV !== "production") return;
+
+  const base = String(process.env.MEDIA_BASE_URL || "").trim();
+  if (!base) {
+    logger.error("MEDIA_BASE_URL is not set: uploaded images will get links without a domain", {
+      fix: "Set MEDIA_BASE_URL=https://<your-backend-domain>/uploads",
+    });
+  } else if (/\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:|\/|$)/i.test(base)) {
+    logger.error("MEDIA_BASE_URL points to localhost in production: uploaded images will not open for users", {
+      mediaBaseUrl: base,
+      fix: "Set MEDIA_BASE_URL=https://<your-backend-domain>/uploads",
+    });
+  }
+  logger.info("Local media storage", { uploadsDirectory, mediaBaseUrl: base || null });
+}
+
 function parseTrustProxy(value) {
   if (value == null || value === "") return false;
   if (value === "true") return 1;
@@ -128,11 +151,11 @@ function createApp() {
       crossOriginResourcePolicy: { policy: "cross-origin" },
     }),
   );
-  app.use(cors(corsOptions));
-  app.use(globalApiRateLimiter);
-
-  // Serve static media uploads
+  // Serve static media uploads. Registered before the API rate limiter: a single
+  // product grid loads dozens of images, which must not use up a visitor's API quota.
   const uploadsDirectory = path.resolve(process.env.LOCAL_MEDIA_PATH || "./uploads");
+  fs.mkdirSync(uploadsDirectory, { recursive: true });
+  checkLocalMediaConfig(uploadsDirectory);
   app.use(
     "/uploads",
     express.static(uploadsDirectory, {
@@ -141,6 +164,9 @@ function createApp() {
       index: false,
     }),
   );
+
+  app.use(cors(corsOptions));
+  app.use(globalApiRateLimiter);
 
   // PhonePe webhook needs raw body for signature verification
   app.use(

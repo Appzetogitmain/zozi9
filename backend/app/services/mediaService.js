@@ -256,6 +256,12 @@ async function createUploadIntent({
   tags = [],
 }) {
   validateStorageConfig();
+  // Signed intents upload straight to Cloudinary; with server storage files go through POST /api/media/upload
+  if (storageProvider() === "local") {
+    const err = new Error("Direct uploads are not available with server storage. Use POST /api/media/upload.");
+    err.statusCode = 400;
+    throw err;
+  }
   if (!isSignedUploadsEnabled()) {
     const err = new Error("Signed uploads are disabled");
     err.statusCode = 503;

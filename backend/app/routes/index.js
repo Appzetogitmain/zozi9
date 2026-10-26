@@ -28,6 +28,7 @@ import roleRoute from "./roleRoutes.js";
 import deliverySlotRoute from "./deliverySlotRoutes.js";
 import { spinCustomerRouter, spinAdminRouter } from "./spinRoutes.js";
 import { referralCustomerRouter, referralAdminRouter } from "./referralRoutes.js";
+import { careersPublicRouter, careersAdminRouter } from "./careersRoutes.js";
 import { maintenanceMiddleware } from "../middleware/maintenanceMiddleware.js";
 
 import express from "express";
@@ -50,6 +51,8 @@ const setupRoutes = (app) => {
     router.use("/spin", spinCustomerRouter);
     router.use("/admin/referrals", referralAdminRouter);
     router.use("/referral", referralCustomerRouter);
+    router.use("/admin/careers", careersAdminRouter);
+    router.use("/careers", careersPublicRouter);
     router.use("/admin", adminRoute);
     router.use("/seller", sellerRoute);
     router.use("/settings", settingsRoute);

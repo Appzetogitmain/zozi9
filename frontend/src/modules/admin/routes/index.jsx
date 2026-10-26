@@ -25,6 +25,7 @@ import {
   ShieldAlert,
   Server,
   TrendingUp,
+  Briefcase,
 } from "lucide-react";
 
 const Dashboard = React.lazy(() => import("../pages/Dashboard"));
@@ -105,6 +106,7 @@ const ShopByStoreManagement = React.lazy(
 const AdminSettings = React.lazy(() => import("../pages/AdminSettings"));
 const AdminProfile = React.lazy(() => import("../pages/AdminProfile"));
 const AdminLegalPages = React.lazy(() => import("../pages/AdminLegalPages"));
+const CareersManagement = React.lazy(() => import("../pages/CareersManagement"));
 const MaintenanceMode = React.lazy(() => import("../pages/MaintenanceMode"));
 const TimeSlotsManagement = React.lazy(() => import("../pages/TimeSlotsManagement"));
 const EscalationDashboard = React.lazy(() => import("../pages/EscalationDashboard"));
@@ -211,6 +213,7 @@ const navItems = [
   },
   { label: "Customers", path: "/admin/customers", icon: Users, color: "sky" },
   { label: "FAQs", path: "/admin/faqs", icon: HelpCircle, color: "pink" },
+  { label: "Careers", path: "/admin/careers", icon: Briefcase, color: "sky" },
   {
     label: "Orders",
     icon: ClipboardList,
@@ -355,6 +358,7 @@ const AdminRoutes = () => {
         <Route path="/maintenance" element={<MaintenanceMode />} />
         <Route path="/time-slots" element={<TimeSlotsManagement />} />
         <Route path="/legal" element={<AdminLegalPages />} />
+        <Route path="/careers" element={<CareersManagement />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </DashboardLayout>

@@ -14,6 +14,8 @@
     "test:finance-e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles --testPathPatterns=finance-api-e2e\\.test\\.js",
     "test:spin-integration": "node scripts/verify-spin-integration.mjs",
     "test:referral-integration": "node scripts/verify-referral-integration.mjs",
+    "test:careers-integration": "node scripts/verify-careers-integration.mjs",
+    "seed:careers": "node scripts/seed-careers.mjs",
     "test:delivery-broadcast": "node scripts/test-delivery-broadcast-flow.js"
   },
   "jest": {
